@@ -266,11 +266,10 @@ export function calculateDamage(attacker:BoardUnit,defender:BoardUnit) {
 		+getBoardUnitCombatBonus(attacker, defender, "attack.modifier")
 	
 	// obtenemos el dado unit.attack y lo tiramos
-	let damage = RollDice(attacker.unit.attack)+attackModBonus
-	let min = attacker.unit.attack.amount+attacker.unit.attack.modifier+attackModBonus
-	let max = attacker.unit.attack.amount*attacker.unit.attack.sides+attacker.unit.attack.modifier+attackModBonus
+	let damage = Math.max(RollDice(attacker.unit.attack)+attackModBonus-defender.unit.defense, 0)
+	let min = Math.max(attacker.unit.attack.amount+attacker.unit.attack.modifier+attackModBonus-defender.unit.defense, 0)
+	let max = attacker.unit.attack.amount*attacker.unit.attack.sides+attacker.unit.attack.modifier+attackModBonus-defender.unit.defense
 	//console.log(`${attacker.unit.name} ataca a ${defender?.unit.name} con ${attacker.unit.attack.amount}d${attacker.unit.attack.sides}+${attacker.unit.attack.modifier}`)
-	min = Math.max(min, 0)
 	//console.log(`Dmg: ${damage} Min: ${min}, Max: ${max}, effects: ${effectDamage}`)
 	
 	return {
