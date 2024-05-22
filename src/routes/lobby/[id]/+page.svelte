@@ -2,7 +2,6 @@
 import { enhance } from '$app/forms';
 import { page } from '$app/stores';
 import { source } from 'sveltekit-sse'
-import type { PageData } from './$types';
 let log:string[] = $state([])
 let lobby = $page.params.id
 source(`/lobby/${lobby}/log`).select('message').subscribe((data) => {
@@ -12,21 +11,24 @@ source(`/lobby/${lobby}/log`).select('message').subscribe((data) => {
 
 <div class="container">
 	<div class="row mt-2">
-		<div class="col-3">
+		<div class="col-12 col-lg-3">
 			<div class="card">
 				<div class="card-header">Chat {$page.data.nickname}</div>
 				<div class="card-body">
 					<div>
-						<form action="/lobby/{lobby}/send" method="post" use:enhance>
+						<form action="/lobby/{lobby}?/send" method="post" use:enhance>
 							<div class="input-group">
-								<input autofocus class="form-control" name="message" />
-								<button class="btn btn-outline-secondary" role="button">✉️</button>
+								<!-- svelte-ignore a11y_autofocus -->
+								<input autofocus autocomplete="off" class="form-control" name="message" />
+								<button class="btn btn-outline-secondary">✉️</button>
 							</div>
 						</form>
 
+						<div class="mt-3" style="height: 7rem; scroll-behavior: auto; overflow-y: scroll;display: flex; flex-direction: column-reverse;">
 						{#each log as message}
 						{message}<br>
 						{/each}
+						</div>
 					</div>
 				</div>
 			</div>
