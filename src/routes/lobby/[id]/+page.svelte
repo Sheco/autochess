@@ -16,7 +16,7 @@ source(`/lobby/${lobby}/connection`).select('chat').subscribe((data) => {
 				<div class="card-header">Chat {$page.params.id}</div>
 				<div class="card-body">
 					<div>
-						<form action="/lobby/{lobby}?/send" method="post" use:enhance>
+						<form action="/lobby/{lobby}?/send" method="post" use:enhance={() => ({update}) => update({invalidateAll: false}) }>
 							<div class="input-group">
 								<!-- svelte-ignore a11y_autofocus -->
 								<input autofocus autocomplete="off" class="form-control" name="message" />
