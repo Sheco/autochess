@@ -1,16 +1,17 @@
 import type { RequestHandler } from './$types';
 import { produce } from 'sveltekit-sse'
 import { Subscription } from 'rxjs'
-import { getChannel } from '$lib/chat'
+import { getChannel } from '.';
+
 
 export let POST:RequestHandler = function (ev) {
 	let suscription:Subscription 
 	let channel = getChannel(ev.params.id)
 	let nickname = ev.cookies.get('nickname')
 	return produce(function start({ emit }) {
-		channel.next(`${nickname} ha llegado`)
+		channel.next(`${nickname} ha llegado!`)
 		suscription = channel.subscribe((value) => {
-			const {error} = emit('message', value as string)
+			const {error} = emit('chat', value as string)
 			if(error) {
 				console.log('error', error)
 				return
@@ -19,7 +20,7 @@ export let POST:RequestHandler = function (ev) {
 	},
 	{
 		stop() {
-			channel.next(`${nickname} se ha ido`)
+			channel.next(`${nickname} se ha ido.`)
 			suscription.unsubscribe()
 		},
 	})

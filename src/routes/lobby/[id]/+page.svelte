@@ -4,7 +4,7 @@ import { page } from '$app/stores';
 import { source } from 'sveltekit-sse'
 let log:string[] = $state([])
 let lobby = $page.params.id
-source(`/lobby/${lobby}/connection`).select('message').subscribe((data) => {
+source(`/lobby/${lobby}/connection`).select('chat').subscribe((data) => {
 	log.push(data)
 })
 </script>
@@ -13,7 +13,7 @@ source(`/lobby/${lobby}/connection`).select('message').subscribe((data) => {
 	<div class="row mt-2">
 		<div class="col-12 col-lg-3">
 			<div class="card">
-				<div class="card-header">Chat {$page.data.nickname}</div>
+				<div class="card-header">Chat {$page.params.id}</div>
 				<div class="card-body">
 					<div>
 						<form action="/lobby/{lobby}?/send" method="post" use:enhance>

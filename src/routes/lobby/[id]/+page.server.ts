@@ -12,8 +12,8 @@ export const load: PageServerLoad = async ({ cookies }) => {
 	};
 };
 
-import { getChannel } from '$lib/chat';
 import type { Actions, RequestEvent } from './$types';
+import { getChannel } from './connection';
 
 export const actions = {
 	send: async (event:RequestEvent) => {
