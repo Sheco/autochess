@@ -4,7 +4,7 @@ import { page } from '$app/stores';
 import { source } from 'sveltekit-sse'
 let log:string[] = $state([])
 let lobby = $page.params.id
-source(`/lobby/${lobby}/log`).select('message').subscribe((data) => {
+source(`/lobby/${lobby}/connection`).select('message').subscribe((data) => {
 	log.push(data)
 })
 </script>
