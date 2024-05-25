@@ -153,9 +153,7 @@ export function *runCombat(attacker:Player, defender:Player): Generator<AttackRo
 	for(let i = 0; i < 20; i++) {
 		tick()
 		for(let turn of unitsReady()) {
-			for(let roll of attack(attacker, turn.boardUnit, turn.defender)) {
-				yield roll
-			}
+			yield* attack(attacker, turn.boardUnit, turn.defender)
 			turn.boardUnit.energy=0
 
 			let defenders = turn.defender.board.filter(boardUnit => boardUnit.hp>0)
