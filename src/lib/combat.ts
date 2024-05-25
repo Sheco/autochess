@@ -170,8 +170,8 @@ export function initBattle(player1:Player, player2: Player) {
 // de los attackRolls y poder sincronizar con la UI
 export function fight(player1:Player, player2:Player): Generator<AttackRoll> {
 	initBattle(player1, player2)
-	let homeFirst = Math.random()*100>50
-	if (homeFirst) [ player1, player2 ] = [player2, player1]
+	let player2First = Math.random()*100>50
+	if (player2First) [ player1, player2 ] = [player2, player1]
 	return combatRound(player1, player2)
 }
 
