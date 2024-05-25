@@ -106,7 +106,7 @@ export function initBattle(player1:Player, player2: Player) {
 	}
 }
 
-function *Attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Player): Generator<AttackRoll> {
+function *attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Player): Generator<AttackRoll> {
 	if(!attacker.hp) {
 		return
 	}
@@ -130,7 +130,7 @@ function *Attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Pla
 	}
 }
 
-export function *combatRound(attacker:Player, defender:Player): Generator<AttackRoll>  {
+export function *runCombat(attacker:Player, defender:Player): Generator<AttackRoll>  {
 	let attackerUnits:Turn[] = attacker.board
 		.filter(boardUnit => boardUnit.hp>0)
 		.map(boardUnit => ({
@@ -153,7 +153,7 @@ export function *combatRound(attacker:Player, defender:Player): Generator<Attack
 	for(let i = 0; i < 20; i++) {
 		tick()
 		for(let turn of unitsReady()) {
-			for(let roll of Attack(attacker, turn.boardUnit, turn.defender)) {
+			for(let roll of attack(attacker, turn.boardUnit, turn.defender)) {
 				yield roll
 			}
 			turn.boardUnit.energy=0
@@ -172,7 +172,7 @@ export function fight(player1:Player, player2:Player): Generator<AttackRoll> {
 	initBattle(player1, player2)
 	let player2First = Math.random()*100>50
 	if (player2First) [ player1, player2 ] = [player2, player1]
-	return combatRound(player1, player2)
+	return runCombat(player1, player2)
 }
 
 export function fightStatus(player1:Player, player2:Player) {
