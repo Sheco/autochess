@@ -72,6 +72,8 @@ declare global {
 		y:number
 		energy:number
 		mods: Mods
+		highlight?:string
+		damage?:AttackRoll
 	}
 
 	interface TraitMods {
@@ -106,7 +108,8 @@ declare global {
 		gold: number,
 		rolls: number,
 		traits: TraitRankActive[],
-		hand: Unit[]
+		hand: Unit[],
+		dimUnits?:boolean
 	}
 
 	export interface DamageRoll {

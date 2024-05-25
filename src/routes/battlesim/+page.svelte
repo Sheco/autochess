@@ -27,6 +27,20 @@ function run100() {
 	}
 }
 
+
+async function chainAttacks(attacks:AttackRoll[]) {
+	let sleep = async () => new Promise((resolve) => setTimeout(resolve, 1000))
+	for(let attack of attacks) {
+		attack.attacker.highlight = "success"
+		attack.defender.highlight = "danger"
+		attack.defender.damage = attack
+		await sleep()
+		attack.attacker.highlight = undefined
+		attack.defender.highlight = undefined
+		attack.defender.damage = undefined
+	}
+}
+
 function run() {
 	log = []
 	let result = fight(home, visitor)
@@ -39,6 +53,7 @@ function run() {
 	}
 	stats.combats++
 	log = result.attacks
+	chainAttacks(result.attacks)
 	home = home
 	visitor = visitor
 }

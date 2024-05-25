@@ -3,6 +3,8 @@ import type { Snippet } from "svelte";
 import Modal from "./Modal.svelte";
 import TraitIcon from "./TraitIcon.svelte";
 import UnitInfo from "./UnitInfo.svelte";
+    import DiceRoll from "./DiceRoll.svelte";
+    import Emoji from "./Emoji.svelte";
 
 let { unit, actions = undefined, onclick, board = undefined, boardUnit = undefined}:{
 	unit:Unit, 
@@ -25,7 +27,7 @@ let showModal = $state(false)
 {#if showModal}
 	<Modal onclose={()=>showModal=false} body={card} />
 {/if}
-<div class="card w-100">
+<div class="card w-100" class:border={boardUnit?.highlight} class:border-danger={boardUnit?.highlight=="danger"} class:border-success={boardUnit?.highlight=="success"} class:border-3={boardUnit?.highlight}>
 	<div class="card-header p-1">
 		<button onclick={() => showModal=true} class="btn btn-sm btn-info p-0"><span class="bi bi-info-circle"></span></button>
 		{unit.name}
@@ -47,8 +49,17 @@ let showModal = $state(false)
 						<TraitIcon {trait} /> {trait.name}<br>
 					</div>
 				{/each}
-				
 			</div>
+			{#if boardUnit && boardUnit.damage}
+				<div class="overlay position-absolute top-50 start-50">
+					<div class="badge bg-danger text-light">
+						{#each boardUnit.damage.dice as dice}
+							<Emoji>{dice.type.icon}</Emoji>
+						{/each}
+						{boardUnit.damage.damage}
+					</div>
+				</div>
+			{/if}
 		</button>
 			<div>
 				{#if actions}

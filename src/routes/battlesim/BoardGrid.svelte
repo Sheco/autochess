@@ -64,7 +64,7 @@ let units = [...Units].sort((a, b) => a.name.localeCompare(b.name));
 							{#if boardUnit}
 								<UnitCard unit={boardUnit.unit} {boardUnit} onclick={() => onRemoveUnit(player, {x: boardUnit.setx, y: boardUnit.sety})} board={player.board} />
 							{:else}
-								<div class="card h-100 border-{player.color}">
+								<div class="card h-100">
 									<div class="card-header p-0 ps-2">Espacio vacio
 									</div>
 									<div class="card-body p-1">
