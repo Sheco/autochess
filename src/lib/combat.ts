@@ -1,10 +1,3 @@
-function RollDice(dice:Dice) {
-	return Array(dice.amount)
-		.fill(0)
-		.map(_ => Math.floor(Math.random()*dice.sides)+1+dice.modifier)
-		.reduce((total, num) => total+num)
-}
-
 function coordinatesBetween(point1:Coordinate, point2:Coordinate) {
     const dx = point2.x - point1.x;
     const dy = point2.y - point1.y;
@@ -79,12 +72,6 @@ let targetting:{[key:string]: (c:BoardUnit, f:Board) => BoardUnit[]} = {
 }
 
 
-interface Turn {
-	boardUnit:BoardUnit,
-	attacker:Player,
-	defender:Player,
-}
-
 function setBattleCoordinates(player:Player) {
 	for(let boardUnit of player.board) {
 		boardUnit.x = boardUnit.setx
@@ -99,11 +86,50 @@ export function resetUnits(player:Player) {
 	}
 }
 
-export function initBattle(player1:Player, player2: Player) {
+function initBattle(player1:Player, player2: Player) {
 	for(let player of [player1, player2]) {
 		resetUnits(player)
 		setBattleCoordinates(player)
 	}
+}
+
+function RollDice(dice:Dice) {
+	return Array(dice.amount)
+		.fill(0)
+		.map(_ => Math.floor(Math.random()*dice.sides)+1+dice.modifier)
+		.reduce((total, num) => total+num)
+}
+
+export function calculateDamage(attacker:BoardUnit,defender:BoardUnit) {
+	// obtenemos el dado unit.attack y lo tiramos
+	let damage = 0
+	let min = 0
+	let max = 0
+	let dice:Dice[] = []
+	for(let die of [...attacker.unit.attack, ...attacker.mods.attack??[]]) {
+		// tira los dados de ataque
+		damage += RollDice(die)
+		min += die.amount+die.modifier
+		max += die.amount*die.sides+die.modifier
+		dice.push(die)
+
+		// tira los dados de debilidad del defensor
+		for(let wdie of defender.unit.weakness.filter(wdie => wdie.type==die.type)) {
+			damage += RollDice(wdie)
+			min += wdie.amount+wdie.modifier
+			max += wdie.amount*wdie.sides+wdie.modifier
+			dice.push(wdie)
+		}
+		//console.log(`${attacker.unit.name} ataca a ${defender?.unit.name} con ${attacker.unit.attack.amount}d${attacker.unit.attack.sides}+${attacker.unit.attack.modifier}`)
+		//console.log(`Dmg: ${damage} Min: ${min}, Max: ${max}, effects: ${effectDamage}`)
+	}
+	
+	return {
+		damage,
+		min,
+		max,
+		dice
+	} as DamageRoll
 }
 
 function *attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Player): Generator<AttackRoll> {
@@ -130,7 +156,13 @@ function *attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Pla
 	}
 }
 
-export function *runCombat(attacker:Player, defender:Player): Generator<AttackRoll>  {
+interface Turn {
+	boardUnit:BoardUnit,
+	attacker:Player,
+	defender:Player,
+}
+
+function *runCombat(attacker:Player, defender:Player): Generator<AttackRoll>  {
 	let attackerUnits:Turn[] = attacker.board
 		.filter(boardUnit => boardUnit.hp>0)
 		.map(boardUnit => ({
@@ -164,8 +196,6 @@ export function *runCombat(attacker:Player, defender:Player): Generator<AttackRo
 	}
 }
 
-// TODO agregar un callback de ondamage() para cachar cada uno
-// de los attackRolls y poder sincronizar con la UI
 export function fight(player1:Player, player2:Player): Generator<AttackRoll> {
 	initBattle(player1, player2)
 	let player2First = Math.random()*100>50
@@ -190,38 +220,6 @@ export function fightStatus(player1:Player, player2:Player) {
 		winner,
 		loser,
 	}
-}
-
-export function calculateDamage(attacker:BoardUnit,defender:BoardUnit) {
-	// obtenemos el dado unit.attack y lo tiramos
-	let damage = 0
-	let min = 0
-	let max = 0
-	let dice:Dice[] = []
-	for(let die of [...attacker.unit.attack, ...attacker.mods.attack??[]]) {
-		// tira los dados de ataque
-		damage += RollDice(die)
-		min += die.amount+die.modifier
-		max += die.amount*die.sides+die.modifier
-		dice.push(die)
-
-		// tira los dados de debilidad del defensor
-		for(let wdie of defender.unit.weakness.filter(wdie => wdie.type==die.type)) {
-			damage += RollDice(wdie)
-			min += wdie.amount+wdie.modifier
-			max += wdie.amount*wdie.sides+wdie.modifier
-			dice.push(wdie)
-		}
-		//console.log(`${attacker.unit.name} ataca a ${defender?.unit.name} con ${attacker.unit.attack.amount}d${attacker.unit.attack.sides}+${attacker.unit.attack.modifier}`)
-		//console.log(`Dmg: ${damage} Min: ${min}, Max: ${max}, effects: ${effectDamage}`)
-	}
-	
-	return {
-		damage,
-		min,
-		max,
-		dice
-	} as DamageRoll
 }
 
 export function createBoardUnit(unit:Unit, c:Coordinate): BoardUnit {

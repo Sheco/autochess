@@ -1,5 +1,5 @@
 <script lang="ts">
-import { initBattle, fight, createBoardUnit, resetUnits, fightStatus } from "$lib/combat";
+import { fight, createBoardUnit, resetUnits, fightStatus } from "$lib/combat";
 import { getPlayers, updatePlayer } from "$lib/state";
 import { UnitMap, updatePlayerTraits } from "$lib/database";
 import BoardGrid from "./BoardGrid.svelte";
@@ -8,10 +8,6 @@ import BoardGrid from "./BoardGrid.svelte";
 let [ _player1, _player2 ] = getPlayers()
 let home = $state(_player1)
 let visitor = $state(_player2)
-$effect(() => {
-	initBattle(home, visitor)
-})
-
 let winner = $state("")
 function run100() {
 	resetStats()
@@ -60,7 +56,6 @@ async function run() {
 	visitor = visitor
 }
 function resetCombat() {
-	initBattle(home, visitor)
 	home = home
 	visitor = visitor
 	log = []
