@@ -5,7 +5,11 @@ declare global {
 		icon: string;
 	}
 
-
+	interface Type {
+		id: string,
+		name: string,
+		icon: string,
+	}
 
 	interface Targetting {
 		id: string;
@@ -13,6 +17,7 @@ declare global {
 		targets: number;
 	}
 	interface Dice {
+		type: Type,
 		amount: number,
 		sides: number,
 		modifier: number,
@@ -44,14 +49,18 @@ declare global {
 		name: string;
 		info: string;
 		maxhp: number,
-		defense: number;
 		energymax: number;
 		energypertick: number;
 		traits: Trait[];
 		targetting: Targetting;
 		cost: number;
-		attack: Dice;
-		combatTraits: CombatTraitFunction[];
+		attack: Dice[];
+		weakness: Dice[];
+	}
+
+	interface Mods {
+		attack?: Dice[]
+		maxhp?: number
 	}
 	export interface BoardUnit {
 		player?:Player,
@@ -62,22 +71,27 @@ declare global {
 		x:number
 		y:number
 		energy:number
-		effects: Effect[]
+		mods: Mods
 	}
 
+	interface TraitMods {
+		target: Trait,
+		values: Mods
+
+	}
 	interface TraitRank {
 		trait: Trait
 		message: string
 		levels: {
 			amount: number
-			effects: Effect[]
+			mods: TraitMods[]
 		}[]
 	}
 
 	interface TraitRankActive extends TraitRank {
 		active: number,
 		level: number
-		effects: Effect[]
+		mods: TraitMods[]
 	}
 	export type Board = BoardUnit[]
 	export interface Player {

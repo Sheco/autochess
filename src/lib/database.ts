@@ -56,7 +56,6 @@ export let NoUnit = {
 	targetting: TargettingMap.closest1,
 	cost: 0,
 	attack: { amount: 1, sides: 1, modifier: 1 },
-	combatTraits: [],
 	teamTraits: [],
 }
 
@@ -108,20 +107,52 @@ let Traits:Trait[] = [
 		icon: '🛡️'
 	},
 ]
-export let TraitMap = Object.fromEntries(Traits.map(c => [ c.id, c ]))
-
-
-function damageAgainstUnitEffect(trait:Trait, value:number): CombatTraitFunction {
-	return (defender: BoardUnit) => {
-		let fullvalue = value>=0?`+${value}`:value
-		let message = `${fullvalue} contra <span class="icon">${trait.icon}</span>`
-		let type = "attack.modifier"
-		let def_trait= defender.unit.traits.find(t => t.id===trait.id)
-		if(!defender || !def_trait || def_trait.id !== trait.id)
-			return [{ type, value, message, active: false, target: TraitMap.unit }]
-		return [{ type , value, message, active: true, target: TraitMap.unit }]
+let Types:Type[] = [
+	{
+		id: 'fire',
+		name: 'Fuego',
+		icon: '🔥',
+		
+	},
+	{
+		id: 'earth',
+		name: 'Tierra',
+		icon: '⛰️',
+	},
+	{
+		id: 'metal',
+		name: 'Metal',
+		icon: '⚙️',
+	},
+	{
+		id: 'water',
+		name: 'Agua',
+		icon: '💧',
+	},
+	{
+		id: 'wood',
+		name: 'Madera',
+		icon: '🪵',
+	},
+	{
+		id: 'cut',
+		name: 'Cortante',
+		icon: '🪓',
+	},
+	{
+		id: 'pierce', 
+		name: 'Penetrante',
+		icon: '🗡️',
+	},
+	{
+		id: 'blunt',
+		name: 'Contundente',
+		icon: '🔨',
 	}
-} 
+
+]
+export let TypeMap = Object.fromEntries(Types.map(c => [ c.id, c ]))
+export let TraitMap = Object.fromEntries(Traits.map(c => [ c.id, c ]))
 
 export let boardTraitRanks:TraitRank[] = [
 	{ 
@@ -130,15 +161,26 @@ export let boardTraitRanks:TraitRank[] = [
 		levels: [
 			{
 				amount: 1,
-				effects: [
-					{type: "hp", value: 2, target: TraitMap.earth },
+				mods: [
+					{ 
+						target: TraitMap.earth,
+						values: { maxhp: 2 },
+					}
 				]
 			},
 			{
 				amount: 2,
-				effects: [
-					{type: "hp", value: 4, target: TraitMap.earth },
-					{type: "attack.modifier", value: 3, target: TraitMap.fire },
+				mods: [
+					{
+						target: TraitMap.earth,
+						values: { maxhp: 4},
+					},
+					{
+						target: TraitMap.fire,
+						values: {
+							attack: [{ type: TraitMap.fire, amount: 1, sides: 4, modifier: 0}],
+						}
+					}
 				]
 			},
 		],
@@ -149,15 +191,26 @@ export let boardTraitRanks:TraitRank[] = [
 		levels: [
 			{
 				amount: 1,
-				effects: [
-					{type: "hp", value: 2, target: TraitMap.metal },
+				mods: [
+					{ 
+						target: TraitMap.metal,
+						values: { maxhp: 2 },
+					}
 				]
 			},
 			{
 				amount: 2,
-				effects: [
-					{type: "hp", value: 4, target: TraitMap.metal },
-					{type: "attack.modifier", value: 3, target: TraitMap.earth },
+				mods: [
+					{
+						target: TraitMap.metal,
+						values: { maxhp: 4},
+					},
+					{
+						target: TraitMap.earth,
+						values: {
+							attack: [{ type: TraitMap.fire, amount: 1, sides: 4, modifier: 0}],
+						}
+					}
 				]
 			},
 		],
@@ -168,15 +221,30 @@ export let boardTraitRanks:TraitRank[] = [
 		levels: [
 			{
 				amount: 1,
-				effects: [
-					{type: "attack.modifier", value: 1, target: TraitMap.fire },
+				mods: [
+					{
+						target: TraitMap.fire,
+						values: {
+							attack: [{ type: TraitMap.fire, amount: 1, sides: 4, modifier: 0}]
+						}
+					}
 				]
 			},
 			{
 				amount: 2,
-				effects: [
-					{type: "attack.modifier", value: 2, target: TraitMap.wood },
-					{type: "attack.modifier", value: 2, target: TraitMap.fire },
+				mods: [
+					{
+						target: TraitMap.wood,
+						values: {
+							attack: [{ type: TraitMap.fire, amount: 1, sides: 4, modifier: 0}]
+						}
+					},
+					{
+						target: TraitMap.fire,
+						values: {
+							attack: [{ type: TraitMap.fire, amount: 1, sides: 4, modifier: 0}]
+						}
+					}
 				]
 			},
 		],
@@ -187,15 +255,26 @@ export let boardTraitRanks:TraitRank[] = [
 		levels: [
 			{
 				amount: 1,
-				effects: [
-					{type: "hp", value: 2, target: TraitMap.wood},
+				mods: [
+					{
+						target: TraitMap.wood,
+						values: { maxhp: 2 },
+					}
 				]
 			},
 			{
 				amount: 2,
-				effects: [
-					{type: "hp", value: 4, target: TraitMap.wood},
-					{type: "attack.modifier", value: 3, target: TraitMap.water },
+				mods: [
+					{
+						target: TraitMap.wood,
+						values: { maxhp: 4},
+					},
+					{
+						target: TraitMap.water,
+						values: {
+							attack: [{ type: TraitMap.fire, amount: 1, sides: 4, modifier: 0}],
+						}
+					}
 				]
 			},
 		],
@@ -206,15 +285,26 @@ export let boardTraitRanks:TraitRank[] = [
 		levels: [
 			{
 				amount: 1,
-				effects: [
-					{type: "hp", value: 4, target: TraitMap.water }
+				mods: [
+					{
+						target: TraitMap.water,
+						values: { maxhp: 4 },
+					}
 				]
 			},
 			{
 				amount: 2,
-				effects: [
-					{type: "hp", value: 4, target: TraitMap.water },
-					{type: "attack.modifier", value: 3, target: TraitMap.metal },
+				mods: [
+					{
+						target: TraitMap.water,
+						values: { maxhp: 4},
+					},
+					{
+						target: TraitMap.metal,
+						values: {
+							attack: [{ type: TraitMap.fire, amount: 1, sides: 4, modifier: 0}],
+						}
+					}
 				]
 			},
 		],
@@ -234,12 +324,26 @@ export function updatePlayerTraits(player:Player) {
 			// create a copy of the levels sorted by amount descending
 			// to get the first biggest level matching
 			traitrank.level = traitrank.levels.findLastIndex(rank => traitrank.active>=rank.amount)
-			traitrank.effects = traitrank.levels[traitrank.level].effects
+			traitrank.mods = traitrank.levels[traitrank.level].mods
 			return traitrank
 		})
 	player.board = player.board.map(bu => {
-		bu.effects = player.traits.flatMap(trait => trait.effects)
+		bu.mods = player.traits.flatMap(trait => trait.mods) // get all mods
+			// that target this unit's type
 			.filter(trait => bu.unit.traits.map(t => t.id).includes(trait.target.id))
+			.map(mod => mod.values)
+			// and sum them all up
+			.reduce((total, mod) => {
+				if(mod.maxhp) {
+					if(total.maxhp===undefined) total.maxhp=0
+					total.maxhp+=mod.maxhp
+				}
+				if(mod.attack) {
+					if(total.attack===undefined) total.attack = []
+					total.attack.push(...mod.attack)
+				}
+				return total
+			},{})
 		return bu
 	})
 }
@@ -250,12 +354,12 @@ export let Units:Unit[] = [
 		name: 'Sirena',
 		info: `Es una bella chica de cabello azul con cola de pez. Ataca invocando una ola magica desde atras del enemigo.`,
 		maxhp: 15,
-		attack: { amount: 2, sides: 4, modifier: 1 },
-		combatTraits: [
-			damageAgainstUnitEffect(TraitMap.fire, 3),
-			damageAgainstUnitEffect(TraitMap.water, -3),
+		attack: [
+			{ type: TypeMap.water, amount: 2, sides: 4, modifier: 1 }
 		],
-		defense:0,
+		weakness: [
+			{ type: TypeMap.earth, amount: 1, sides: 4, modifier: 0 }
+		],
 		energymax: 4,
 		energypertick: 1,
 		traits: [TraitMap.unit, TraitMap.water, TraitMap.female],
@@ -267,16 +371,16 @@ export let Units:Unit[] = [
 		name: 'Elemental de agua',
 		info: `Es una creatura de agua viva, con grandes poderes mágicos. Ataca invocando un remolino de agua rasgador.`,
 		maxhp: 20,
-		defense:0,
 		energymax: 4,
 		energypertick: 1,
 		traits: [TraitMap.unit, TraitMap.water, TraitMap.guardian],
 		targetting: TargettingMap.nearby,
 		cost: 1,
-		attack: { amount: 1, sides: 4, modifier: 3 },
-		combatTraits: [
-			damageAgainstUnitEffect(TraitMap.fire, 3),
-			damageAgainstUnitEffect(TraitMap.water, -3),
+		attack: [
+			{ type: TypeMap.water, amount: 1, sides: 4, modifier: 3 },
+		],
+		weakness: [
+			{ type: TypeMap.earth, amount: 1, sides: 4, modifier: 0 },
 		],
 	},
 	{ 
@@ -284,16 +388,16 @@ export let Units:Unit[] = [
 		name: 'Pistolero',
 		info: `Es un rebelde sín causa que resuelve las problemas a balazos.\nAtaca disparando su pistola.`,
 		maxhp: 15,
-		defense:0,
 		energymax: 3,
 		energypertick: 1,
 		traits: [TraitMap.unit, TraitMap.metal, TraitMap.male],
 		targetting: TargettingMap.farthest1_direct,
 		cost: 1,
-		attack: { amount: 1, sides: 4, modifier: 4 },
-		combatTraits: [
-			damageAgainstUnitEffect(TraitMap.wood, 3),
-			damageAgainstUnitEffect(TraitMap.metal, -3),
+		attack: [
+			{ type: TypeMap.metal, amount: 1, sides: 4, modifier: 4 },
+		],
+		weakness: [
+			{ type: TypeMap.fire, amount: 1, sides: 4, modifier: 0 },
 		],
 	},
 	{ 
@@ -301,16 +405,16 @@ export let Units:Unit[] = [
 		name: 'Elemental de metal',
 		info: `Es un soldado con armadura de oro.\nAtaca dando un espadazo.`,
 		maxhp: 20,
-		defense:1,
 		energymax: 4,
 		energypertick: 1,
 		traits: [TraitMap.unit, TraitMap.metal, TraitMap.guardian],
 		targetting: TargettingMap.closest1,
 		cost: 1,
-		attack: { amount: 1, sides: 4, modifier: 3 },
-		combatTraits: [
-			damageAgainstUnitEffect(TraitMap.wood, 3),
-			damageAgainstUnitEffect(TraitMap.metal, -3),
+		attack: [
+			{ type: TypeMap.metal, amount: 1, sides: 4, modifier: 3 },
+		],
+		weakness: [
+			{ type: TypeMap.fire, amount: 1, sides: 4, modifier: 0 },
 		],
 	},
 	{
@@ -318,16 +422,16 @@ export let Units:Unit[] = [
 		name: 'Mago de fuego',
 		info: `Es un mago elemental de fuego.\nAtaca lanzando una bola de fuego.`,
 		maxhp: 15,
-		defense: 0,
 		energymax: 4,
 		energypertick: 1,
 		traits: [TraitMap.unit, TraitMap.fire, TraitMap.female],
 		targetting: TargettingMap.farthest1_direct,
 		cost: 1,
-		attack: { amount: 1, sides: 8, modifier: 2 },
-		combatTraits: [
-			damageAgainstUnitEffect(TraitMap.metal, 3),
-			damageAgainstUnitEffect(TraitMap.fire, -3),
+		attack: [
+			{ type: TypeMap.fire, amount: 1, sides: 8, modifier: 2 },
+		],
+		weakness: [
+			{ type: TypeMap.water, amount: 1, sides: 4, modifier: 0 },
 		],
 	},
 	{
@@ -335,16 +439,16 @@ export let Units:Unit[] = [
 		name: 'Elemental de fuego',
 		info: `Es una creatura de fuego vivo.\nAtaca dando un puñetazo ardiente.`,
 		maxhp: 20,
-		defense: 0,
 		energymax: 4,
 		energypertick: 1,
 		traits: [TraitMap.unit, TraitMap.fire, TraitMap.guardian],
 		targetting: TargettingMap.closest1,
 		cost: 1,
-		attack: { amount: 1, sides: 4, modifier: 3 },
-		combatTraits: [
-			damageAgainstUnitEffect(TraitMap.metal, 3),
-			damageAgainstUnitEffect(TraitMap.fire, -3),
+		attack: [
+			{ type: TypeMap.fire, amount: 1, sides: 4, modifier: 3 },
+		],
+		weakness: [
+			{ type: TypeMap.water, amount: 1, sides: 4, modifier: 0 },
 		],
 	},
 	{
@@ -352,16 +456,16 @@ export let Units:Unit[] = [
 		name: 'Arquero',
 		info: `Es un soldado con arco y flecha.\nAtaca disparando una lluvia de flechas.`,
 		maxhp: 15,
-		defense: 0,
 		energymax: 3,
 		energypertick: 1,
 		traits: [TraitMap.unit, TraitMap.wood, TraitMap.male],
 		targetting: TargettingMap.farthest2,
 		cost: 1,
-		attack: { amount: 1, sides: 4, modifier: 1 },
-		combatTraits: [
-			damageAgainstUnitEffect(TraitMap.earth, 3),
-			damageAgainstUnitEffect(TraitMap.wood, -3),
+		attack: [
+			{ type: TypeMap.wood, amount: 1, sides: 4, modifier: 1 },
+		],
+		weakness: [
+			{ type: TypeMap.metal, amount: 1, sides: 4, modifier: 0 },
 		],
 	},
 	{
@@ -369,16 +473,16 @@ export let Units:Unit[] = [
 		name: 'Elemental de madera',
 		info: `Es una criatura humanoide de madera viva, por algun motivo solo puede decir "yo soy noob". Ataca con un latigo de raices.`,
 		maxhp: 20,
-		defense: 0,
 		energymax: 4,
 		energypertick: 1,
 		traits: [TraitMap.unit, TraitMap.wood, TraitMap.guardian],
 		targetting: TargettingMap.nearby,
 		cost: 1,
-		attack: { amount: 1, sides: 4, modifier: 3 },
-		combatTraits: [
-			damageAgainstUnitEffect(TraitMap.earth, 3),
-			damageAgainstUnitEffect(TraitMap.wood, -3),
+		attack: [
+			{ type: TypeMap.wood, amount: 1, sides: 4, modifier: 3 },
+		],
+		weakness: [
+			{ type: TypeMap.metal, amount: 1, sides: 4, modifier: 0 },
 		],
 	},
 	{
@@ -390,12 +494,12 @@ export let Units:Unit[] = [
 		traits: [TraitMap.unit, TraitMap.earth, TraitMap.guardian],
 		targetting: TargettingMap.everyone,
 		maxhp: 20,
-		defense:0,
 		cost: 1,
-		attack: { amount: 1, sides: 4, modifier: 0 },
-		combatTraits: [
-			damageAgainstUnitEffect(TraitMap.water, 3),
-			damageAgainstUnitEffect(TraitMap.earth, -3),
+		attack: [
+			{ type: TypeMap.earth, amount: 1, sides: 4, modifier: 0 },
+		],
+		weakness: [
+			{ type: TypeMap.wood, amount: 1, sides: 4, modifier: 0 },
 		],
 	},
 	{
@@ -407,12 +511,12 @@ export let Units:Unit[] = [
 		traits: [TraitMap.unit, TraitMap.earth,TraitMap.male],
 		targetting: TargettingMap.random,
 		maxhp: 15,
-		defense:0,
 		cost: 1,
-		attack: { amount: 1, sides: 10, modifier: 1 },
-		combatTraits: [
-			damageAgainstUnitEffect(TraitMap.water, 3),
-			damageAgainstUnitEffect(TraitMap.earth, -3),
+		attack: [
+			{ type: TypeMap.earth, amount: 1, sides: 10, modifier: 1 },
+		],
+		weakness: [
+			{ type: TypeMap.wood, amount: 1, sides: 4, modifier: 0 },
 		],
 	},
 		

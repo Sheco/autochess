@@ -52,7 +52,7 @@ function reset() {
 	</p>
 	<div class="row">
 	{#each boardTraitRanks as traitRank}
-		<div class="col-6 col-lg-3">
+		<div class="col-6 col-lg-4">
 			<div class="card mb-2">
 				<div class="card-header">
 					<TraitIcon trait={traitRank.trait} /> {traitRank.trait.name}
@@ -61,16 +61,21 @@ function reset() {
 					{@html traitRank.message}
 					<ul>
 						{#each traitRank.levels as level}
-							{level.amount}: {#each level.effects as effect}
-								<TraitIcon trait={effect.target} /> {effect.value>0? "+"+effect.value: effect} 
-								{#if effect.type=="attack.modifier"}
-									daño
-								{:else}
-									{effect.type}
+							<li>{level.amount} unidad(es) <ul><li>{#each level.mods as mod}
+								
+								Aplica a <TraitIcon trait={mod.target} />:
+								{#if mod.values.hp!==undefined}
+									HP+{mod.values.hp}
 								{/if}
-							{/each}
-							<br>
-
+								{#if mod.values.attack!==undefined}
+										{#each mod.values.attack as dice}
+											Ataque: {dice.type.icon}{dice.amount}d{dice.sides}+{dice.modifier}
+										{/each}
+								{/if}
+								<br>
+								{/each}
+							</li></ul>
+						</li>
 						{/each}
 					</ul>
 				</div>
@@ -102,7 +107,7 @@ function reset() {
 								<UnitTraits unit={dmg.target} />
 								{dmg.target.name} 
 							</td>
-							<td class="text-end">{dmg.damage.min}-{dmg.damage.max}</td>
+							<td class="text-end" title={dmg.damage.roll}>{dmg.damage.min}-{dmg.damage.max}</td>
 							<td class="text-end">{(dmg.damage.min+dmg.damage.max)/2}</td>
 							<td class="text-end">{dmg.target.maxhp}</td>
 							<td class="text-end">{Math.floor(dmg.damage.min/dmg.target.maxhp*100)}-{Math.floor(dmg.damage.max/dmg.target.maxhp*100)}%</td>

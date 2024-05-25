@@ -21,9 +21,8 @@ export const actions = {
 		let nickname = event.cookies.get('nickname')
 		let data = await event.request.formData()
 		let message = data.get('message')
-		console.log(`nm: ${nickname}: ${message}`)
-
 		let channel = getChannel(id)
+
 		channel.next(`${nickname}: ${message}`)
 	},
 } satisfies Actions;

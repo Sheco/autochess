@@ -22,8 +22,16 @@ let modal = $state(false)
 		<div class="card-header"><TraitIcon trait={trait.trait} /> {trait.trait.name} nível {trait.level+1}</div>
 		<div class="card-body">
 			<p>{@html trait.message}</p>
-			{#each trait.effects as effect}
-				<TraitIcon trait={effect.target} /> {@render type(effect.type)}: {effect.value>0? '+'+effect.value:effect.value}
+			{#each trait.mods as mod}
+				Aplica a <TraitIcon trait={mod.target} />:
+				{#if mod.values.hp!==undefined}
+					HP+{mod.values.hp}
+				{/if}
+				{#if mod.values.attack!==undefined}
+						{#each mod.values.attack as dice}
+							Ataque: {dice.type.icon}{dice.amount}d{dice.sides}+{dice.modifier}
+						{/each}
+				{/if}
 				<br>
 			{/each}
 		</div>

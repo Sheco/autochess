@@ -185,7 +185,7 @@ function setBattleCoordinates(player:Player) {
 export function resetUnits(player:Player) {
 	for(let boardUnit of player.board) {
 		boardUnit.energy = 0
-		boardUnit.hp = boardUnit.unit.maxhp+getBoardUnitBonus(boardUnit, "hp")
+		boardUnit.hp = boardUnit.unit.maxhp+(boardUnit.mods.maxhp??0)
 	}
 }
 
@@ -244,39 +244,35 @@ export function fight(player1:Player, player2:Player) {
 	}
 }
 
-export function calculateCombatTraits(attacker:BoardUnit, defender:BoardUnit) {
-	return attacker.unit.combatTraits
-		.flatMap(effect => effect(defender))
-}
-
-export function getBoardUnitBonus(unit:BoardUnit, type:string) {
-	return unit.effects
-		.filter(effect => effect.type==type)
-		.reduce((total, effect) => total+effect.value, 0)
-}
-export function getBoardUnitCombatBonus(attacker:BoardUnit, defender:BoardUnit, type:string) {
-	return calculateCombatTraits(attacker, defender)
-		.filter(effect => effect.type==type && effect.active)
-		.reduce((total, effect) => total+effect.value, 0)
-}
-
 export function calculateDamage(attacker:BoardUnit,defender:BoardUnit) {
-	// buscamos efectos de attack.modifier
-	let attackModBonus = getBoardUnitBonus(attacker, "attack.modifier")
-		+getBoardUnitCombatBonus(attacker, defender, "attack.modifier")
-	
 	// obtenemos el dado unit.attack y lo tiramos
-	let damage = Math.max(RollDice(attacker.unit.attack)+attackModBonus-defender.unit.defense, 0)
-	let min = Math.max(attacker.unit.attack.amount+attacker.unit.attack.modifier+attackModBonus-defender.unit.defense, 0)
-	let max = attacker.unit.attack.amount*attacker.unit.attack.sides+attacker.unit.attack.modifier+attackModBonus-defender.unit.defense
-	//console.log(`${attacker.unit.name} ataca a ${defender?.unit.name} con ${attacker.unit.attack.amount}d${attacker.unit.attack.sides}+${attacker.unit.attack.modifier}`)
-	//console.log(`Dmg: ${damage} Min: ${min}, Max: ${max}, effects: ${effectDamage}`)
+	let damage = 0
+	let min = 0
+	let max = 0
+	let rolls = []
+	for(let die of [...attacker.unit.attack, ...attacker.mods.attack??[]]) {
+		// tira los dados de ataque
+		damage += RollDice(die)
+		min += die.amount+die.modifier
+		max += die.amount*die.sides+die.modifier
+		rolls.push(`${die.type.icon}${die.amount}d${die.sides}+${die.modifier}`)
+
+		// tira los dados de debilidad del defensor
+		for(let wdie of defender.unit.weakness.filter(wdie => wdie.type==die.type)) {
+			damage += RollDice(wdie)
+			min += wdie.amount+wdie.modifier
+			max += wdie.amount*wdie.sides+wdie.modifier
+			rolls.push(`${wdie.type.icon}${wdie.amount}d${wdie.sides}+${wdie.modifier}`)
+		}
+		//console.log(`${attacker.unit.name} ataca a ${defender?.unit.name} con ${attacker.unit.attack.amount}d${attacker.unit.attack.sides}+${attacker.unit.attack.modifier}`)
+		//console.log(`Dmg: ${damage} Min: ${min}, Max: ${max}, effects: ${effectDamage}`)
+	}
 	
 	return {
 		damage,
 		min,
 		max,
-		roll: `${attacker.unit.attack.amount}d${attacker.unit.attack.sides}+${attacker.unit.attack.modifier}+${attackModBonus}`
+		roll: rolls.join(', ')
 	} as DamageRoll
 }
 
@@ -289,6 +285,6 @@ export function createBoardUnit(unit:Unit, c:Coordinate): BoardUnit {
 		y: c.y,
 		hp: unit.maxhp,
 		energy: 0,
-		effects: []
+		mods: {},
 	}
 }

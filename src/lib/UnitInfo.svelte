@@ -2,7 +2,7 @@
 import UnitTraits from "./UnitTraits.svelte";
     import Attribute from "./Attribute.svelte";
 import Effect from './Effect.svelte';
-    import { calculateCombatTraits, createBoardUnit } from "./combat";
+    import { createBoardUnit } from "./combat";
     import { NoUnit } from "./database";
 
 let { unit, boardUnit=undefined }:{
@@ -11,6 +11,7 @@ let { unit, boardUnit=undefined }:{
 	boardUnit?:BoardUnit|undefined
 } = $props()
 
+let attackMods = boardUnit? boardUnit.mods.attack??[]: []
 </script>
 <div class="row">
 	
@@ -30,38 +31,39 @@ let { unit, boardUnit=undefined }:{
 		<b>Rasgos:</b> 
 		<UnitTraits {unit} />
 	</div>
-	<div class="col-12 col-md-6">
-		<b>Ataque:</b>
-		<span class="float-end">{unit.attack.amount}d{unit.attack.sides}+<Attribute value={unit.attack.modifier} {boardUnit} bonus="attack.modifier" /></span>
+	<div class="col-12">
+		<b>Ataque:</b><br>
+		<div class="ms-3">
+			{#each [...unit.attack, ...attackMods] as die}
+				{die.type.icon}{die.amount}d{die.sides}+{die.modifier}
+			{/each}
+		</div>
 	</div>
-	<div class="col-12 col-md-6">
+	<div class="col-12">
+		<b>Debilidades:</b><br>
+		<div class="ms-3">
+			{#each unit.weakness as die}
+				{die.type.icon}{die.amount}d{die.sides}+{die.modifier}
+			{/each}
+		</div>
+	</div>
+	<div class="col-12">
 		<b>HP:</b> 
-		<span class="float-end"><Attribute value={unit.maxhp} {boardUnit} bonus="hp" /></span>
-	</div>
-	<div class="col-12 col-md-6 position-relative">
-		<b>Def:</b> 
-		<span class="float-end">{unit.defense}</span>
-	</div>
-	<div class="col-6">
-		<b>Energía maxima:</b>
-		<span class="float-end">{unit.energymax}</span>
+		<span class="float-end"><Attribute value={unit.maxhp} mod={boardUnit?.mods.hp} /></span>
 	</div>
 	<div class="col-6">
 		<b>Energía por tick:</b>
 		<span class="float-end">{unit.energypertick}</span>
+	</div>
+	<div class="col-6">
+		<b>Energía maxima:</b>
+		<span class="float-end">{unit.energymax}</span>
 	</div>
 	<div class="col-12">
 		<b>Objetivos:</b> <br>
 		<div class="ms-2" style="height: 3rem">
 		{unit.targetting.name}
 		</div>
-		<b>Efectos de combate:</b><br>
-		{#each calculateCombatTraits(createBoardUnit(unit, {x:0, y:0}), createBoardUnit(NoUnit, {x:0, y:0})) as effect}
-			<div class="ms-2">
-				<Effect {effect} />
-			</div>
-
-		{/each}
 	</div>
 </div>
 
