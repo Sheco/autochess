@@ -130,5 +130,7 @@ declare global {
 		y: number;
 	}
 
+	type AttackFunction = (attack:AttackRoll)=>Promise<void>
+
 }
 export {}

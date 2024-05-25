@@ -28,22 +28,20 @@ function run100() {
 }
 
 
-async function chainAttacks(attacks:AttackRoll[]) {
+async function ondamage(attack:AttackRoll[]) {
 	let sleep = async () => new Promise((resolve) => setTimeout(resolve, 1000))
-	for(let attack of attacks) {
-		attack.attacker.highlight = "success"
-		attack.defender.highlight = "danger"
-		attack.defender.damage = attack
-		await sleep()
-		attack.attacker.highlight = undefined
-		attack.defender.highlight = undefined
-		attack.defender.damage = undefined
-	}
+	attack.attacker.highlight = "success"
+	attack.defender.highlight = "danger"
+	attack.defender.damage = attack
+	await sleep()
+	attack.attacker.highlight = undefined
+	attack.defender.highlight = undefined
+	attack.defender.damage = undefined
 }
 
-function run() {
+async function run() {
 	log = []
-	let result = fight(home, visitor)
+	let result = await fight(home, visitor, ondamage)
 	if(!result.winner) 
 		winner = "Nadie"
 	else {

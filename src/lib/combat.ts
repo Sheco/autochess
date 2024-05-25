@@ -79,7 +79,7 @@ let targetting:{[key:string]: (c:BoardUnit, f:Board) => BoardUnit[]} = {
 }
 
 
-function Attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Player): AttackRoll[] {
+async function Attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Player, ondamage:AttackFunction) {
 	let damageRolls:AttackRoll[] = []
 	if(!attacker.hp) {
 		return damageRolls
@@ -94,12 +94,14 @@ function Attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Play
 		let damage = calculateDamage(attacker, defender)
 		//output.push(`<span class="text-${attacker.color}">${boardUnit.unit.name}</span>(${boardUnit.hp}) ataca a <span class="text-${defender.color}">${targetUnit.unit.name}</span>(${targetUnit.hp}): <b>${damage.damage}</b> (${damage.dice})`)
 		defender.hp = Math.max(defender.hp-damage.damage, 0)
-		damageRolls.push({
+		let roll = {
 			attacker, 
 			attackingPlayer,
 			defender, 
 			defendingPlayer,
-			...damage})
+			...damage}
+		damageRolls.push(roll)
+		await ondamage(roll)
 	}
 	return damageRolls
 }
@@ -110,7 +112,7 @@ interface Turn {
 	defender:Player,
 }
 
-export function combatRound(attacker:Player, defender:Player)  {
+export async function combatRound(attacker:Player, defender:Player, ondamage:AttackFunction)  {
 	let output = []
 	let result:AttackRoll[] = []
 	output.push(`<b class="text-${attacker.color}">${attacker.name}</b> tiene preferencia.`)
@@ -136,7 +138,7 @@ export function combatRound(attacker:Player, defender:Player)  {
 	for(let i = 0; i < 20; i++) {
 		tick()
 		for(let turn of unitsReady()) {
-			let damage = Attack(attacker, turn.boardUnit, turn.defender)
+			let damage = await Attack(attacker, turn.boardUnit, turn.defender, ondamage)
 			if (damage.length==0)
 				continue
 			
@@ -173,12 +175,14 @@ export function initBattle(player1:Player, player2: Player) {
 	}
 }
 
-export function fight(player1:Player, player2:Player) {
+// TODO agregar un callback de ondamage() para cachar cada uno
+// de los attackRolls y poder sincronizar con la UI
+export async function fight(player1:Player, player2:Player, ondamage:AttackFunction) {
 	initBattle(player1, player2)
 	let homeFirst = Math.random()*100>50
 	let attacks = homeFirst? 
-		combatRound(player1, player2):
-		combatRound(player2, player1)
+		await combatRound(player1, player2, ondamage):
+		await combatRound(player2, player1, ondamage)
 	let player1Alive = player1.board.filter(boardUnit => boardUnit.hp>0).length>0
 	let player2Alive = player2.board.filter(boardUnit => boardUnit.hp>0).length>0
 
