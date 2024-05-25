@@ -43,6 +43,7 @@ async function ondamage(attack:AttackRoll) {
 async function run() {
 	log = []
 	winner = ""
+	document.querySelector("#grid")?.scrollIntoView()
 	for(let attack of fight(home, visitor)) {
 		await ondamage(attack)
 	}
@@ -120,15 +121,16 @@ let onAddUnit = (player:Player, c:Coordinate, value:string) => {
 		{/if}
 	</div>
 
-	<div>
+	<div id="grid">
 	</div>
-			<BoardGrid player={visitor} mirrored={true} {onAddUnit} {onRemoveUnit} />
-			<BoardGrid player={home} mirrored={false} {onAddUnit} {onRemoveUnit}  />
-		<br>
-		{#each log as attack}
-			<span class="text-{attack.attackingPlayer.color}">{attack.attacker.unit.name}</span> ataca a 
-			<span class="text-{attack.defendingPlayer.color}">{attack.defender.unit.name}</span> y hace <b>{attack.damage}</b> de daño. (
-				<DiceRoll dice={attack.dice} />
-			)<br>
-		{/each}
+
+	<BoardGrid player={visitor} mirrored={true} {onAddUnit} {onRemoveUnit} />
+	<BoardGrid player={home} mirrored={false} {onAddUnit} {onRemoveUnit}  />
+	<br>
+	{#each log as attack}
+		<span class="text-{attack.attackingPlayer.color}">{attack.attacker.unit.name}</span> ataca a 
+		<span class="text-{attack.defendingPlayer.color}">{attack.defender.unit.name}</span> y hace <b>{attack.damage}</b> de daño. (
+			<DiceRoll dice={attack.dice} />
+		)<br>
+	{/each}
 </div>
