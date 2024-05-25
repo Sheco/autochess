@@ -1,5 +1,5 @@
 <script lang="ts">
-import { initBattle, fight, createBoardUnit, resetUnits } from "$lib/combat";
+import { initBattle, fight, createBoardUnit, resetUnits, fightStatus } from "$lib/combat";
 import { getPlayers, updatePlayer } from "$lib/state";
 import { UnitMap, updatePlayerTraits } from "$lib/database";
 import BoardGrid from "./BoardGrid.svelte";
@@ -12,7 +12,7 @@ $effect(() => {
 	initBattle(home, visitor)
 })
 
-let winner = $state("Nadie")
+let winner = $state("")
 function run100() {
 	resetStats()
 	for(let i=0; i<100; i++) {
@@ -28,7 +28,7 @@ function run100() {
 }
 
 
-async function ondamage(attack:AttackRoll[]) {
+async function ondamage(attack:AttackRoll) {
 	let sleep = async () => new Promise((resolve) => setTimeout(resolve, 1000))
 	attack.attacker.highlight = "success"
 	attack.defender.highlight = "danger"
@@ -42,7 +42,11 @@ async function ondamage(attack:AttackRoll[]) {
 
 async function run() {
 	log = []
-	let result = await fight(home, visitor, ondamage)
+	winner = ""
+	for(let attack of fight(home, visitor)) {
+		await ondamage(attack)
+	}
+	let result = fightStatus(home, visitor)
 	if(!result.winner) 
 		winner = "Nadie"
 	else {
@@ -104,7 +108,9 @@ let onAddUnit = (player:Player, c:Coordinate, value:string) => {
 		<button onclick={resetAll} class="btn btn-secondary">Limpiar</button>
 		<button onclick={run} class="btn btn-success">Pelear</button>
 		<button onclick={run100} class="btn btn-warning">Pelear x100</button>
+		{#if winner}
 		{@html winner} ganó!
+		{/if}
 		{#if stats.combats>0}
 			Combates: {stats.combats}
 			Victorias de <span class="text-{home.color}">{home.name}</span>: {stats.victories.home} 

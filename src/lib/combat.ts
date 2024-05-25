@@ -79,16 +79,15 @@ let targetting:{[key:string]: (c:BoardUnit, f:Board) => BoardUnit[]} = {
 }
 
 
-async function Attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Player, ondamage:AttackFunction) {
-	let damageRolls:AttackRoll[] = []
+function *Attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Player): Generator<AttackRoll> {
 	if(!attacker.hp) {
-		return damageRolls
+		return
 	}
 	let targets = targetting[attacker.unit.targetting.id](attacker, 
 		defendingPlayer.board.filter(boardUnit => boardUnit.hp>0))
 	if(!targets) {
 		//log.push(`<b>${turn.player.name}</b>: ${turn.boardUnit.unit.name} esta fuera de combate.`)
-		return damageRolls
+		return
 	}
 	for(let defender of targets) {
 		let damage = calculateDamage(attacker, defender)
@@ -100,10 +99,8 @@ async function Attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlaye
 			defender, 
 			defendingPlayer,
 			...damage}
-		damageRolls.push(roll)
-		await ondamage(roll)
+		yield roll
 	}
-	return damageRolls
 }
 
 interface Turn {
@@ -112,10 +109,7 @@ interface Turn {
 	defender:Player,
 }
 
-export async function combatRound(attacker:Player, defender:Player, ondamage:AttackFunction)  {
-	let output = []
-	let result:AttackRoll[] = []
-	output.push(`<b class="text-${attacker.color}">${attacker.name}</b> tiene preferencia.`)
+export function *combatRound(attacker:Player, defender:Player): Generator<AttackRoll>  {
 	let attackerUnits:Turn[] = attacker.board
 		.filter(boardUnit => boardUnit.hp>0)
 		.map(boardUnit => ({
@@ -138,20 +132,17 @@ export async function combatRound(attacker:Player, defender:Player, ondamage:Att
 	for(let i = 0; i < 20; i++) {
 		tick()
 		for(let turn of unitsReady()) {
-			let damage = await Attack(attacker, turn.boardUnit, turn.defender, ondamage)
-			if (damage.length==0)
-				continue
-			
-			result.push(...damage)
+			for(let roll of Attack(attacker, turn.boardUnit, turn.defender)) {
+				yield roll
+			}
 			turn.boardUnit.energy=0
 
 			let defenders = turn.defender.board.filter(boardUnit => boardUnit.hp>0)
 			if(defenders.length==0) {
-				return result
+				return
 			}
 		}
 	}
-	return result
 }
 
 function setBattleCoordinates(player:Player) {
@@ -177,12 +168,15 @@ export function initBattle(player1:Player, player2: Player) {
 
 // TODO agregar un callback de ondamage() para cachar cada uno
 // de los attackRolls y poder sincronizar con la UI
-export async function fight(player1:Player, player2:Player, ondamage:AttackFunction) {
+export function fight(player1:Player, player2:Player): Generator<AttackRoll> {
 	initBattle(player1, player2)
 	let homeFirst = Math.random()*100>50
-	let attacks = homeFirst? 
-		await combatRound(player1, player2, ondamage):
-		await combatRound(player2, player1, ondamage)
+	return homeFirst? 
+		combatRound(player1, player2):
+		combatRound(player2, player1)
+}
+
+export function fightStatus(player1:Player, player2:Player) {
 	let player1Alive = player1.board.filter(boardUnit => boardUnit.hp>0).length>0
 	let player2Alive = player2.board.filter(boardUnit => boardUnit.hp>0).length>0
 
@@ -198,7 +192,6 @@ export async function fight(player1:Player, player2:Player, ondamage:AttackFunct
 	return {
 		winner,
 		loser,
-		attacks
 	}
 }
 
