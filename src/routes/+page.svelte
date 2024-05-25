@@ -5,6 +5,7 @@ import { calculateDamage, createBoardUnit } from "$lib/combat";
 import UnitTraits from "$lib/UnitTraits.svelte";
 import UnitInfo from "$lib/UnitInfo.svelte";
 import TraitIcon from "$lib/TraitIcon.svelte";
+    import Emoji from "$lib/Emoji.svelte";
 let units = [...Units].sort((a,b) => (a.energymax/a.energypertick)-(b.energymax/b.energypertick))
 let targetTable = (source:Unit) => {
 	return units.map((target) => ({
@@ -69,7 +70,7 @@ function reset() {
 								{/if}
 								{#if mod.values.attack!==undefined}
 										{#each mod.values.attack as dice}
-											Ataque: {dice.type.icon}{dice.amount}d{dice.sides}+{dice.modifier}
+											Ataque: <Emoji>{dice.type.icon}</Emoji>{dice.amount}d{dice.sides}+{dice.modifier}
 										{/each}
 								{/if}
 								<br>

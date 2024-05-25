@@ -1,0 +1,8 @@
+@font-face {
+  font-family: 'OpenMoji';
+  src: url('./OpenMoji-Color.ttf') format('truetype'); /* Adjust the path to the font file */
+}
+
+.emoji {
+  font-family: 'OpenMoji', sans-serif;
+}

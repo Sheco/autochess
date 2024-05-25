@@ -1,9 +1,7 @@
 <script lang="ts">
 import UnitTraits from "./UnitTraits.svelte";
     import Attribute from "./Attribute.svelte";
-import Effect from './Effect.svelte';
-    import { createBoardUnit } from "./combat";
-    import { NoUnit } from "./database";
+    import Emoji from "./Emoji.svelte";
 
 let { unit, boardUnit=undefined }:{
 	unit:Unit, 
@@ -24,7 +22,7 @@ let attackMods = boardUnit? boardUnit.mods.attack??[]: []
 	<div class="col-6">
 		<b>Precio:</b>
 		<div class="float-end">
-		{unit.cost} <span class="icon">🪙</span>
+		{unit.cost} <span class="emoji">🪙</span>
 		</div>
 	</div>
 	<div class="col-6">
@@ -35,7 +33,7 @@ let attackMods = boardUnit? boardUnit.mods.attack??[]: []
 		<b>Ataque:</b><br>
 		<div class="ms-3">
 			{#each [...unit.attack, ...attackMods] as die}
-				{die.type.icon}{die.amount}d{die.sides}+{die.modifier}
+				<Emoji>{die.type.icon}</Emoji>{die.amount}d{die.sides}+{die.modifier}
 			{/each}
 		</div>
 	</div>
@@ -43,7 +41,7 @@ let attackMods = boardUnit? boardUnit.mods.attack??[]: []
 		<b>Debilidades:</b><br>
 		<div class="ms-3">
 			{#each unit.weakness as die}
-				{die.type.icon}{die.amount}d{die.sides}+{die.modifier}
+				<Emoji>{die.type.icon}</Emoji>{die.amount}d{die.sides}+{die.modifier}
 			{/each}
 		</div>
 	</div>

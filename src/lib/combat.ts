@@ -255,14 +255,14 @@ export function calculateDamage(attacker:BoardUnit,defender:BoardUnit) {
 		damage += RollDice(die)
 		min += die.amount+die.modifier
 		max += die.amount*die.sides+die.modifier
-		rolls.push(`${die.type.icon}${die.amount}d${die.sides}+${die.modifier}`)
+		rolls.push(`<span class="emoji">${die.type.icon}</span>${die.amount}d${die.sides}+${die.modifier}`)
 
 		// tira los dados de debilidad del defensor
 		for(let wdie of defender.unit.weakness.filter(wdie => wdie.type==die.type)) {
 			damage += RollDice(wdie)
 			min += wdie.amount+wdie.modifier
 			max += wdie.amount*wdie.sides+wdie.modifier
-			rolls.push(`${wdie.type.icon}${wdie.amount}d${wdie.sides}+${wdie.modifier}`)
+			rolls.push(`<span class="emoji">${wdie.type.icon}</span>${wdie.amount}d${wdie.sides}+${wdie.modifier}`)
 		}
 		//console.log(`${attacker.unit.name} ataca a ${defender?.unit.name} con ${attacker.unit.attack.amount}d${attacker.unit.attack.sides}+${attacker.unit.attack.modifier}`)
 		//console.log(`Dmg: ${damage} Min: ${min}, Max: ${max}, effects: ${effectDamage}`)

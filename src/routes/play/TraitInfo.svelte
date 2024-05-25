@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Emoji from "$lib/Emoji.svelte";
     import Modal from "$lib/Modal.svelte";
     import TraitIcon from "$lib/TraitIcon.svelte";
 
@@ -8,15 +9,6 @@ let { trait }: {
 
 let modal = $state(false)
 </script>
-{#snippet type(type:string)}
-	{#if type=="attack.modifier"}
-		Daño
-	{:else if type=="hp"}
-		HP
-	{:else}
-		{type}
-	{/if}
-{/snippet}
 {#snippet info()}
 	<div class="card">
 		<div class="card-header"><TraitIcon trait={trait.trait} /> {trait.trait.name} nível {trait.level+1}</div>
@@ -29,7 +21,7 @@ let modal = $state(false)
 				{/if}
 				{#if mod.values.attack!==undefined}
 						{#each mod.values.attack as dice}
-							Ataque: {dice.type.icon}{dice.amount}d{dice.sides}+{dice.modifier}
+							Ataque: <Emoji>{dice.type.icon}</Emoji>{dice.amount}d{dice.sides}+{dice.modifier}
 						{/each}
 				{/if}
 				<br>
