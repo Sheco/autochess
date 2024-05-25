@@ -33,6 +33,7 @@ async function ondamage(attack:AttackRoll[]) {
 	attack.attacker.highlight = "success"
 	attack.defender.highlight = "danger"
 	attack.defender.damage = attack
+	log.push(attack)
 	await sleep()
 	attack.attacker.highlight = undefined
 	attack.defender.highlight = undefined
@@ -50,7 +51,6 @@ async function run() {
 		else if(result.winner == visitor) stats.victories.visitor++
 	}
 	stats.combats++
-	log = result.attacks
 	home = home
 	visitor = visitor
 }
