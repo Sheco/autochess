@@ -51,7 +51,6 @@ async function run() {
 	}
 	stats.combats++
 	log = result.attacks
-	chainAttacks(result.attacks)
 	home = home
 	visitor = visitor
 }
