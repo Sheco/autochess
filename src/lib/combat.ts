@@ -171,9 +171,8 @@ export function initBattle(player1:Player, player2: Player) {
 export function fight(player1:Player, player2:Player): Generator<AttackRoll> {
 	initBattle(player1, player2)
 	let homeFirst = Math.random()*100>50
-	return homeFirst? 
-		combatRound(player1, player2):
-		combatRound(player2, player1)
+	if (homeFirst) [ player1, player2 ] = [player2, player1]
+	return combatRound(player1, player2)
 }
 
 export function fightStatus(player1:Player, player2:Player) {
