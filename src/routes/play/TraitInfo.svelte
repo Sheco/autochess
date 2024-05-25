@@ -24,8 +24,8 @@ let modal = $state(false)
 			<p>{@html trait.message}</p>
 			{#each trait.mods as mod}
 				Aplica a <TraitIcon trait={mod.target} />:
-				{#if mod.values.hp!==undefined}
-					HP+{mod.values.hp}
+				{#if mod.values.maxhp!==undefined}
+					HP+{mod.values.maxhp}
 				{/if}
 				{#if mod.values.attack!==undefined}
 						{#each mod.values.attack as dice}

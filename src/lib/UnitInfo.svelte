@@ -49,7 +49,7 @@ let attackMods = boardUnit? boardUnit.mods.attack??[]: []
 	</div>
 	<div class="col-12">
 		<b>HP:</b> 
-		<span class="float-end"><Attribute value={unit.maxhp} mod={boardUnit?.mods.hp} /></span>
+		<span class="float-end"><Attribute value={unit.maxhp} mod={boardUnit?.mods.maxhp} /></span>
 	</div>
 	<div class="col-6">
 		<b>Energía por tick:</b>

@@ -30,7 +30,7 @@ let showModal = $state(false)
 		<button onclick={() => showModal=true} class="btn btn-sm btn-info p-0"><span class="bi bi-info-circle"></span></button>
 		{unit.name}
 			{#if boardUnit}
-			{@const maxhp = boardUnit.unit.maxhp+(boardUnit.mods.hp??0) }
+			{@const maxhp = boardUnit.unit.maxhp+(boardUnit.mods.maxhp??0) }
 			{@const percent = Math.floor(boardUnit.hp/maxhp*100) }
 			<div class="progress">
 				<div class="progress-bar bg-danger" role="progress-bar" style="width: {percent}%" aria-valuenow={percent} aria-valuemin="0" aria-valuemax="100"></div>
