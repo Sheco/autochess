@@ -33,7 +33,7 @@ let {player, onclick, onrelease, actions = undefined, takenUnit}:{
 				<div class="col-3 mb-2 d-flex align-items-stretch">
 					<div class="card w-100">
 						<div class="card-header p-0">Oops</div>
-						<div class="card-body" style="height: 120px">
+						<div class="card-body" style="height: 100px">
 							No tienes cartas en la mano.
 						</div>
 					</div>

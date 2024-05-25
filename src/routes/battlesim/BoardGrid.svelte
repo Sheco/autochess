@@ -45,19 +45,10 @@ let status = $derived(isAlive? "bg-"+player.color: "bg-secondary")
 let units = [...Units].sort((a, b) => a.name.localeCompare(b.name));
 
 </script>
-<div class="card mb-1 border-{player.color}" >
-	<div class="card-header {status} text-white">
-		<!-- 
-		we're not doing any validation, if the user enters HTML code here, it'll be used in the logs
-		no big deal :)
-		-->
-		<input type="text" bind:value={player.name} />
-		<span class="badge bg-danger position-absolute top-0 end-0 border">{player.board.reduce((total, v) => total+v.hp, 0)}</span><br>
-	</div>
-
+<div class="card mb-1 border-{player.color} border-2"  >
 	<div class="card-body p-1">
 		<div class="row">
-			<div class="col-9">
+			<div class="col-6">
 				<div class="row gx-1">
 					{#each boardArray as boardUnit, index (index)}
 						<div class="col-4 mb-1">
@@ -81,7 +72,17 @@ let units = [...Units].sort((a, b) => a.name.localeCompare(b.name));
 					{/each}
 				</div>
 			</div>
+
 			<div class="col-3">
+				<div class="bg-{status} text-white">
+					<!-- 
+					we're not doing any validation, if the user enters HTML code here, it'll be used in the logs
+					no big deal :)
+					-->
+					<input type="text" bind:value={player.name} />
+					<span class="badge bg-danger position-absolute top-0 end-0 border">{player.board.reduce((total, v) => total+v.hp, 0)}</span><br>
+				</div>
+
 				{#each player.traits as trait}
 						<TraitInfo {trait} /><br>
 				{/each}

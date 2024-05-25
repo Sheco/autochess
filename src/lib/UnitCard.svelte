@@ -39,13 +39,13 @@ let showModal = $state(false)
 			</div>
 			{/if}
 	</div>
-	<div class="card-body p-0" style="height: 120px">
+	<div class="card-body p-0" style="height: 100px">
 
 		<button {onclick} class="unit p-0 position-relative">
 			<img src="/units/{unit.id}.png" width="100%" class="{unit.id}" alt={unit.name} />
-			<div class="overlay position-absolute bottom-0 pb-2 ps-2">
+			<div class="overlay position-absolute bottom-0 pb-0 ps-0">
 				{#each unit.traits.filter(t => t.name) as trait}
-					<div class="trait mb-1 pe-3 ps-2 text-start" style="font-size: 80%">
+					<div class="trait mb-0 pe-3 ps-1 text-start" style="font-size: 80%">
 						<TraitIcon {trait} /> {trait.name}<br>
 					</div>
 				{/each}
@@ -71,7 +71,7 @@ let showModal = $state(false)
 
 <style>
 .unit {
-  height: 120px;
+  height: 100px;
   width: 100%;
   overflow: hidden;
 }
