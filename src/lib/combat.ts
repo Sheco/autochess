@@ -79,6 +79,33 @@ let targetting:{[key:string]: (c:BoardUnit, f:Board) => BoardUnit[]} = {
 }
 
 
+interface Turn {
+	boardUnit:BoardUnit,
+	attacker:Player,
+	defender:Player,
+}
+
+function setBattleCoordinates(player:Player) {
+	for(let boardUnit of player.board) {
+		boardUnit.x = boardUnit.setx
+		boardUnit.y = player.mirrored? -boardUnit.sety-1: boardUnit.sety
+	}
+}
+
+export function resetUnits(player:Player) {
+	for(let boardUnit of player.board) {
+		boardUnit.energy = 0
+		boardUnit.hp = boardUnit.unit.maxhp+(boardUnit.mods.maxhp??0)
+	}
+}
+
+export function initBattle(player1:Player, player2: Player) {
+	for(let player of [player1, player2]) {
+		resetUnits(player)
+		setBattleCoordinates(player)
+	}
+}
+
 function *Attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Player): Generator<AttackRoll> {
 	if(!attacker.hp) {
 		return
@@ -101,12 +128,6 @@ function *Attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Pla
 			...damage}
 		yield roll
 	}
-}
-
-interface Turn {
-	boardUnit:BoardUnit,
-	attacker:Player,
-	defender:Player,
 }
 
 export function *combatRound(attacker:Player, defender:Player): Generator<AttackRoll>  {
@@ -142,27 +163,6 @@ export function *combatRound(attacker:Player, defender:Player): Generator<Attack
 				return
 			}
 		}
-	}
-}
-
-function setBattleCoordinates(player:Player) {
-	for(let boardUnit of player.board) {
-		boardUnit.x = boardUnit.setx
-		boardUnit.y = player.mirrored? -boardUnit.sety-1: boardUnit.sety
-	}
-}
-
-export function resetUnits(player:Player) {
-	for(let boardUnit of player.board) {
-		boardUnit.energy = 0
-		boardUnit.hp = boardUnit.unit.maxhp+(boardUnit.mods.maxhp??0)
-	}
-}
-
-export function initBattle(player1:Player, player2: Player) {
-	for(let player of [player1, player2]) {
-		resetUnits(player)
-		setBattleCoordinates(player)
 	}
 }
 
