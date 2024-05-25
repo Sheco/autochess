@@ -1,4 +1,5 @@
 <script lang="ts">
+    import DiceRoll from "$lib/DiceRoll.svelte";
 import { fight } from "$lib/combat";
 
 let { players, onendcombat, ondamage }:{
@@ -21,7 +22,7 @@ let shuffledPairs = () => {
 }
 let pairs = shuffledPairs()
 
-let log:string[]=$state([])
+let attacks:AttackRoll[]=$state([])
 let winner:Player|undefined=$state(undefined)
 let nextFight = () => {
 	let next = pairs.shift()
@@ -35,9 +36,9 @@ let nextFight = () => {
 			return
 	}
 	let result = fight(p1, p2)
-	log = result.log
+	attacks = result.attacks
 	winner = result.winner
-	if(result.loser) {
+	if(result.loser && result.winner) {
 		let unitsAlive = result.winner.board.filter(u => u.hp>0).length
 		ondamage(result.loser, unitsAlive)
 	}
@@ -50,8 +51,11 @@ nextFight()
 Ganador: <span class="fw-bold text-{winner.color}">{winner.name}</span>
 {/if}
 <div>
-{#each log as msg}
-{@html msg}<br>
+{#each attacks as attack}
+	<span class="text-{attack.attackingPlayer.color}">{attack.attacker.unit.name}</span> ataca a 
+	<span class="text-{attack.defendingPlayer.color}">{attack.defender.unit.name}</span> y hace <b>{attack.damage}</b> de daño. (
+		<DiceRoll dice={attack.dice} />
+	)<br>
 {/each}
 </div>
 

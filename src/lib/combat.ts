@@ -78,41 +78,30 @@ let targetting:{[key:string]: (c:BoardUnit, f:Board) => BoardUnit[]} = {
 		}
 }
 
-function Attack(attacker:Player, boardUnit:BoardUnit, defender:Player) {
-	let output:string[] = []
-	let damage:DamageRoll = {
-			damage:0,
-			max:0,
-			min:0,
-			roll:'',
+
+function Attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Player): AttackRoll[] {
+	let damageRolls:AttackRoll[] = []
+	if(!attacker.hp) {
+		return damageRolls
 	}
-	if(!boardUnit.hp) {
-		return {
-			output,
-			damage,
-		}
-	}
-	let targets = targetting[boardUnit.unit.targetting.id](boardUnit, 
-		defender.board.filter(boardUnit => boardUnit.hp>0))
+	let targets = targetting[attacker.unit.targetting.id](attacker, 
+		defendingPlayer.board.filter(boardUnit => boardUnit.hp>0))
 	if(!targets) {
 		//log.push(`<b>${turn.player.name}</b>: ${turn.boardUnit.unit.name} esta fuera de combate.`)
-		return {
-			output,
-			damage,
-		}
+		return damageRolls
 	}
-	for(let targetUnit of targets) {
-		let damage = calculateDamage(boardUnit, targetUnit)
-		output.push(`<span class="text-${attacker.color}">${boardUnit.unit.name}</span>(${boardUnit.hp}) ataca a <span class="text-${defender.color}">${targetUnit.unit.name}</span>(${targetUnit.hp}): <b>${damage.damage}</b> (${damage.roll})`)
-		targetUnit.hp = Math.max(targetUnit.hp-damage.damage, 0)
-		if (targetUnit.hp==0) {
-			output.push(`* <span class="text-${defender.color}">${targetUnit.unit.name}</b></span> <span class="text-warning">ha caido</span>`)
-		}
+	for(let defender of targets) {
+		let damage = calculateDamage(attacker, defender)
+		//output.push(`<span class="text-${attacker.color}">${boardUnit.unit.name}</span>(${boardUnit.hp}) ataca a <span class="text-${defender.color}">${targetUnit.unit.name}</span>(${targetUnit.hp}): <b>${damage.damage}</b> (${damage.dice})`)
+		defender.hp = Math.max(defender.hp-damage.damage, 0)
+		damageRolls.push({
+			attacker, 
+			attackingPlayer,
+			defender, 
+			defendingPlayer,
+			...damage})
 	}
-	return {
-		output,
-		damage
-	}
+	return damageRolls
 }
 
 interface Turn {
@@ -123,6 +112,7 @@ interface Turn {
 
 export function combatRound(attacker:Player, defender:Player)  {
 	let output = []
+	let result:AttackRoll[] = []
 	output.push(`<b class="text-${attacker.color}">${attacker.name}</b> tiene preferencia.`)
 	let attackerUnits:Turn[] = attacker.board
 		.filter(boardUnit => boardUnit.hp>0)
@@ -136,7 +126,6 @@ export function combatRound(attacker:Player, defender:Player)  {
 		}))
 	let units = [...attackerUnits, ...defenderUnits]
 	let tick = () => {
-		output.push('Tick')
 		for(let unit of units) {
 			unit.boardUnit.energy+=unit.boardUnit.unit.energypertick
 		}
@@ -144,35 +133,23 @@ export function combatRound(attacker:Player, defender:Player)  {
 	let unitsReady = () => units
 		.filter(u => u.boardUnit.energy==u.boardUnit.unit.energymax)
 
-	let total = {
-		[attacker.name]: {
-			dmgmax: 0,
-			dmg: 0,
-		},
-		[defender.name]: {
-			dmgmax: 0,
-			dmg: 0,
-		}
-	}
-	
 	for(let i = 0; i < 20; i++) {
 		tick()
 		for(let turn of unitsReady()) {
-			let attack = Attack(turn.attacker, turn.boardUnit, turn.defender)
-			if (!attack.damage)
+			let damage = Attack(attacker, turn.boardUnit, turn.defender)
+			if (damage.length==0)
 				continue
-			total[turn.attacker.name].dmgmax += attack.damage.max
-			total[turn.attacker.name].dmg += attack.damage.damage
-			output.push(...attack.output)
+			
+			result.push(...damage)
 			turn.boardUnit.energy=0
 
 			let defenders = turn.defender.board.filter(boardUnit => boardUnit.hp>0)
 			if(defenders.length==0) {
-				return output
+				return result
 			}
 		}
 	}
-	return output
+	return result
 }
 
 function setBattleCoordinates(player:Player) {
@@ -197,50 +174,27 @@ export function initBattle(player1:Player, player2: Player) {
 }
 
 export function fight(player1:Player, player2:Player) {
-	let log = [`Combate entre <span class="text-${player1.color}">${player1.name}</span> y <span class="text-${player2.color}">${player2.name}</span>`]
 	initBattle(player1, player2)
-	let player1Alive = true
-	let player2Alive = true
-
 	let homeFirst = Math.random()*100>50
-	if (homeFirst)
-		log.push(...combatRound(player1, player2))
-	else
-		log.push(...combatRound(player2, player1))
-	player1Alive = player1.board.filter(boardUnit => boardUnit.hp>0).length>0
-	player2Alive = player2.board.filter(boardUnit => boardUnit.hp>0).length>0
+	let attacks = homeFirst? 
+		combatRound(player1, player2):
+		combatRound(player2, player1)
+	let player1Alive = player1.board.filter(boardUnit => boardUnit.hp>0).length>0
+	let player2Alive = player2.board.filter(boardUnit => boardUnit.hp>0).length>0
 
-	let showBoardHP = (player:Player) => {
-		log.push('Unidades vivas:')
-		for(let unit of player.board) {
-			if(unit.hp===0)
-				continue
-			log.push(`${unit.unit.name}: ${unit.hp}/${unit.unit.maxhp}`)
-		}
+	let winner:Player|undefined = undefined
+	let loser:Player|undefined = undefined
+	if (!player1Alive) {
+		winner = player2
+		loser = player1
+	} else if (!player2Alive) {
+		winner = player1
+		loser = player2
 	}
-	if (player1Alive && player2Alive) {
-		log.push("Empate!")
-		return {
-			winner: undefined,
-			loser: undefined,
-			log
-		}
-	} else if (player1Alive) {
-		showBoardHP(player1)
-		log.push(`<b class="text-${player1.color}">${player1.name}</b> es el ganador`)
-		return {
-			winner: player1,
-			loser: player2,
-			log
-		}
-	} else  {
-		showBoardHP(player2)
-		log.push(`<b class="text-${player2.color}">${player2.name}</b> es el ganador`)
-		return {
-			winner: player2,
-			loser: player1,
-			log
-		}
+	return {
+		winner,
+		loser,
+		attacks
 	}
 }
 
@@ -249,20 +203,20 @@ export function calculateDamage(attacker:BoardUnit,defender:BoardUnit) {
 	let damage = 0
 	let min = 0
 	let max = 0
-	let rolls = []
+	let dice:Dice[] = []
 	for(let die of [...attacker.unit.attack, ...attacker.mods.attack??[]]) {
 		// tira los dados de ataque
 		damage += RollDice(die)
 		min += die.amount+die.modifier
 		max += die.amount*die.sides+die.modifier
-		rolls.push(`<span class="emoji">${die.type.icon}</span>${die.amount}d${die.sides}+${die.modifier}`)
+		dice.push(die)
 
 		// tira los dados de debilidad del defensor
 		for(let wdie of defender.unit.weakness.filter(wdie => wdie.type==die.type)) {
 			damage += RollDice(wdie)
 			min += wdie.amount+wdie.modifier
 			max += wdie.amount*wdie.sides+wdie.modifier
-			rolls.push(`<span class="emoji">${wdie.type.icon}</span>${wdie.amount}d${wdie.sides}+${wdie.modifier}`)
+			dice.push(wdie)
 		}
 		//console.log(`${attacker.unit.name} ataca a ${defender?.unit.name} con ${attacker.unit.attack.amount}d${attacker.unit.attack.sides}+${attacker.unit.attack.modifier}`)
 		//console.log(`Dmg: ${damage} Min: ${min}, Max: ${max}, effects: ${effectDamage}`)
@@ -272,7 +226,7 @@ export function calculateDamage(attacker:BoardUnit,defender:BoardUnit) {
 		damage,
 		min,
 		max,
-		roll: rolls.join(', ')
+		dice
 	} as DamageRoll
 }
 

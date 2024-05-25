@@ -113,7 +113,13 @@ declare global {
 		damage:number,
 		max:number,
 		min:number,
-		roll:string,
+		dice:Dice[],
+	}
+	interface AttackRoll extends DamageRoll {
+		attacker: BoardUnit
+		attackingPlayer: Player
+		defender: BoardUnit
+		defendingPlayer: Player
 	}
 
 	export interface Coordinate {

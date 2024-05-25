@@ -3,6 +3,7 @@ import { initBattle, fight, createBoardUnit, resetUnits } from "$lib/combat";
 import { getPlayers, updatePlayer } from "$lib/state";
 import { UnitMap, updatePlayerTraits } from "$lib/database";
 import BoardGrid from "./BoardGrid.svelte";
+    import DiceRoll from "$lib/DiceRoll.svelte";
 
 let [ _player1, _player2 ] = getPlayers()
 let home = $state(_player1)
@@ -37,7 +38,7 @@ function run() {
 		else if(result.winner == visitor) stats.victories.visitor++
 	}
 	stats.combats++
-	log = result.log
+	log = result.attacks
 	home = home
 	visitor = visitor
 }
@@ -59,7 +60,7 @@ function resetStats() {
 }
 
 
-let log:string[] = $state([])
+let log:AttackRoll[] = $state([])
 let stats = $state({
 	combats: 0,
 	victories: {
@@ -106,7 +107,10 @@ let onAddUnit = (player:Player, c:Coordinate, value:string) => {
 			<BoardGrid player={visitor} mirrored={true} {onAddUnit} {onRemoveUnit} />
 			<BoardGrid player={home} mirrored={false} {onAddUnit} {onRemoveUnit}  />
 		<br>
-		{#each log as msg}
-			{@html msg}<br>
+		{#each log as attack}
+			<span class="text-{attack.attackingPlayer.color}">{attack.attacker.unit.name}</span> ataca a 
+			<span class="text-{attack.defendingPlayer.color}">{attack.defender.unit.name}</span> y hace <b>{attack.damage}</b> de daño. (
+				<DiceRoll dice={attack.dice} />
+			)<br>
 		{/each}
 </div>
