@@ -132,7 +132,7 @@ export function calculateDamage(attacker:BoardUnit,defender:BoardUnit) {
 	} as DamageRoll
 }
 
-function *attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Player): Generator<AttackRoll> {
+function *attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Player) {
 	if(!attacker.hp) {
 		return
 	}
@@ -151,7 +151,7 @@ function *attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Pla
 			attackingPlayer,
 			defender, 
 			defendingPlayer,
-			...damage}
+			...damage} as AttackRoll
 		yield roll
 	}
 }
@@ -162,7 +162,7 @@ interface Turn {
 	defender:Player,
 }
 
-function *runCombat(attacker:Player, defender:Player): Generator<AttackRoll>  {
+function *runCombat(attacker:Player, defender:Player)  {
 	let attackerUnits:Turn[] = attacker.board
 		.filter(boardUnit => boardUnit.hp>0)
 		.map(boardUnit => ({
@@ -196,7 +196,7 @@ function *runCombat(attacker:Player, defender:Player): Generator<AttackRoll>  {
 	}
 }
 
-export function fight(player1:Player, player2:Player): Generator<AttackRoll> {
+export function fight(player1:Player, player2:Player) {
 	initBattle(player1, player2)
 	let player2First = Math.random()*100>50
 	if (player2First) [ player1, player2 ] = [player2, player1]
