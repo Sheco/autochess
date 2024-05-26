@@ -25,12 +25,12 @@ function run100() {
 
 
 async function run() {
-	log = []
+	attackRolls = []
 	winner = ""
 	document.querySelector("#grid")?.scrollIntoView()
 	let attacks = animatedFight(fight(home, visitor))
 	for await (let attack of attacks) {
-		log.push(attack)
+		attackRolls.push(attack)
 	}
 	let result = fightStatus(home, visitor)
 	if(!result.winner) 
@@ -47,7 +47,7 @@ async function run() {
 function resetCombat() {
 	home = home
 	visitor = visitor
-	log = []
+	attackRolls = []
 }
 
 function resetAll() {
@@ -62,7 +62,7 @@ function resetStats() {
 }
 
 
-let log:AttackRoll[] = $state([])
+let attackRolls:AttackRoll[] = $state([])
 let stats = $state({
 	combats: 0,
 	victories: {
@@ -109,14 +109,6 @@ let onAddUnit = (player:Player, c:Coordinate, value:string) => {
 	</div>
 
 	<div id="grid">
-		<BattleGround player1={home} player2={visitor} {onAddUnit} {onRemoveUnit} editable={true} />
+		<BattleGround player1={home} player2={visitor} {onAddUnit} {onRemoveUnit} editable={true} {attackRolls} />
 	</div>
-
-	<br>
-	{#each log as attack}
-		<span class="text-{attack.attackingPlayer.color}">{attack.attacker.unit.name}</span> ataca a 
-		<span class="text-{attack.defendingPlayer.color}">{attack.defender.unit.name}</span> y hace <b>{attack.damage}</b> de daño. (
-			<DiceRoll dice={attack.dice} />
-		)<br>
-	{/each}
 </div>

@@ -23,7 +23,7 @@ let shuffledPairs = () => {
 }
 let pairs = shuffledPairs()
 
-let attacks:AttackRoll[]=$state([])
+let attackRolls:AttackRoll[]=$state([])
 let winner:Player|undefined=$state(undefined)
 let player1:Player|undefined=$state(undefined)
 let player2:Player|undefined=$state(undefined)
@@ -41,9 +41,10 @@ let nextFight = async () => {
 	}
 	winner = undefined
 	active = true
+
 	let asyncattacks = animatedFight(fight(player1, player2))
 	for await (let attack of asyncattacks)
-		attacks.push(attack)
+		attackRolls.push(attack)
 
 	let result = fightStatus(player1, player2)
 	winner = result.winner
@@ -71,9 +72,9 @@ let nextFight = async () => {
 	{#if winner}
 	Ganador: <span class="fw-bold text-{winner.color}">{winner.name}</span>
 	{/if}
-	<BattleGround {player1} {player2} editable={false} />
+	<BattleGround {player1} {player2} editable={false} {attackRolls} />
 	<div>
-	{#each attacks as attack}
+	{#each attackRolls as attack}
 		<span class="text-{attack.attackingPlayer.color}">{attack.attacker.unit.name}</span> ataca a 
 		<span class="text-{attack.defendingPlayer.color}">{attack.defender.unit.name}</span> y hace <b>{attack.damage}</b> de daño. (
 			<DiceRoll dice={attack.dice} />

@@ -2,13 +2,15 @@
 import { Units } from './database'
 import UnitCard from './UnitCard.svelte';
 import TraitInfo from './TraitInfo.svelte';
+    import DiceRoll from './DiceRoll.svelte';
 
-let { player, mirrored=false, editable=false, onAddUnit, onRemoveUnit }:{
+let { player, mirrored=false, editable=false, onAddUnit, onRemoveUnit, attackRolls }:{
 	player:Player, 
 	mirrored:boolean,
 	editable:boolean,
 	onAddUnit?: (player:Player, c:Coordinate, value:string)=>void,
-	onRemoveUnit?: (player:Player, c:Coordinate)=>void
+	onRemoveUnit?: (player:Player, c:Coordinate)=>void,
+	attackRolls?: AttackRoll[]
 } = $props()
 let boardArray = $derived(boardToArray(player.board, mirrored))
 
@@ -76,7 +78,7 @@ let units = [...Units].sort((a, b) => a.name.localeCompare(b.name));
 				</div>
 			</div>
 
-			<div class="col-3">
+			<div class="col-6">
 				<div class="bg-{status} text-white">
 					<!-- 
 					we're not doing any validation, if the user enters HTML code here, it'll be used in the logs
@@ -89,6 +91,17 @@ let units = [...Units].sort((a, b) => a.name.localeCompare(b.name));
 				{#each player.traits as trait}
 						<TraitInfo {trait} /><br>
 				{/each}
+
+				{#if attackRolls}
+					<div>
+					{#each attackRolls.filter(r => r.attackingPlayer.name==player.name) as attack}
+						<span class="text-{attack.attackingPlayer.color}">{attack.attacker.unit.name}</span> ataca a 
+						<span class="text-{attack.defendingPlayer.color}">{attack.defender.unit.name}</span> y hace <b>{attack.damage}</b> de daño. (
+							<DiceRoll dice={attack.dice} />
+						)<br>
+					{/each}
+					</div>
+				{/if}
 			</div>
 		</div>
 	</div>
