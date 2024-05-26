@@ -44,7 +44,7 @@ let status = $derived(isAlive? "bg-"+player.color: "bg-secondary")
 let units = [...Units].sort((a, b) => a.name.localeCompare(b.name));
 
 </script>
-<div class="card mb-1 border-{player.color} border-2"  >
+<div class="card mb-1 border-{player.color} border-2"  style="font-size: 80%">
 	<div class="card-body p-1">
 		<div class="row">
 			<div class="col-6">
