@@ -208,7 +208,7 @@ export let boardTraitRanks:TraitRank[] = [
 					{
 						target: TraitMap.earth,
 						values: {
-							attack: [{ type: TraitMap.fire, amount: 1, sides: 4, modifier: 0}],
+							attack: [{ type: TraitMap.earth, amount: 1, sides: 4, modifier: 0}],
 						}
 					}
 				]
@@ -236,7 +236,7 @@ export let boardTraitRanks:TraitRank[] = [
 					{
 						target: TraitMap.wood,
 						values: {
-							attack: [{ type: TraitMap.fire, amount: 1, sides: 4, modifier: 0}]
+							attack: [{ type: TraitMap.wood, amount: 1, sides: 4, modifier: 0}]
 						}
 					},
 					{
@@ -272,7 +272,7 @@ export let boardTraitRanks:TraitRank[] = [
 					{
 						target: TraitMap.water,
 						values: {
-							attack: [{ type: TraitMap.fire, amount: 1, sides: 4, modifier: 0}],
+							attack: [{ type: TraitMap.water, amount: 1, sides: 4, modifier: 0}],
 						}
 					}
 				]
@@ -302,7 +302,7 @@ export let boardTraitRanks:TraitRank[] = [
 					{
 						target: TraitMap.metal,
 						values: {
-							attack: [{ type: TraitMap.fire, amount: 1, sides: 4, modifier: 0}],
+							attack: [{ type: TraitMap.metal, amount: 1, sides: 4, modifier: 0}],
 						}
 					}
 				]
