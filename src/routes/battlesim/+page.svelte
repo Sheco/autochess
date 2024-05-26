@@ -2,9 +2,8 @@
 import { fight, createBoardUnit, resetUnits, fightStatus } from "$lib/combat";
 import { getPlayers, updatePlayer } from "$lib/state";
 import { UnitMap, updatePlayerTraits } from "$lib/database";
-import BoardGrid from "./BoardGrid.svelte";
-    import DiceRoll from "$lib/DiceRoll.svelte";
-    import BattleGround from "./BattleGround.svelte";
+import DiceRoll from "$lib/DiceRoll.svelte";
+import BattleGround from "$lib/BattleGround.svelte";
 
 let [ _player1, _player2 ] = getPlayers()
 let home = $state(_player1)

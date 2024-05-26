@@ -1,7 +1,7 @@
 <script lang="ts">
-import { Units } from '$lib/database'
-import UnitCard from '$lib/UnitCard.svelte';
-    import TraitInfo from '../play/TraitInfo.svelte';
+import { Units } from './database'
+import UnitCard from './UnitCard.svelte';
+import TraitInfo from './TraitInfo.svelte';
 
 let { player, mirrored=false, editable=false, onAddUnit, onRemoveUnit }:{
 	player:Player, 
