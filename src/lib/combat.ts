@@ -206,7 +206,7 @@ export function fight(player1:Player, player2:Player) {
 let abortController:AbortController
 async function ondamage(attack:AttackRoll) {
 	let sleep = async () => new Promise((resolve, reject) => {
-		let timeout = setTimeout(resolve, 200)
+		let timeout = setTimeout(resolve, 1000)
 		let abort = () => { 
 			clearTimeout(timeout)
 			reject('abort')
