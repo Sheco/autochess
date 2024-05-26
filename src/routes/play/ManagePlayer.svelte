@@ -19,7 +19,7 @@ function ontakeFromBoard(c:Coordinate) {
 	if (takenUnit) {
 		onreleaseToBoard(c)
 	}
-	let index=player.board.findIndex(bu => c.x==bu.setx && c.y==bu.sety)
+	let index=player.board.findIndex(bu => c.x==bu.setCoord.x && c.y==bu.setCoord.y)
 	takenUnit = player.board[index].unit
 	player.board.splice(index, 1)
 	updatePlayerTraits(player)

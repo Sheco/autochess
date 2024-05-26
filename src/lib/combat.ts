@@ -13,13 +13,13 @@ function coordinatesBetween(point1:Coordinate, point2:Coordinate) {
 }
 
 function coordinatesToBoardUnits(board:Board) {
-	return (c:Coordinate) => board.find(boardUnit => boardUnit.x==c.x && boardUnit.y==c.y)
+	return (c:Coordinate) => board.find(boardUnit => boardUnit.realCoord.x==c.x && boardUnit.realCoord.y==c.y)
 }
 
 let calculateDistance = (attacker:BoardUnit, defender:BoardUnit) => {
 	let distance = Math.sqrt(
-		Math.pow(attacker.x- defender.x, 2)+
-		Math.pow(attacker.y- defender.y, 2)
+		Math.pow(attacker.realCoord.x- defender.realCoord.x, 2)+
+		Math.pow(attacker.realCoord.y- defender.realCoord.y, 2)
 	)
 	return { target: defender, distance }
 }
@@ -63,7 +63,7 @@ let targetting:{[key:string]: (c:BoardUnit, f:Board) => BoardUnit[]} = {
 		farthest1_direct: (attacker:BoardUnit, target:Board) => {
 			let [farthest1] = targetting.farthest1(attacker, target)
 			if(!farthest1) return []
-			let blocker = coordinatesBetween(attacker, farthest1)
+			let blocker = coordinatesBetween(attacker.realCoord, farthest1.realCoord)
 				.map(coordinatesToBoardUnits(target))
 				.filter(x => x)
 				.shift()
@@ -74,8 +74,8 @@ let targetting:{[key:string]: (c:BoardUnit, f:Board) => BoardUnit[]} = {
 
 function setBattleCoordinates(player:Player) {
 	for(let boardUnit of player.board) {
-		boardUnit.x = boardUnit.setx
-		boardUnit.y = player.mirrored? -boardUnit.sety-1: boardUnit.sety
+		boardUnit.realCoord.x = boardUnit.setCoord.x
+		boardUnit.realCoord.y = player.mirrored? -boardUnit.setCoord.y-1: boardUnit.setCoord.y
 	}
 }
 
@@ -225,10 +225,8 @@ export function fightStatus(player1:Player, player2:Player) {
 export function createBoardUnit(unit:Unit, c:Coordinate): BoardUnit {
 	return {
 		unit,
-		setx: c.x,
-		sety: c.y,
-		x: c.x,
-		y: c.y,
+		setCoord: c,
+		realCoord: c,
 		hp: unit.maxhp,
 		energy: 0,
 		mods: {},

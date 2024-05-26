@@ -65,11 +65,9 @@ declare global {
 	export interface BoardUnit {
 		player?:Player,
 		unit:Unit
-		setx:number
-		sety:number
+		setCoord:Coordinate
+		realCoord:Coordinate
 		hp: number
-		x:number
-		y:number
 		energy:number
 		mods: Mods
 		highlight?:string

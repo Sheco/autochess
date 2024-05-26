@@ -1,5 +1,4 @@
 <script lang="ts">
-import { updatePlayer } from '$lib/state';
 import { Units } from '$lib/database'
 import UnitCard from '$lib/UnitCard.svelte';
     import TraitInfo from '../play/TraitInfo.svelte';
@@ -17,7 +16,7 @@ function boardToArray(board:Board, mirrored:boolean=false) {
 		let x = i%3
 		let y = Math.floor(i/3)
 		return board.find(boardUnit => {
-			return (boardUnit.setx == x) && (boardUnit.sety == y)
+			return (boardUnit.setCoord.x == x) && (boardUnit.setCoord.y == y)
 		})
 	})
 	if(!mirrored) return newboard
@@ -52,7 +51,7 @@ let units = [...Units].sort((a, b) => a.name.localeCompare(b.name));
 					{#each boardArray as boardUnit, index (index)}
 						<div class="col-4 mb-1">
 							{#if boardUnit}
-								<UnitCard unit={boardUnit.unit} {boardUnit} onclick={() => onRemoveUnit(player, {x: boardUnit.setx, y: boardUnit.sety})} board={player.board} />
+								<UnitCard unit={boardUnit.unit} {boardUnit} onclick={() => onRemoveUnit(player, {x: boardUnit.setCoord.x, y: boardUnit.setCoord.y})} board={player.board} />
 							{:else}
 								<div class="card h-100">
 									<div class="card-header p-0 ps-2">Espacio vacio

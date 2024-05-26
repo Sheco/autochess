@@ -100,7 +100,7 @@ let onRemoveUnit = (player:Player, c:Coordinate) => {
 	if(abortController) {
 		abortController.abort()
 	}
-	player.board=player.board.filter(i => !(i.setx==c.x && i.sety==c.y))
+	player.board=player.board.filter(i => !(i.setCoord.x==c.x && i.setCoord.y==c.y))
 	updatePlayerTraits(player)
 	updatePlayer($state.snapshot(player))
 	resetUnits(player)
