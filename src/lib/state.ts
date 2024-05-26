@@ -1,4 +1,4 @@
-import { UnitMap } from "./database";
+import { UnitMap, updatePlayerTraits } from "./database";
 
 export function getPlayers() {
 	let player1 = JSON.parse(localStorage.getItem('player1')??"null")??{ 
@@ -45,13 +45,16 @@ export function syncUserData(player:Player) {
 			return
 		bu.unit = UnitMap[bu.unit.id]
 	}
-	// updatePlayerBoard runs through the player
-	// board to set each unit its player instance
-	//for(let bu of player.board) {
-	//	bu.player = untrack(() => player)
-	//}
+	updatePlayerTraits(player)
 }
 
 export function updatePlayer(player:Player) {
-	localStorage.setItem(player.id, JSON.stringify(player))
+	let copy = Object.assign({}, player)
+	copy.traits = []
+	copy.board = copy.board.map(bu => {
+		bu.damage = undefined
+		bu.mods = {}
+		return bu
+	})
+	localStorage.setItem(player.id, JSON.stringify(copy))
 }

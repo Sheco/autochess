@@ -101,7 +101,7 @@ let onRemoveUnit = (player:Player, c:Coordinate) => {
 	}
 	player.board=player.board.filter(i => !(i.setx==c.x && i.sety==c.y))
 	updatePlayerTraits(player)
-	updatePlayer(player)
+	updatePlayer($state.snapshot(player))
 	resetUnits(player)
 }
 let onAddUnit = (player:Player, c:Coordinate, value:string) => {
@@ -113,7 +113,7 @@ let onAddUnit = (player:Player, c:Coordinate, value:string) => {
 	}
 	player.board.push(createBoardUnit(UnitMap[value], c))
 	updatePlayerTraits(player)
-	updatePlayer(player)
+	updatePlayer($state.snapshot(player))
 	resetUnits(player)
 }
 </script>
