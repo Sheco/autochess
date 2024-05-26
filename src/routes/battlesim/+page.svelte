@@ -76,6 +76,7 @@ function resetCombat() {
 }
 
 function resetAll() {
+	if(abortController) abortController.abort()
 	resetCombat()
 	resetStats()
 }
