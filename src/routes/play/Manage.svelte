@@ -73,20 +73,3 @@ let onmanage = (p:Player) => {
 {:else if view == "combat"}
 	<Combat {players} {ondamage} {onendcombat} />
 {/if}
-
-<p>
-	<b>Instrucciones:</b><br>
-	Ya llegamos a la etapa de preparación del tablero, aquí los jugadores se alternaran el dispositivo para ver y darle click en "Administrar"
-	del jugador apropiado.<br>
-	Selecciona una carta que quieras jugar y dale click en el boton de "Agarrar" y luego lo sueltas apretando el botón "Soltar" en la 
-	rejilla de Tablero.
-	Una vez que hayas acomodado tus tarjetas, puede darle click al boton "Ocultar cartas" para darle el dispositivo al otro jugador para
-	que el acomode sus tarjetas.<br>
-	<br>
-	Cuando ambos jugadores tengan 4 unidades en el tablero y esten listos, pueden apretar el botón de "Pelear" para ejecutar una simulación automatica.<br>
-	<br>
-	Se recomienda jugar este juego con cartas y dados fisicos.
-
-	
-</p>
-
