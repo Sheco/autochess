@@ -143,7 +143,6 @@ function *attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Pla
 		return
 	}
 	for(let defender of targets) {
-		console.log('attackingPlayer', attackingPlayer.name, 'attacks with', attacker.unit.name, 'at defendingPlayer', defendingPlayer.name, ':', defender.unit.name)
 		let damage = calculateDamage(attacker, defender)
 		//output.push(`<span class="text-${attacker.color}">${boardUnit.unit.name}</span>(${boardUnit.hp}) ataca a <span class="text-${defender.color}">${targetUnit.unit.name}</span>(${targetUnit.hp}): <b>${damage.damage}</b> (${damage.dice})`)
 		defender.hp = Math.max(defender.hp-damage.damage, 0)
@@ -164,7 +163,6 @@ interface Turn {
 }
 
 function *runCombat(attacker:Player, defender:Player)  {
-	console.log('combat', attacker.name, ',', defender.name)
 	let attackerUnits:Turn[] = attacker.board
 		.filter(boardUnit => boardUnit.hp>0)
 		.map(boardUnit => ({
