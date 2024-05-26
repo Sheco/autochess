@@ -1,7 +1,7 @@
 <script lang="ts">
     import BattleGround from "$lib/BattleGround.svelte";
 import DiceRoll from "$lib/DiceRoll.svelte";
-import { animatedFight, fightStatus } from "$lib/combat";
+import { fight, animatedFight, fightStatus } from "$lib/combat";
 
 let { players, onendcombat, ondamage }:{
 	players:Player[],
@@ -41,7 +41,7 @@ let nextFight = async () => {
 	}
 	winner = undefined
 	active = true
-	let asyncattacks = animatedFight(player1, player2)
+	let asyncattacks = animatedFight(fight(player1, player2))
 	for await (let attack of asyncattacks)
 		attacks.push(attack)
 

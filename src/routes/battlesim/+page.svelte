@@ -1,5 +1,5 @@
 <script lang="ts">
-import { animatedFight, createBoardUnit, resetUnits, fightStatus, abortFight } from "$lib/combat";
+import { animatedFight, createBoardUnit, resetUnits, fightStatus, abortFight, fight } from "$lib/combat";
 import { getPlayers, updatePlayer } from "$lib/state";
 import { UnitMap, updatePlayerTraits } from "$lib/database";
 import DiceRoll from "$lib/DiceRoll.svelte";
@@ -28,7 +28,7 @@ async function run() {
 	log = []
 	winner = ""
 	document.querySelector("#grid")?.scrollIntoView()
-	let attacks = animatedFight(home, visitor)
+	let attacks = animatedFight(fight(home, visitor))
 	for await (let attack of attacks) {
 		log.push(attack)
 	}

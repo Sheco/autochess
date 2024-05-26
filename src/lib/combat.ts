@@ -222,10 +222,10 @@ async function ondamage(attack:AttackRoll) {
 	attack.defender.damage = undefined
 }
 
-export async function *animatedFight(home:Player, visitor:Player) {
+export async function *animatedFight(attacks:AttackRoll[]|Generator<AttackRoll>) {
 	if(abortController) abortController.abort()
 	abortController = new AbortController()
-	for(let attack of fight(home, visitor)) {
+	for(let attack of attacks) {
 		try {
 			await ondamage(attack)
 			yield attack
