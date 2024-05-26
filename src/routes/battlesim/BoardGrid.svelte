@@ -35,7 +35,6 @@ function add(index:number) {
 		let c:Coordinate = { x, y: mirroredy }
 		onRemoveUnit(player, c)
 		onAddUnit(player, c, select.value)
-		updatePlayer(player)
 	}
 }
 
