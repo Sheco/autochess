@@ -12,10 +12,9 @@ let { player, onclick, onrelease, takenUnit}:{
 }= $props()
 
 let grid = Array(9).fill(0).map((_, i) => ({
-	i,
 	x: i%3,
 	y: Math.floor(i/3)
-}))
+} as Coordinate))
 
 </script>
 <div class="card mt-2" id="board">
