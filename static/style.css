@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'OpenMoji';
-  src: url('./OpenMoji-Color.ttf') format('truetype'); /* Adjust the path to the font file */
+  src: url('./OpenMoji-color-colr0_svg.ttf') format('truetype'); /* Adjust the path to the font file */
 }
 
 .emoji {
