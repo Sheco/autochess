@@ -38,6 +38,6 @@ let modal = $state(false)
 	{#if i == trait.level}
 		<b>{level.amount}</b> >
 	{:else}
-		{level.amount} >
+		<span class="text-muted">{level.amount} ></span>
 	{/if}
 {/each}
