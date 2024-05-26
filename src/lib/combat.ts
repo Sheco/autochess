@@ -203,6 +203,41 @@ export function fight(player1:Player, player2:Player) {
 	return runCombat(player1, player2)
 }
 
+let abortController:AbortController
+async function ondamage(attack:AttackRoll) {
+	let sleep = async () => new Promise((resolve, reject) => {
+		let timeout = setTimeout(resolve, 200)
+		let abort = () => { 
+			clearTimeout(timeout)
+			reject('abort')
+		}
+		abortController.signal.addEventListener('abort', abort)
+	})
+	attack.attacker.highlight = "success"
+	attack.defender.highlight = "danger"
+	attack.defender.damage = attack
+	await sleep()
+	attack.attacker.highlight = undefined
+	attack.defender.highlight = undefined
+	attack.defender.damage = undefined
+}
+
+export async function *animatedFight(home:Player, visitor:Player) {
+	if(abortController) abortController.abort()
+	abortController = new AbortController()
+	for(let attack of fight(home, visitor)) {
+		try {
+			await ondamage(attack)
+			yield attack
+		} catch(err) {
+			return
+		}
+	}
+}
+export function abortFight() {
+	if(abortController) abortController.abort()
+}
+
 export function fightStatus(player1:Player, player2:Player) {
 	let player1Alive = player1.board.filter(boardUnit => boardUnit.hp>0).length>0
 	let player2Alive = player2.board.filter(boardUnit => boardUnit.hp>0).length>0

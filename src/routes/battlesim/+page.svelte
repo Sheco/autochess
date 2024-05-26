@@ -1,5 +1,5 @@
 <script lang="ts">
-import { fight, createBoardUnit, resetUnits, fightStatus } from "$lib/combat";
+import { animatedFight, createBoardUnit, resetUnits, fightStatus, abortFight } from "$lib/combat";
 import { getPlayers, updatePlayer } from "$lib/state";
 import { UnitMap, updatePlayerTraits } from "$lib/database";
 import DiceRoll from "$lib/DiceRoll.svelte";
@@ -24,38 +24,13 @@ function run100() {
 }
 
 
-let abortController:AbortController
-async function ondamage(attack:AttackRoll) {
-	let sleep = async () => new Promise((resolve, reject) => {
-		let timeout = setTimeout(resolve, 1000)
-		let abort = () => { 
-			clearTimeout(timeout)
-			reject('abort')
-		}
-		abortController.signal.addEventListener('abort', abort)
-	})
-	attack.attacker.highlight = "success"
-	attack.defender.highlight = "danger"
-	attack.defender.damage = attack
-	log.push(attack)
-	await sleep()
-	attack.attacker.highlight = undefined
-	attack.defender.highlight = undefined
-	attack.defender.damage = undefined
-}
-
 async function run() {
 	log = []
 	winner = ""
-	if(abortController) abortController.abort()
-	abortController = new AbortController()
 	document.querySelector("#grid")?.scrollIntoView()
-	for(let attack of fight(home, visitor)) {
-		try {
-			await ondamage(attack)
-		} catch(err) {
-			break
-		}
+	let attacks = animatedFight(home, visitor)
+	for await (let attack of attacks) {
+		log.push(attack)
 	}
 	let result = fightStatus(home, visitor)
 	if(!result.winner) 
@@ -76,7 +51,7 @@ function resetCombat() {
 }
 
 function resetAll() {
-	if(abortController) abortController.abort()
+	abortFight()
 	resetCombat()
 	resetStats()
 }
@@ -97,18 +72,14 @@ let stats = $state({
 })
 
 let onRemoveUnit = (player:Player, c:Coordinate) => {
-	if(abortController) {
-		abortController.abort()
-	}
+	abortFight()
 	player.board=player.board.filter(i => !(i.setCoord.x==c.x && i.setCoord.y==c.y))
 	updatePlayerTraits(player)
 	updatePlayer($state.snapshot(player))
 	resetUnits(player)
 }
 let onAddUnit = (player:Player, c:Coordinate, value:string) => {
-	if(abortController) {
-		abortController.abort()
-	}
+	abortFight()
 	if(!value) {
 		return;
 	}

@@ -7,8 +7,8 @@ let { player, mirrored=false, editable=false, onAddUnit, onRemoveUnit }:{
 	player:Player, 
 	mirrored:boolean,
 	editable:boolean,
-	onAddUnit: (player:Player, c:Coordinate, value:string)=>void,
-	onRemoveUnit: (player:Player, c:Coordinate)=>void
+	onAddUnit?: (player:Player, c:Coordinate, value:string)=>void,
+	onRemoveUnit?: (player:Player, c:Coordinate)=>void
 } = $props()
 let boardArray = $derived(boardToArray(player.board, mirrored))
 
@@ -33,8 +33,10 @@ function add(index:number) {
 		let mirroredy = mirrored? 2-y: y
 		let x = index%3
 		let c:Coordinate = { x, y: mirroredy }
-		onRemoveUnit(player, c)
-		onAddUnit(player, c, select.value)
+		if(onRemoveUnit)
+			onRemoveUnit(player, c)
+		if(onAddUnit)
+			onAddUnit(player, c, select.value)
 	}
 }
 
@@ -52,7 +54,7 @@ let units = [...Units].sort((a, b) => a.name.localeCompare(b.name));
 					{#each boardArray as boardUnit, index (index)}
 						<div class="col-4 mb-1">
 							{#if boardUnit}
-								<UnitCard unit={boardUnit.unit} {boardUnit} onclick={() => editable?onRemoveUnit(player, {x: boardUnit.setCoord.x, y: boardUnit.setCoord.y}):undefined} board={player.board} />
+								<UnitCard unit={boardUnit.unit} {boardUnit} onclick={() => onRemoveUnit?onRemoveUnit(player, {x: boardUnit.setCoord.x, y: boardUnit.setCoord.y}):undefined} board={player.board} />
 							{:else}
 								<div class="card h-100">
 									<div class="card-header p-0 ps-2">Espacio vacio

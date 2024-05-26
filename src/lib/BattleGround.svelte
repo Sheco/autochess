@@ -5,8 +5,8 @@ let { player1, player2, onAddUnit, onRemoveUnit, editable}:
 	{
 		player1:Player,
 		player2:Player,
-		onAddUnit: (player:Player, c:Coordinate, value:string)=>void,
-		onRemoveUnit: (player:Player, c:Coordinate)=>void,
+		onAddUnit?: (player:Player, c:Coordinate, value:string)=>void,
+		onRemoveUnit?: (player:Player, c:Coordinate)=>void,
 		editable:boolean,
 	} = $props()
 		
