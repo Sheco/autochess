@@ -4,6 +4,7 @@ import { getPlayers, updatePlayer } from "$lib/state";
 import { UnitMap, updatePlayerTraits } from "$lib/database";
 import BoardGrid from "./BoardGrid.svelte";
     import DiceRoll from "$lib/DiceRoll.svelte";
+    import BattleGround from "./BattleGround.svelte";
 
 let [ _player1, _player2 ] = getPlayers()
 let home = $state(_player1)
@@ -138,10 +139,9 @@ let onAddUnit = (player:Player, c:Coordinate, value:string) => {
 	</div>
 
 	<div id="grid">
+		<BattleGround player1={home} player2={visitor} {onAddUnit} {onRemoveUnit} editable={true} />
 	</div>
 
-	<BoardGrid player={visitor} mirrored={true} {onAddUnit} {onRemoveUnit} />
-	<BoardGrid player={home} mirrored={false} {onAddUnit} {onRemoveUnit}  />
 	<br>
 	{#each log as attack}
 		<span class="text-{attack.attackingPlayer.color}">{attack.attacker.unit.name}</span> ataca a 

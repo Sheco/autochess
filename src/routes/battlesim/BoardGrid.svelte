@@ -3,9 +3,10 @@ import { Units } from '$lib/database'
 import UnitCard from '$lib/UnitCard.svelte';
     import TraitInfo from '../play/TraitInfo.svelte';
 
-let { player, mirrored=false, onAddUnit, onRemoveUnit }:{
+let { player, mirrored=false, editable=false, onAddUnit, onRemoveUnit }:{
 	player:Player, 
 	mirrored:boolean,
+	editable:boolean,
 	onAddUnit: (player:Player, c:Coordinate, value:string)=>void,
 	onRemoveUnit: (player:Player, c:Coordinate)=>void
 } = $props()
@@ -51,18 +52,20 @@ let units = [...Units].sort((a, b) => a.name.localeCompare(b.name));
 					{#each boardArray as boardUnit, index (index)}
 						<div class="col-4 mb-1">
 							{#if boardUnit}
-								<UnitCard unit={boardUnit.unit} {boardUnit} onclick={() => onRemoveUnit(player, {x: boardUnit.setCoord.x, y: boardUnit.setCoord.y})} board={player.board} />
+								<UnitCard unit={boardUnit.unit} {boardUnit} onclick={() => editable?onRemoveUnit(player, {x: boardUnit.setCoord.x, y: boardUnit.setCoord.y}):undefined} board={player.board} />
 							{:else}
 								<div class="card h-100">
 									<div class="card-header p-0 ps-2">Espacio vacio
 									</div>
 									<div class="card-body p-1">
+										{#if editable}
 										<select onchange={add(index)} value="" class="mw-100 form-control">
 											<option value="">-</option>
 											{#each units as unit}
 												<option value="{unit.id}">{unit.name}</option>
 											{/each}
 										</select>
+										{/if}
 									</div>
 								</div>
 							{/if}
