@@ -185,7 +185,7 @@ function *runCombat(attacker:Player, defender:Player)  {
 	for(let i = 0; i < 20; i++) {
 		tick()
 		for(let turn of unitsReady()) {
-			yield* attack(attacker, turn.boardUnit, turn.defender)
+			yield* attack(turn.attacker, turn.boardUnit, turn.defender)
 			turn.boardUnit.energy=0
 
 			let defenders = turn.defender.board.filter(boardUnit => boardUnit.hp>0)
