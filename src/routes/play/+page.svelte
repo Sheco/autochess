@@ -1,6 +1,7 @@
 <script lang="ts">
 import { goto } from "$app/navigation";
 import Manage from "./Manage.svelte";
+    import PlayerBoard from "./PlayerBoard.svelte";
 import PlayerSetup from "./PlayerSetup.svelte";
 import Shop from "./Shop.svelte";
 
@@ -75,7 +76,7 @@ let onnewplayer = () => {
 			color: colors[id],
 			finished: false,
 			maxgold: 5,
-			gold: 20,
+			gold: 10,
 			rolls: 2,
 			traits: [],
 			hand: [],
@@ -119,5 +120,6 @@ let onendcombat = () => {
 		<div>
 			El ganador del torneo es <span class="fw-bold text-{winner.color}">{winner.name}</span>!
 		</div>
+		<PlayerBoard {players} />
 	{/if}
 </div>

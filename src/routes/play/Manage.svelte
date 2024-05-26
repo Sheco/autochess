@@ -1,6 +1,7 @@
 <script lang="ts">
 import Combat from './Combat.svelte';
 import ManagePlayer from './ManagePlayer.svelte';
+    import PlayerBoard from './PlayerBoard.svelte';
 
 let {players,ondamage,onendcombat}:{
 	players:Player[],
@@ -10,7 +11,7 @@ let {players,ondamage,onendcombat}:{
 let player:Player|undefined = $state(undefined)
 let view = $state("main")
 
-let doFight = () => {
+let onfight = () => {
 	player = undefined
 	view = "combat"
 }
@@ -28,41 +29,7 @@ let onmanage = (p:Player) => {
 <h5>Etapa de administración de tablero y de batalla.</h5>
 
 {#if view == "main"}
-	<div class="row">
-		<div class="col-3">
-			<table class="table table-bordered">
-			<tbody>
-			<tr>
-				<td>Nombre</td>
-				<td>HP</td>
-				<td title="Unidades en el tablero">Unidades</td>
-				<td>Acciones</td>
-			</tr>
-			{#each players as p}
-			<tr>
-				<td>{p.name}</td>
-				<td>{p.hp}</td>
-				<td>{p.board.length}</td>
-				<td>
-					<button onclick={() => onmanage(p)} class="btn btn-{p.color} me-2">
-						Administrar
-					</button>
-				</td>
-			</tr>
-			{/each}
-			<tr>
-				<td colspan="3"></td>
-				<td colspan="2">
-					<button disabled={!(players[0].board.length==3 && players[1].board.length==3)} 
-						onclick={() => doFight()} class="btn btn-secondary">
-						Pelear
-					</button>
-				</td>
-			</tr>
-			</tbody>
-			</table>
-		</div>
-	</div>
+	<PlayerBoard {players} {onmanage} {onfight} />
 {:else if view == "manage" && player}
 	{#snippet actions()}
 		<button class="btn btn-secondary" onclick={onclose}>
@@ -73,3 +40,4 @@ let onmanage = (p:Player) => {
 {:else if view == "combat"}
 	<Combat {players} {ondamage} {onendcombat} />
 {/if}
+
