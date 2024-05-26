@@ -24,8 +24,16 @@ function run100() {
 }
 
 
+let abortController:AbortController
 async function ondamage(attack:AttackRoll) {
-	let sleep = async () => new Promise((resolve) => setTimeout(resolve, 1000))
+	let sleep = async () => new Promise((resolve, reject) => {
+		let timeout = setTimeout(resolve, 1000)
+		let abort = () => { 
+			clearTimeout(timeout)
+			reject('abort')
+		}
+		abortController.signal.addEventListener('abort', abort)
+	})
 	attack.attacker.highlight = "success"
 	attack.defender.highlight = "danger"
 	attack.defender.damage = attack
@@ -39,9 +47,15 @@ async function ondamage(attack:AttackRoll) {
 async function run() {
 	log = []
 	winner = ""
+	if(abortController) abortController.abort()
+	abortController = new AbortController()
 	document.querySelector("#grid")?.scrollIntoView()
 	for(let attack of fight(home, visitor)) {
-		await ondamage(attack)
+		try {
+			await ondamage(attack)
+		} catch(err) {
+			break
+		}
 	}
 	let result = fightStatus(home, visitor)
 	if(!result.winner) 
@@ -82,12 +96,18 @@ let stats = $state({
 })
 
 let onRemoveUnit = (player:Player, c:Coordinate) => {
+	if(abortController) {
+		abortController.abort()
+	}
 	player.board=player.board.filter(i => !(i.setx==c.x && i.sety==c.y))
 	updatePlayerTraits(player)
 	updatePlayer(player)
 	resetUnits(player)
 }
 let onAddUnit = (player:Player, c:Coordinate, value:string) => {
+	if(abortController) {
+		abortController.abort()
+	}
 	if(!value) {
 		return;
 	}
