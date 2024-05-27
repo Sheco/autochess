@@ -315,9 +315,8 @@ export function updatePlayerTraits(player:Player) {
 	let countUnitTraits = (trait:Trait) => player.board
 		.reduce((total, curr) => {
 			// get a list of unique units
-			if(!total.map(u => u.unit.id).includes(curr.unit.id)) {
+			if(!total.find(u => u.unit.id==curr.unit.id))
 				total.push(curr)
-			}
 			return total
 		}, [] as BoardUnit[])
 		.reduce((total, curr) => total+(curr.unit.traits.map(t=>t.id).includes(trait.id)? 1: 0), 0)
