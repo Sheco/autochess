@@ -42,7 +42,7 @@ let nextFight = async () => {
 	winner = undefined
 	active = true
 
-	let asyncattacks = animatedFight(fight(player1, player2))
+	let asyncattacks = animatedFight(fight(player1, player2), 1000)
 	for await (let attack of asyncattacks)
 		attackRolls.push(attack)
 
