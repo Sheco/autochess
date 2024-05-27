@@ -227,8 +227,8 @@ export async function *animatedFight(attacks:AttackRoll[]|Generator<AttackRoll>)
 	abortController = new AbortController()
 	for(let attack of attacks) {
 		try {
-			await ondamage(attack)
 			yield attack
+			await ondamage(attack)
 		} catch(err) {
 			return
 		}
