@@ -260,7 +260,7 @@ export function fightStatus(player1:Player, player2:Player) {
 export function createBoardUnit(unit:Unit, c:Coordinate): BoardUnit {
 	return {
 		unit,
-		setCoord: c,
+		setCoord: {...c},
 		realCoord: c,
 		hp: unit.maxhp,
 		energy: 0,
