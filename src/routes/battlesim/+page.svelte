@@ -83,7 +83,7 @@ let onAddUnit = (player:Player, c:Coordinate, value:string) => {
 		<a class="btn btn-primary" href="/">Regresar</a>
 		<button onclick={resetAll} class="btn btn-secondary">Limpiar</button>
 		<button onclick={run} class="btn btn-success">Pelear</button>
-		<select bind:value={wait}>
+		<select class="form-control d-inline-block" style="width: 10rem" bind:value={wait}>
 			<option value="2000">Lento</option>
 			<option value="1000">Velocidad normal</option>
 			<option value="500">Rápido</option>
