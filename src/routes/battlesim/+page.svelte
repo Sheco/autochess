@@ -6,37 +6,24 @@ import DiceRoll from "$lib/DiceRoll.svelte";
 import BattleGround from "$lib/BattleGround.svelte";
 
 let [ _player1, _player2 ] = getPlayers()
-let home = $state(_player1)
-let visitor = $state(_player2)
-let winner = $state("")
-function run100() {
-	resetStats()
-	for(let i=0; i<100; i++) {
-		run()
-	}
-	if (stats.victories.home>stats.victories.visitor) {
-		winner = `<b class="text-${home.color}">${home.name}</b>`
-	} else if (stats.victories.home<stats.victories.visitor) {
-		winner = `<b class="text-${visitor.color}">${visitor.name}</b>`
-	} else {
-		winner = "Nadie"
-	}
-}
-
+let home:Player = $state(_player1)
+let visitor:Player = $state(_player2)
+let winner:Player|undefined = $state(undefined)
 
 async function run() {
 	attackRolls = []
-	winner = ""
+	winner = undefined
 	document.querySelector("#grid")?.scrollIntoView()
 	let attacks = animatedFight(fight(home, visitor))
 	for await (let attack of attacks) {
 		attackRolls.push(attack)
 	}
 	let result = fightStatus(home, visitor)
+
 	if(!result.winner) 
-		winner = "Nadie"
+		winner = undefined
 	else {
-		winner = `<b class="text-${result.winner.color}">${result.winner.name}</b>`
+		winner = result.winner
 		if (result.winner == home) stats.victories.home++
 		else if(result.winner == visitor) stats.victories.visitor++
 	}
@@ -95,9 +82,8 @@ let onAddUnit = (player:Player, c:Coordinate, value:string) => {
 		<a class="btn btn-primary" href="/">Regresar</a>
 		<button onclick={resetAll} class="btn btn-secondary">Limpiar</button>
 		<button onclick={run} class="btn btn-success">Pelear</button>
-		<button onclick={run100} class="btn btn-warning">Pelear x100</button>
 		{#if winner}
-		{@html winner} ganó!
+			<b class="text-{winner.color}">{winner.name}</b> ha ganado!
 		{/if}
 		{#if stats.combats>0}
 			Combates: {stats.combats}
