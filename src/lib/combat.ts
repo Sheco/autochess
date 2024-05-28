@@ -203,43 +203,59 @@ export function fight(player1:Player, player2:Player) {
 	return runCombat(player1, player2)
 }
 
-let abortController:AbortController
-async function ondamage(attack:AttackRoll, wait:number) {
+
+export function createThrottledGenerator<T>(items:T[]|Generator<T>, wait:number) {
+	let abortController = new AbortController()
 	let sleep = async () => new Promise((resolve, reject) => {
 		let timeout = setTimeout(() => {
 			abortController.signal.removeEventListener('abort', abort)
 			resolve('ok')
 		}, wait)
 		let abort = () => { 
-			abortController.signal.removeEventListener('abort', abort)
 			clearTimeout(timeout)
 			reject('abort')
 		}
 		abortController.signal.addEventListener('abort', abort)
 	})
-	attack.attacker.highlight = "success"
-	attack.defender.highlight = "danger"
-	attack.defender.damage = attack
-	await sleep()
-	attack.attacker.highlight = undefined
-	attack.defender.highlight = undefined
-	attack.defender.damage = undefined
-}
-
-export async function *animatedFight(attacks:AttackRoll[]|Generator<AttackRoll>, wait:number) {
-	abortFight()
-	abortController = new AbortController()
-	for(let attack of attacks) {
-		try {
-			yield attack
-			await ondamage(attack, wait)
-		} catch(err) {
-			return
+	async function *throttle() {
+		for(let i of items) {
+			try {
+				yield i
+				await sleep()
+			} catch(err) {
+				return
+			}
 		}
 	}
+	return {
+		stop: () => abortController.abort(),
+		items: throttle(),
+	} as ThrottledGenerator<T>
 }
-export function abortFight() {
-	if(abortController) abortController.abort()
+
+export async function animatedFight(attacks:AttackRoll[]|Generator<AttackRoll>, wait:number) {
+	let generator = createThrottledGenerator(attacks, wait)
+	async function *throttle() {
+		let lastAttack:AttackRoll|undefined = undefined
+		for await (let attack of generator.items) {
+			if(lastAttack) {
+				lastAttack.attacker.highlight = undefined
+				lastAttack.defender.highlight = undefined
+				lastAttack.defender.damage = undefined
+			}
+
+			yield attack
+			attack.attacker.highlight = "success"
+			attack.defender.highlight = "danger"
+			attack.defender.damage = attack
+			lastAttack = attack
+		}
+	}
+
+	return {
+		stop: generator.stop,
+		items: throttle()
+	} as ThrottledGenerator<AttackRoll>
 }
 
 export function fightStatus(player1:Player, player2:Player) {

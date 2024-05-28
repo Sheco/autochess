@@ -128,6 +128,10 @@ declare global {
 		y: number;
 	}
 
+	interface ThrottledGenerator<T> {
+		stop: () => void,
+		items: AsyncGenerator<T>
+	}
 	type AttackFunction = (attack:AttackRoll)=>Promise<void>
 
 }

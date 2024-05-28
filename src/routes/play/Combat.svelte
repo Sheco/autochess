@@ -1,7 +1,7 @@
 <script lang="ts">
     import BattleGround from "$lib/BattleGround.svelte";
 import DiceRoll from "$lib/DiceRoll.svelte";
-import { fight, animatedFight, fightStatus } from "$lib/combat";
+import { fight, createThrottledGenerator, fightStatus, animatedFight } from "$lib/combat";
 
 let { players, onendcombat, ondamage }:{
 	players:Player[],
@@ -28,6 +28,7 @@ let winner:Player|undefined=$state(undefined)
 let player1:Player|undefined=$state(undefined)
 let player2:Player|undefined=$state(undefined)
 let next:Player[] = $state([])
+let generator:ThrottledGenerator<AttackRoll> = $state(createThrottledGenerator([], 0))
 
 $effect(() => {
 	next = pairs.shift()??[]
@@ -42,9 +43,10 @@ let nextFight = async () => {
 	winner = undefined
 	active = true
 
-	let asyncattacks = animatedFight(fight(player1, player2), 1000)
-	for await (let attack of asyncattacks)
+	generator = await animatedFight(fight(player1, player2), 1000)
+	for await (let attack of generator.items) {
 		attackRolls.push(attack)
+	}
 
 	let result = fightStatus(player1, player2)
 	winner = result.winner
@@ -73,13 +75,5 @@ let nextFight = async () => {
 	Ganador: <span class="fw-bold text-{winner.color}">{winner.name}</span>
 	{/if}
 	<BattleGround {player1} {player2} editable={false} {attackRolls} />
-	<div>
-	{#each attackRolls as attack}
-		<span class="text-{attack.attackingPlayer.color}">{attack.attacker.unit.name}</span> ataca a 
-		<span class="text-{attack.defendingPlayer.color}">{attack.defender.unit.name}</span> y hace <b>{attack.damage}</b> de daño. (
-			<DiceRoll dice={attack.dice} />
-		)<br>
-	{/each}
-	</div>
 {/if}
 

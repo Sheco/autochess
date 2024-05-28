@@ -1,5 +1,5 @@
 <script lang="ts">
-import { animatedFight, createBoardUnit, resetUnits, fightStatus, abortFight, fight } from "$lib/combat";
+import { createBoardUnit, resetUnits, fightStatus, fight, createThrottledGenerator, animatedFight } from "$lib/combat";
 import { loadPlayers, rememberPlayerState } from "$lib/state";
 import { UnitMap, updatePlayerTraits } from "$lib/database";
 import BattleGround from "$lib/BattleGround.svelte";
@@ -9,13 +9,15 @@ let home:Player = $state(_player1)
 let visitor:Player = $state(_player2)
 let winner:Player|undefined = $state(undefined)
 let wait:string = $state("1000")
+let generator:ThrottledGenerator<AttackRoll> = $state(createThrottledGenerator([], 0))
 
 async function run() {
 	attackRolls = []
 	winner = undefined
 	document.querySelector("#grid")?.scrollIntoView()
-	let attacks = animatedFight(fight(home, visitor), Number(wait))
-	for await (let attack of attacks) {
+	generator.stop()
+	generator = await animatedFight(fight(home, visitor), Number(wait))
+	for await (let attack of generator.items) {
 		attackRolls.push(attack)
 	}
 	let result = fightStatus(home, visitor)
@@ -29,7 +31,7 @@ function resetCombat() {
 }
 
 function resetAll() {
-	abortFight()
+	generator.stop()
 	resetCombat()
 	resetStats()
 }
@@ -50,14 +52,14 @@ let stats = $state({
 })
 
 let onRemoveUnit = (player:Player, c:Coordinate) => {
-	abortFight()
+	generator.stop()
 	player.board=player.board.filter(i => !(i.setCoord.x==c.x && i.setCoord.y==c.y))
 	updatePlayerTraits(player)
 	rememberPlayerState($state.snapshot(player))
 	resetUnits(player)
 }
 let onAddUnit = (player:Player, c:Coordinate, value:string) => {
-	abortFight()
+	generator.stop()
 	if(!value) {
 		return;
 	}
