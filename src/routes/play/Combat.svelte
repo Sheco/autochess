@@ -43,7 +43,7 @@ let nextFight = async () => {
 	winner = undefined
 	active = true
 
-	generator = await animatedFight(fight(player1, player2), 1000)
+	generator = animatedFight(fight(player1, player2), 1000)
 	for await (let attack of generator.items) {
 		attackRolls.push(attack)
 	}

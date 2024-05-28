@@ -16,7 +16,7 @@ async function run() {
 	winner = undefined
 	document.querySelector("#grid")?.scrollIntoView()
 	generator.stop()
-	generator = await animatedFight(fight(home, visitor), Number(wait))
+	generator = animatedFight(fight(home, visitor), Number(wait))
 	for await (let attack of generator.items) {
 		attackRolls.push(attack)
 	}

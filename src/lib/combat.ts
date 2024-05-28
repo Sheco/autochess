@@ -233,7 +233,7 @@ export function createThrottledGenerator<T>(items:T[]|Generator<T>, wait:number)
 	} as ThrottledGenerator<T>
 }
 
-export async function animatedFight(attacks:AttackRoll[]|Generator<AttackRoll>, wait:number) {
+export function animatedFight(attacks:AttackRoll[]|Generator<AttackRoll>, wait:number) {
 	let generator = createThrottledGenerator(attacks, wait)
 	async function *throttle() {
 		let lastAttack:AttackRoll|undefined = undefined
