@@ -206,8 +206,12 @@ export function fight(player1:Player, player2:Player) {
 let abortController:AbortController
 async function ondamage(attack:AttackRoll, wait:number) {
 	let sleep = async () => new Promise((resolve, reject) => {
-		let timeout = setTimeout(resolve, wait)
+		let timeout = setTimeout(() => {
+			abortController.signal.removeEventListener('abort', abort)
+			resolve('ok')
+		}, wait)
 		let abort = () => { 
+			abortController.signal.removeEventListener('abort', abort)
 			clearTimeout(timeout)
 			reject('abort')
 		}
@@ -223,7 +227,7 @@ async function ondamage(attack:AttackRoll, wait:number) {
 }
 
 export async function *animatedFight(attacks:AttackRoll[]|Generator<AttackRoll>, wait:number) {
-	if(abortController) abortController.abort()
+	abortFight()
 	abortController = new AbortController()
 	for(let attack of attacks) {
 		try {

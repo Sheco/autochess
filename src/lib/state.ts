@@ -1,6 +1,6 @@
 import { UnitMap, updatePlayerTraits } from "./database";
 
-export function getPlayers() {
+export function loadPlayers() {
 	let player1 = JSON.parse(localStorage.getItem('player1')??"null")??{ 
 			id: 'player1',
 			name: 'Azul',
@@ -48,7 +48,7 @@ export function syncUserData(player:Player) {
 	updatePlayerTraits(player)
 }
 
-export function updatePlayer(player:Player) {
+export function rememberPlayerState(player:Player) {
 	let copy = Object.assign({}, player)
 	copy.traits = []
 	copy.board = copy.board.map(bu => {

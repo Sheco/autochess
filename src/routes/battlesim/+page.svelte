@@ -1,11 +1,10 @@
 <script lang="ts">
 import { animatedFight, createBoardUnit, resetUnits, fightStatus, abortFight, fight } from "$lib/combat";
-import { getPlayers, updatePlayer } from "$lib/state";
+import { loadPlayers, rememberPlayerState } from "$lib/state";
 import { UnitMap, updatePlayerTraits } from "$lib/database";
-import DiceRoll from "$lib/DiceRoll.svelte";
 import BattleGround from "$lib/BattleGround.svelte";
 
-let [ _player1, _player2 ] = getPlayers()
+let [ _player1, _player2 ] = loadPlayers()
 let home:Player = $state(_player1)
 let visitor:Player = $state(_player2)
 let winner:Player|undefined = $state(undefined)
@@ -20,21 +19,12 @@ async function run() {
 		attackRolls.push(attack)
 	}
 	let result = fightStatus(home, visitor)
-
-	if(!result.winner) 
-		winner = undefined
-	else {
-		winner = result.winner
-		if (result.winner == home) stats.victories.home++
-		else if(result.winner == visitor) stats.victories.visitor++
-	}
+	winner = result.winner
+	if (result.winner == home) stats.victories.home++
+	else if(result.winner == visitor) stats.victories.visitor++
 	stats.combats++
-	home = home
-	visitor = visitor
 }
 function resetCombat() {
-	home = home
-	visitor = visitor
 	attackRolls = []
 }
 
@@ -63,7 +53,7 @@ let onRemoveUnit = (player:Player, c:Coordinate) => {
 	abortFight()
 	player.board=player.board.filter(i => !(i.setCoord.x==c.x && i.setCoord.y==c.y))
 	updatePlayerTraits(player)
-	updatePlayer($state.snapshot(player))
+	rememberPlayerState($state.snapshot(player))
 	resetUnits(player)
 }
 let onAddUnit = (player:Player, c:Coordinate, value:string) => {
@@ -73,7 +63,7 @@ let onAddUnit = (player:Player, c:Coordinate, value:string) => {
 	}
 	player.board.push(createBoardUnit(UnitMap[value], c))
 	updatePlayerTraits(player)
-	updatePlayer($state.snapshot(player))
+	rememberPlayerState($state.snapshot(player))
 	resetUnits(player)
 }
 </script>
