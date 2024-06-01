@@ -31,18 +31,14 @@ export function loadPlayers() {
 			board: [ ]
 		} as Player
 
-	syncUserData(player1)
-	syncUserData(player2)
+	refreshState(player1)
+	refreshState(player2)
 
 	return [player1, player2]
 }
 
-export function syncUserData(player:Player) {
-	// updateStats, this reloads the unit data from
-	// the database to overwrite the cached version
+export function refreshState(player:Player) {
 	for(let bu of player.board) {
-		if(!bu.unit)
-			return
 		bu.unit = UnitMap[bu.unit.id]
 	}
 	updatePlayerTraits(player)
@@ -51,9 +47,11 @@ export function syncUserData(player:Player) {
 export function rememberPlayerState(player:Player) {
 	let copy = Object.assign({}, player)
 	copy.traits = []
-	copy.board = copy.board.map(bu => {
+	copy.board = copy.board.map(bu  => {
 		bu.damage = undefined
 		bu.mods = {}
+		let obj:{unit:{id:string}} = bu
+		obj.unit = { id: obj.unit.id }
 		return bu
 	})
 	localStorage.setItem(player.id, JSON.stringify(copy))

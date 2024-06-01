@@ -56,7 +56,7 @@ let units = [...Units].sort((a, b) => a.name.localeCompare(b.name));
 					{#each boardArray as boardUnit, index (index)}
 						<div class="col-4 mb-1">
 							{#if boardUnit}
-								<UnitCard unit={boardUnit.unit} {boardUnit} onclick={() => onRemoveUnit?onRemoveUnit(player, {x: boardUnit.setCoord.x, y: boardUnit.setCoord.y}):undefined} board={player.board} />
+								<UnitCard unit={boardUnit.unit} {boardUnit} onclick={() => onRemoveUnit?onRemoveUnit(player, boardUnit.setCoord):undefined} board={player.board} />
 							{:else}
 								<div class="card h-100">
 									<div class="card-header p-0 ps-2">Espacio vacio
