@@ -1,7 +1,8 @@
 import { UnitMap, updatePlayerTraits } from "./database";
 
-export function loadPlayers() {
-	let player1 = JSON.parse(localStorage.getItem('player1')??"null")??{ 
+export function loadPlayer(id:string) {
+	let defaults:{[key:string]:Player} = {
+		1: { 
 			id: 'player1',
 			name: 'Azul',
 			hp: 3,
@@ -14,9 +15,8 @@ export function loadPlayers() {
 			traits: [],
 			hand: [],
 			board: [],
-		} as Player
-
-	let player2 = JSON.parse(localStorage.getItem('player2')??"null")??{
+		},
+		2: {
 			id: 'player2',
 			name: 'Rojo',
 			hp: 3,
@@ -29,12 +29,11 @@ export function loadPlayers() {
 			hand: [],
 			traits: [],
 			board: [ ]
-		} as Player
-
-	refreshState(player1)
-	refreshState(player2)
-
-	return [player1, player2]
+		}
+	}
+	let player:Player = JSON.parse(localStorage.getItem('player'+id)??"null")??defaults[id]
+	refreshState(player)
+	return player
 }
 
 export function refreshState(player:Player) {

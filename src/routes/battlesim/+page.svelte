@@ -1,12 +1,11 @@
 <script lang="ts">
 import { createBoardUnit, resetUnits, fightStatus, fight, createThrottledGenerator, animatedFight } from "$lib/combat";
-import { loadPlayers, rememberPlayerState } from "$lib/state";
+import { loadPlayer, rememberPlayerState } from "$lib/state";
 import { UnitMap, updatePlayerTraits } from "$lib/database";
 import BattleGround from "$lib/BattleGround.svelte";
 
-let [ _player1, _player2 ] = loadPlayers()
-let home:Player = $state(_player1)
-let visitor:Player = $state(_player2)
+let player1:Player = $state(loadPlayer("1"))
+let player2:Player = $state(loadPlayer("2"))
 let winner:Player|undefined = $state(undefined)
 let wait:string = $state("1000")
 let generator:ThrottledGenerator<AttackRoll> = $state(createThrottledGenerator([], 0))
@@ -16,14 +15,14 @@ async function run() {
 	winner = undefined
 	document.querySelector("#grid")?.scrollIntoView()
 	generator.stop()
-	generator = animatedFight(fight(home, visitor), Number(wait))
+	generator = animatedFight(fight(player1, player2), Number(wait))
 	for await (let attack of generator.items) {
 		attackRolls.push(attack)
 	}
-	let result = fightStatus(home, visitor)
+	let result = fightStatus(player1, player2)
 	winner = result.winner
-	if (result.winner == home) stats.victories.home++
-	else if(result.winner == visitor) stats.victories.visitor++
+	if (result.winner == player1) stats.victories.player1++
+	else if(result.winner == player2) stats.victories.player2++
 	stats.combats++
 }
 function resetCombat() {
@@ -37,8 +36,8 @@ function resetAll() {
 }
 function resetStats() {
 	stats.combats = 0 
-	stats.victories.home = 0 
-	stats.victories.visitor = 0 
+	stats.victories.player1 = 0 
+	stats.victories.player2 = 0 
 }
 
 
@@ -46,8 +45,8 @@ let attackRolls:AttackRoll[] = $state([])
 let stats = $state({
 	combats: 0,
 	victories: {
-		home: 0,
-		visitor: 0,
+		player1: 0,
+		player2: 0,
 	}
 })
 
@@ -86,14 +85,14 @@ let onAddUnit = (player:Player, c:Coordinate, value:string) => {
 		{/if}
 		{#if stats.combats>0}
 			Combates: {stats.combats}
-			Victorias de <span class="text-{home.color}">{home.name}</span>: {stats.victories.home} 
-				({Math.round(stats.victories.home/stats.combats*100)}%)
-			Victorias de <span class="text-{visitor.color}">{visitor.name}</span>: {stats.victories.visitor} 
-				({Math.round(stats.victories.visitor/stats.combats*100)}%)
+			Victorias de <span class="text-{player1.color}">{player1.name}</span>: {stats.victories.player1} 
+				({Math.round(stats.victories.player1/stats.combats*100)}%)
+			Victorias de <span class="text-{player2.color}">{player2.name}</span>: {stats.victories.player2} 
+				({Math.round(stats.victories.player2/stats.combats*100)}%)
 		{/if}
 	</div>
 
 	<div id="grid">
-		<BattleGround player1={home} player2={visitor} {onAddUnit} {onRemoveUnit} editable={true} {attackRolls} />
+		<BattleGround player1={player1} player2={player2} {onAddUnit} {onRemoveUnit} editable={true} {attackRolls} />
 	</div>
 </div>
