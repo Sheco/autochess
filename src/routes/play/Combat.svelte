@@ -1,6 +1,5 @@
 <script lang="ts">
     import BattleGround from "$lib/BattleGround.svelte";
-import DiceRoll from "$lib/DiceRoll.svelte";
 import { fight, createThrottledGenerator, fightStatus, animatedFight } from "$lib/combat";
 
 let { players, onendcombat, ondamage }:{
@@ -44,15 +43,18 @@ let nextFight = async () => {
 	active = true
 
 	generator = animatedFight(fight(player1, player2), 1000)
-	for await (let attack of generator.items) {
-		attackRolls.push(attack)
-	}
+	try {
+		for await (let attack of generator.items) {
+			attackRolls.push(attack)
+		}
 
-	let result = fightStatus(player1, player2)
-	winner = result.winner
-	if(result.loser && result.winner) {
-		let unitsAlive = result.winner.board.filter(u => u.hp>0).length
-		ondamage(result.loser, unitsAlive)
+		let result = fightStatus(player1, player2)
+		winner = result.winner
+		if(result.loser && result.winner) {
+			let unitsAlive = result.winner.board.filter(u => u.hp>0).length
+			ondamage(result.loser, unitsAlive)
+		}
+	} catch(Exception) {
 	}
 	next = pairs.shift()??[]
 	active = false

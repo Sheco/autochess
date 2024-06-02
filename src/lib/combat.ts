@@ -201,12 +201,8 @@ export function createThrottledGenerator<T>(items:T[]|Generator<T>, wait:number)
 	})
 	async function *throttle() {
 		for(let i of items) {
-			try {
-				yield i
-				await sleep()
-			} catch(err) {
-				return
-			}
+			yield i
+			await sleep()
 		}
 	}
 	return {

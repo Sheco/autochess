@@ -43,7 +43,7 @@ function loadPlayer(id:string) {
 }
 
 
-function rememberPlayerState(player:Player) {
+function savePlayer(player:Player) {
 	let copy = Object.assign({}, player)
 	copy.traits = []
 	copy.board = copy.board.map(bu  => {
@@ -69,14 +69,18 @@ async function run() {
 	document.querySelector("#grid")?.scrollIntoView()
 	generator.stop()
 	generator = animatedFight(fight(player1, player2), wait)
-	for await (let attack of generator.items) {
-		attackRolls.push(attack)
+	try {
+		for await (let attack of generator.items) {
+			attackRolls.push(attack)
+		}
+		let result = fightStatus(player1, player2)
+		winner = result.winner
+		if (result.winner == player1) stats.victories.player1++
+		else if(result.winner == player2) stats.victories.player2++
+		stats.combats++
+	} catch (Exception) {
+		return
 	}
-	let result = fightStatus(player1, player2)
-	winner = result.winner
-	if (result.winner == player1) stats.victories.player1++
-	else if(result.winner == player2) stats.victories.player2++
-	stats.combats++
 }
 function resetCombat() {
 	attackRolls = []
@@ -107,7 +111,7 @@ let onRemoveUnit = (player:Player, c:Coordinate) => {
 	generator.stop()
 	player.board=player.board.filter(i => !(i.setCoord.x==c.x && i.setCoord.y==c.y))
 	updatePlayerTraits(player)
-	rememberPlayerState($state.snapshot(player))
+	savePlayer($state.snapshot(player))
 	resetUnits(player)
 }
 let onAddUnit = (player:Player, c:Coordinate, value:string) => {
@@ -117,7 +121,7 @@ let onAddUnit = (player:Player, c:Coordinate, value:string) => {
 	}
 	player.board.push(createBoardUnit(UnitMap[value], c))
 	updatePlayerTraits(player)
-	rememberPlayerState($state.snapshot(player))
+	savePlayer($state.snapshot(player))
 	resetUnits(player)
 }
 </script>
