@@ -101,35 +101,20 @@ function RollDice(dice:Dice) {
 }
 
 export function calculateDamage(attacker:BoardUnit,defender:BoardUnit) {
-	// obtenemos el dado unit.attack y lo tiramos
-	let damage = 0
-	let min = 0
-	let max = 0
-	let dice:Dice[] = []
-	for(let die of [...attacker.unit.attack, ...attacker.mods.attack??[]]) {
-		// tira los dados de ataque
-		damage += RollDice(die)
-		min += die.amount+die.modifier
-		max += die.amount*die.sides+die.modifier
-		dice.push(die)
-
-		// tira los dados de debilidad del defensor
-		for(let wdie of defender.unit.weakness.filter(wdie => wdie.type==die.type)) {
-			damage += RollDice(wdie)
-			min += wdie.amount+wdie.modifier
-			max += wdie.amount*wdie.sides+wdie.modifier
-			dice.push(wdie)
-		}
-		//console.log(`${attacker.unit.name} ataca a ${defender?.unit.name} con ${attacker.unit.attack.amount}d${attacker.unit.attack.sides}+${attacker.unit.attack.modifier}`)
-		//console.log(`Dmg: ${damage} Min: ${min}, Max: ${max}, effects: ${effectDamage}`)
-	}
-	
-	return {
-		damage,
-		min,
-		max,
-		dice
-	} as DamageRoll
+	let attackdice = [...attacker.unit.attack, ...attacker.mods.attack??[]] 
+	let defensedice = attackdice.flatMap(die => defender.unit.weakness.filter(wdie => wdie.type==die.type))
+	let dice:Dice[] = [...attackdice, ...defensedice]
+	return dice.reduce((total, die) => {
+		total.damage += RollDice(die)
+		total.min += die.amount+die.modifier
+		total.max += die.amount*die.sides+die.modifier
+		return total
+	}, {
+		damage: 0,
+		min: 0,
+		max: 0,
+		dice: dice,
+	} as DamageRoll)
 }
 
 function *attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Player) {
@@ -139,12 +124,10 @@ function *attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Pla
 	let targets = targetting[attacker.unit.targetting.id](attacker, 
 		defendingPlayer.board.filter(boardUnit => boardUnit.hp>0))
 	if(!targets) {
-		//log.push(`<b>${turn.player.name}</b>: ${turn.boardUnit.unit.name} esta fuera de combate.`)
 		return
 	}
 	for(let defender of targets) {
 		let damage = calculateDamage(attacker, defender)
-		//output.push(`<span class="text-${attacker.color}">${boardUnit.unit.name}</span>(${boardUnit.hp}) ataca a <span class="text-${defender.color}">${targetUnit.unit.name}</span>(${targetUnit.hp}): <b>${damage.damage}</b> (${damage.dice})`)
 		defender.hp = Math.max(defender.hp-damage.damage, 0)
 		let roll = {
 			attacker, 
