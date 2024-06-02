@@ -2,46 +2,17 @@
 import { createBoardUnit, resetUnits, fightStatus, fight, createThrottledGenerator, animatedFight } from "$lib/combat";
 import { UnitMap, updatePlayerTraits } from "$lib/database";
 import BattleGround from "$lib/BattleGround.svelte";
+import { onMount } from "svelte";
 
 function loadPlayer(id:string) {
-	let defaults:{[key:string]:Player} = {
-		1: { 
-			id: 'player1',
-			name: 'Azul',
-			hp: 3,
-			mirrored: false,
-			color: 'primary',
-			finished: false,
-			maxgold: 5,
-			gold: 5,
-			rolls: 2,
-			traits: [],
-			hand: [],
-			board: [],
-		},
-		2: {
-			id: 'player2',
-			name: 'Rojo',
-			hp: 3,
-			mirrored: true,
-			color: 'danger',
-			finished: false,
-			maxgold: 5,
-			gold: 5,
-			rolls: 2,
-			hand: [],
-			traits: [],
-			board: [ ]
-		}
-	}
-	let player:Player = JSON.parse(localStorage.getItem('player'+id)??"null")??defaults[id]
-	for(let bu of player.board) {
+	let ls = JSON.parse(localStorage.getItem('player'+id)??"null")
+	if(!ls) return 
+	for(let bu of ls.board) {
 		bu.unit = UnitMap[bu.unit.id]
 	}
-	updatePlayerTraits(player)
-	return player
+	updatePlayerTraits(ls)
+	return ls as Player
 }
-
 
 function savePlayer(player:Player) {
 	let copy = Object.assign({}, player)
@@ -56,8 +27,39 @@ function savePlayer(player:Player) {
 	localStorage.setItem(player.id, JSON.stringify(copy))
 }
 
-let player1:Player = $state(loadPlayer("1"))
-let player2:Player = $state(loadPlayer("2"))
+onMount(() => {
+	player1 = loadPlayer("1")??player1
+	player2 = loadPlayer("2")??player2
+})
+
+let player1:Player = $state({ 
+	id: 'player1',
+	name: 'Azul',
+	hp: 3,
+	mirrored: false,
+	color: 'primary',
+	finished: false,
+	maxgold: 5,
+	gold: 5,
+	rolls: 2,
+	traits: [],
+	hand: [],
+	board: [],
+})
+let player2:Player = $state({
+	id: 'player2',
+	name: 'Rojo',
+	hp: 3,
+	mirrored: true,
+	color: 'danger',
+	finished: false,
+	maxgold: 5,
+	gold: 5,
+	rolls: 2,
+	hand: [],
+	traits: [],
+	board: [ ]
+})
 let winner:Player|undefined = $state(undefined)
 let waitValue:string = $state("1000")
 let wait:number = $derived(Number(waitValue))
