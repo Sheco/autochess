@@ -1,13 +1,66 @@
 <script lang="ts">
 import { createBoardUnit, resetUnits, fightStatus, fight, createThrottledGenerator, animatedFight } from "$lib/combat";
-import { loadPlayer, rememberPlayerState } from "$lib/state";
 import { UnitMap, updatePlayerTraits } from "$lib/database";
 import BattleGround from "$lib/BattleGround.svelte";
+
+function loadPlayer(id:string) {
+	let defaults:{[key:string]:Player} = {
+		1: { 
+			id: 'player1',
+			name: 'Azul',
+			hp: 3,
+			mirrored: false,
+			color: 'primary',
+			finished: false,
+			maxgold: 5,
+			gold: 5,
+			rolls: 2,
+			traits: [],
+			hand: [],
+			board: [],
+		},
+		2: {
+			id: 'player2',
+			name: 'Rojo',
+			hp: 3,
+			mirrored: true,
+			color: 'danger',
+			finished: false,
+			maxgold: 5,
+			gold: 5,
+			rolls: 2,
+			hand: [],
+			traits: [],
+			board: [ ]
+		}
+	}
+	let player:Player = JSON.parse(localStorage.getItem('player'+id)??"null")??defaults[id]
+	for(let bu of player.board) {
+		bu.unit = UnitMap[bu.unit.id]
+	}
+	updatePlayerTraits(player)
+	return player
+}
+
+
+function rememberPlayerState(player:Player) {
+	let copy = Object.assign({}, player)
+	copy.traits = []
+	copy.board = copy.board.map(bu  => {
+		bu.damage = undefined
+		bu.mods = {}
+		let obj:{unit:{id:string}} = bu
+		obj.unit = { id: obj.unit.id }
+		return bu
+	})
+	localStorage.setItem(player.id, JSON.stringify(copy))
+}
 
 let player1:Player = $state(loadPlayer("1"))
 let player2:Player = $state(loadPlayer("2"))
 let winner:Player|undefined = $state(undefined)
-let wait:string = $state("1000")
+let waitValue:string = $state("1000")
+let wait:number = $derived(Number(waitValue))
 let generator:ThrottledGenerator<AttackRoll> = $state(createThrottledGenerator([], 0))
 
 async function run() {
@@ -15,7 +68,7 @@ async function run() {
 	winner = undefined
 	document.querySelector("#grid")?.scrollIntoView()
 	generator.stop()
-	generator = animatedFight(fight(player1, player2), Number(wait))
+	generator = animatedFight(fight(player1, player2), wait)
 	for await (let attack of generator.items) {
 		attackRolls.push(attack)
 	}
@@ -74,7 +127,7 @@ let onAddUnit = (player:Player, c:Coordinate, value:string) => {
 		<a class="btn btn-primary" href="/">Regresar</a>
 		<button onclick={resetAll} class="btn btn-secondary">Limpiar</button>
 		<button onclick={run} class="btn btn-success">Pelear</button>
-		<select class="form-control d-inline-block" style="width: 10rem" bind:value={wait}>
+		<select class="form-control d-inline-block" style="width: 10rem" bind:value={waitValue}>
 			<option value="2000">Lento</option>
 			<option value="1000">Velocidad normal</option>
 			<option value="500">Rápido</option>
