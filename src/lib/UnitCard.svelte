@@ -11,26 +11,26 @@ let { unit, onclick, boardUnit }:{
 	onclick:()=>void,
 } = $props()
 let showModal = $state(false)
-let highlight = $derived('highlight' in unit? unit.highlight: '')
 if(!boardUnit) boardUnit=createBoardUnit(unit, {x:0, y:0})
+let highlight = $derived(boardUnit.highlight)
 </script>
 
 {#snippet card()}
 	<div class="card">
 		<div class="card-header">{unit.name}</div>
 		<div class="card-body">
-			<UnitInfo {unit} />
+			<UnitInfo {unit} {boardUnit} />
 		</div>
 	</div>
 {/snippet}
 {#if showModal}
 	<Modal onclose={()=>showModal=false} body={card} />
 {/if}
-<div class="card w-100" class:border={highlight} class:border-danger={highlight=="danger"} class:border-success={highlight=="success"} class:border-3={highlight}>
+<div class="card w-100" class:border={highlight!=''} class:border-danger={highlight=="danger"} class:border-success={highlight=="success"} class:border-3={highlight!=""}>
 	<div class="card-header p-1">
 		<button onclick={() => showModal=true} class="btn btn-sm btn-info p-0"><span class="bi bi-info-circle"></span></button>
 		{unit.name}
-			{#if 'mods' in unit}
+			{#if boardUnit}
 			{@const maxhp = unit.maxhp+(boardUnit.mods.maxhp??0) }
 			{@const percent = Math.floor(boardUnit.hp/maxhp*100) }
 			<div class="progress">

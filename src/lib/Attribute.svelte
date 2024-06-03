@@ -1,14 +1,13 @@
 <script lang="ts">
-let { unit, attribute }:{
-	unit:Unit|BoardUnit,
+let { boardUnit, attribute }:{
+	boardUnit:BoardUnit,
 	attribute:string
 } = $props()
-type key = keyof typeof unit
+let base = boardUnit.unit[attribute as keyof typeof boardUnit.unit] as number
+let mod = boardUnit.mods[attribute as keyof typeof boardUnit.mods] as number
 </script>
-{#if 'mods' in unit}
-	{#if attribute in unit.mods && unit.mods[attribute as keyof typeof unit.mods]}
-		<span class="text-success fw-bold">{(unit[attribute as key] as number)+(unit.mods[attribute as keyof typeof unit.mods] as number)}</span>
-	{:else}
-		{unit[attribute as key]}
-	{/if}
+{#if mod}
+	<span class="text-success fw-bold">{base+mod}</span>
+{:else}
+	{base}
 {/if}
