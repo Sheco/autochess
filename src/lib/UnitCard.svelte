@@ -5,34 +5,33 @@ import TraitIcon from "./TraitIcon.svelte";
 import UnitInfo from "./UnitInfo.svelte";
 import Emoji from "./Emoji.svelte";
 
-let { unit, actions = undefined, onclick, board = undefined, boardUnit = undefined}:{
-	unit:Unit, 
-	boardUnit?:BoardUnit,
+let { unit, actions = undefined, onclick }:{
+	unit:Unit|BoardUnit, 
 	onclick:()=>void,
-	board?:Board|undefined,
 	actions?:Snippet|undefined
 } = $props()
 let showModal = $state(false)
+let highlight = $derived('highlight' in unit? unit.highlight: '')
 </script>
 
 {#snippet card()}
 	<div class="card">
 		<div class="card-header">{unit.name}</div>
 		<div class="card-body">
-			<UnitInfo {unit} {board} {boardUnit} />
+			<UnitInfo {unit} />
 		</div>
 	</div>
 {/snippet}
 {#if showModal}
 	<Modal onclose={()=>showModal=false} body={card} />
 {/if}
-<div class="card w-100" class:border={boardUnit?.highlight} class:border-danger={boardUnit?.highlight=="danger"} class:border-success={boardUnit?.highlight=="success"} class:border-3={boardUnit?.highlight}>
+<div class="card w-100" class:border={highlight} class:border-danger={highlight=="danger"} class:border-success={highlight=="success"} class:border-3={highlight}>
 	<div class="card-header p-1">
 		<button onclick={() => showModal=true} class="btn btn-sm btn-info p-0"><span class="bi bi-info-circle"></span></button>
 		{unit.name}
-			{#if boardUnit}
-			{@const maxhp = boardUnit.maxhp+(boardUnit.mods.maxhp??0) }
-			{@const percent = Math.floor(boardUnit.hp/maxhp*100) }
+			{#if 'mods' in unit}
+			{@const maxhp = unit.maxhp+(unit.mods.maxhp??0) }
+			{@const percent = Math.floor(unit.hp/maxhp*100) }
 			<div class="progress">
 				<div class="progress-bar bg-danger" role="progressbar" style="width: {percent}%" aria-valuenow={percent} aria-valuemin="0" aria-valuemax="100"></div>
 			</div>
@@ -49,13 +48,13 @@ let showModal = $state(false)
 					</div>
 				{/each}
 			</div>
-			{#if boardUnit && boardUnit.damage}
+			{#if 'damage' in unit && unit.damage}
 				<div class="overlay position-absolute top-0 start-0">
 					<div class="badge bg-danger text-light" style="font-size: 150%">
-						{#each boardUnit.damage.dice as dice}
+						{#each unit.damage.dice as dice}
 							<Emoji>{dice.type.icon}</Emoji>
 						{/each}
-						{boardUnit.damage.damage}
+						{unit.damage.damage}
 					</div>
 				</div>
 			{/if}
