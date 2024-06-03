@@ -8,7 +8,7 @@ function loadPlayer(id:string) {
 	let ls = JSON.parse(localStorage.getItem('player'+id)??"null")
 	if(!ls) return 
 	for(let bu of ls.board) {
-		bu.unit = UnitMap[bu.unit.id]
+		Object.assign(bu, UnitMap[bu.id])
 	}
 	updatePlayerTraits(ls)
 	return ls as Player
@@ -20,8 +20,6 @@ function savePlayer(player:Player) {
 	copy.board = copy.board.map(bu  => {
 		bu.damage = undefined
 		bu.mods = {}
-		let obj:{unit:{id:string}} = bu
-		obj.unit = { id: obj.unit.id }
 		return bu
 	})
 	localStorage.setItem(player.id, JSON.stringify(copy))

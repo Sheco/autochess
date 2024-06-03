@@ -108,7 +108,7 @@ function reset() {
 								<UnitTraits unit={dmg.target} />
 								{dmg.target.name} 
 							</td>
-							<td class="text-end" title={dmg.damage.roll}>{dmg.damage.min}-{dmg.damage.max}</td>
+							<td class="text-end" title="FIXME">{dmg.damage.min}-{dmg.damage.max}</td>
 							<td class="text-end">{(dmg.damage.min+dmg.damage.max)/2}</td>
 							<td class="text-end">{dmg.target.maxhp}</td>
 							<td class="text-end">{Math.floor(dmg.damage.min/dmg.target.maxhp*100)}-{Math.floor(dmg.damage.max/dmg.target.maxhp*100)}%</td>

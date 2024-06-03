@@ -82,7 +82,7 @@ function setBattleCoordinates(player:Player) {
 export function resetUnits(player:Player) {
 	for(let boardUnit of player.board) {
 		boardUnit.energy = 0
-		boardUnit.hp = boardUnit.unit.maxhp+(boardUnit.mods.maxhp??0)
+		boardUnit.hp = boardUnit.maxhp+(boardUnit.mods.maxhp??0)
 	}
 }
 
@@ -101,8 +101,8 @@ function RollDice(dice:Dice) {
 }
 
 export function calculateDamage(attacker:BoardUnit,defender:BoardUnit) {
-	let attackDice = [...attacker.unit.attack, ...attacker.mods.attack??[]] 
-	let weaknessDice = attackDice.flatMap(die => defender.unit.weakness.filter(wdie => wdie.type==die.type))
+	let attackDice = [...attacker.attack, ...attacker.mods.attack??[]] 
+	let weaknessDice = attackDice.flatMap(die => defender.weakness.filter(wdie => wdie.type==die.type))
 	let dice:Dice[] = [...attackDice, ...weaknessDice]
 	return dice.reduce((total, die) => {
 		total.damage += RollDice(die)
@@ -121,7 +121,7 @@ function *attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Pla
 	if(!attacker.hp) {
 		return
 	}
-	let targets = targetting[attacker.unit.targetting.id](attacker, 
+	let targets = targetting[attacker.targetting.id](attacker, 
 		defendingPlayer.board.filter(boardUnit => boardUnit.hp>0))
 	if(!targets) {
 		return
@@ -159,10 +159,10 @@ function *runCombat(attacker:Player, defender:Player)  {
 	let units = [...attackerTurns, ...defenderTurns]
 	let tick = () => {
 		for(let unit of units) {
-			unit.boardUnit.energy+=unit.boardUnit.unit.energypertick
+			unit.boardUnit.energy+=unit.boardUnit.energypertick
 		}
 		return units
-			.filter(u => u.boardUnit.energy==u.boardUnit.unit.energymax)
+			.filter(u => u.boardUnit.energy==u.boardUnit.energymax)
 	}
 
 	for(let i = 0; i < 20; i++) {
@@ -257,7 +257,7 @@ export function fightStatus(player1:Player, player2:Player) {
 
 export function createBoardUnit(unit:Unit, c:Coordinate): BoardUnit {
 	return {
-		unit,
+		...unit,
 		setCoord: {...c},
 		realCoord: c,
 		hp: unit.maxhp,

@@ -56,7 +56,7 @@ let units = [...Units].sort((a, b) => a.name.localeCompare(b.name));
 					{#each boardArray as boardUnit, index (index)}
 						<div class="col-4 mb-1">
 							{#if boardUnit}
-								<UnitCard unit={boardUnit.unit} {boardUnit} onclick={() => onRemoveUnit?onRemoveUnit(player, boardUnit.setCoord):undefined} board={player.board} />
+								<UnitCard unit={boardUnit} {boardUnit} onclick={() => onRemoveUnit?onRemoveUnit(player, boardUnit.setCoord):undefined} board={player.board} />
 							{:else}
 								<div class="card h-100">
 									<div class="card-header p-0 ps-2">Espacio vacio
@@ -95,8 +95,8 @@ let units = [...Units].sort((a, b) => a.name.localeCompare(b.name));
 				{#if attackRolls}
 					<div>
 					{#each attackRolls.filter(r => r.attackingPlayer.name==player.name) as attack}
-						<span class="text-{attack.attackingPlayer.color}">{attack.attacker.unit.name}</span> ataca a 
-						<span class="text-{attack.defendingPlayer.color}">{attack.defender.unit.name}</span> y hace <b>{attack.damage}</b> de daño. (
+						<span class="text-{attack.attackingPlayer.color}">{attack.attacker.name}</span> ataca a 
+						<span class="text-{attack.defendingPlayer.color}">{attack.defender.name}</span> y hace <b>{attack.damage}</b> de daño. (
 							<DiceRoll dice={attack.dice} />
 						)<br>
 					{/each}

@@ -33,7 +33,7 @@ let grid = Array(9).fill(0).map((_, i) => ({
 						{/if}
 						{#if boardUnit}
 							<div in:fade>
-								<UnitCard board={player.board} unit={boardUnit.unit} boardUnit={boardUnit} onclick={() => onclick(g)} />
+								<UnitCard board={player.board} unit={boardUnit} boardUnit={boardUnit} onclick={() => onclick(g)} />
 							</div>
 						{/if}
 					</div>
