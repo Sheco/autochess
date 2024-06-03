@@ -1,16 +1,14 @@
 <script lang="ts">
-import type { Snippet } from "svelte";
 import Modal from "./Modal.svelte";
 import TraitIcon from "./TraitIcon.svelte";
 import UnitInfo from "./UnitInfo.svelte";
 import Emoji from "./Emoji.svelte";
 import { createBoardUnit } from "./combat";
 
-let { unit, actions = undefined, onclick, boardUnit }:{
+let { unit, onclick, boardUnit }:{
 	unit:Unit, 
 	boardUnit?:BoardUnit,
 	onclick:()=>void,
-	actions?:Snippet|undefined
 } = $props()
 let showModal = $state(false)
 let highlight = $derived('highlight' in unit? unit.highlight: '')
@@ -62,11 +60,6 @@ if(!boardUnit) boardUnit=createBoardUnit(unit, {x:0, y:0})
 				</div>
 			</div>
 		</button>
-			<div>
-				{#if actions}
-					{@render actions()}
-				{/if}
-			</div>
 	</div>
 </div>
 
