@@ -215,19 +215,22 @@ export function animatedFight(attacks:AttackRoll[]|Generator<AttackRoll>, wait:n
 	let generator = createThrottledGenerator(attacks, wait)
 	async function *throttle() {
 		let lastAttack:AttackRoll|undefined = undefined
-		for await (let attack of generator.items) {
+		let cleanup = () => { 
 			if(lastAttack) {
 				lastAttack.attacker.highlight = undefined
 				lastAttack.defender.highlight = undefined
 				lastAttack.defender.damage = undefined
 			}
-
+		}
+		for await (let attack of generator.items) {
+			cleanup()
 			yield attack
 			attack.attacker.highlight = "success"
 			attack.defender.highlight = "danger"
 			attack.defender.damage = attack
 			lastAttack = attack
 		}
+		cleanup()
 	}
 
 	return {
