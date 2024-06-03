@@ -26,14 +26,14 @@ let grid = Array(9).fill(0).map((_, i) => ({
 			<div class="col-9">
 				<div class="row row-cols-3">
 				{#each grid as g}
-					{@const unit = player.board.find(u => u.setCoord.x==g.x && u.setCoord.y==g.y)}
+					{@const boardUnit = player.board.find(u => u.setCoord.x==g.x && u.setCoord.y==g.y)}
 					<div class="col d-flex align-items-stretch mb-1" style="height: 150px">
-						{#if takenUnit!== undefined && !unit}
+						{#if takenUnit!== undefined && !boardUnit}
 							<DropUnitCard onclick={() => onrelease(g)} unit={takenUnit} />
 						{/if}
-						{#if unit}
+						{#if boardUnit}
 							<div in:fade>
-								<UnitCard {unit} onclick={() => onclick(g)} />
+								<UnitCard unit={boardUnit.unit} {boardUnit} onclick={() => onclick(g)} />
 							</div>
 						{/if}
 					</div>

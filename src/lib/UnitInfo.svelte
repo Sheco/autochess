@@ -3,9 +3,10 @@ import UnitTraits from "./UnitTraits.svelte";
     import Attribute from "./Attribute.svelte";
     import Emoji from "./Emoji.svelte";
 
-let { unit }:{ unit:Unit|BoardUnit } = $props()
+let { unit, mods = {} }:{ unit:Unit, mods?:Mods } = $props()
 
-let attackMods = ('mods' in unit)? unit.mods.attack??[]: []
+
+let attackMods = mods.attack??[]
 </script>
 <div class="row">
 	
@@ -23,7 +24,7 @@ let attackMods = ('mods' in unit)? unit.mods.attack??[]: []
 	</div>
 	<div class="col-6">
 		<b>Rasgos:</b> 
-		<UnitTraits {unit} />
+		<UnitTraits unit={unit} />
 	</div>
 	<div class="col-12">
 		<b>Ataque:</b><br>

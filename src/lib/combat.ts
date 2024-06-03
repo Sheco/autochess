@@ -1,7 +1,7 @@
 function coordinatesBetween(point1:Coordinate, point2:Coordinate) {
     const dx = point2.x - point1.x;
     const dy = point2.y - point1.y;
-    
+
     // Calculate the number of points to interpolate (including both endpoints)
     const numPoints = Math.max(Math.abs(dx), Math.abs(dy));
 	let coordinates = Array(numPoints).fill(null).map((_, i) => {
@@ -32,14 +32,14 @@ let targetting:{[key:string]: (c:BoardUnit, f:Board) => BoardUnit[]} = {
 			let closest = target
 				.map((target) => calculateDistance(attacker, target))
 				.sort((a, b) => a.distance-b.distance)
-				.map(({target}) => target) 
+				.map(({target}) => target)
 				.slice(0, 2)
 			return !closest.length? []: [closest[Math.floor(Math.random()*closest.length)]]
 		},
 		closest1: (attacker:BoardUnit, target:Board) => target
 				.map((target) => calculateDistance(attacker, target))
 				.sort((a, b) => a.distance-b.distance)
-				.map(({target}) => target) 
+				.map(({target}) => target)
 				.slice(0,1)
 		,
 		weakest1: (attacker:BoardUnit, target:Board) => target
@@ -51,15 +51,15 @@ let targetting:{[key:string]: (c:BoardUnit, f:Board) => BoardUnit[]} = {
 		farthest1: (attacker:BoardUnit, target:Board) => target
 				.map((target) => calculateDistance(attacker, target))
 				.sort((a, b) => b.distance-a.distance)
-				.map(({target}) => target) 
+				.map(({target}) => target)
 				.slice(0,1)
-		, 
+		,
 		farthest2: (attacker:BoardUnit, target:Board) => target
 				.map((target) => calculateDistance(attacker, target))
 				.sort((a, b) => b.distance-a.distance)
-				.map(({target}) => target) 
+				.map(({target}) => target)
 				.slice(0,2)
-		, 
+		,
 		farthest1_direct: (attacker:BoardUnit, target:Board) => {
 			let [farthest1] = targetting.farthest1(attacker, target)
 			if(!farthest1) return []
@@ -82,7 +82,7 @@ function setBattleCoordinates(player:Player) {
 export function resetUnits(player:Player) {
 	for(let boardUnit of player.board) {
 		boardUnit.energy = 0
-		boardUnit.hp = boardUnit.maxhp+(boardUnit.mods.maxhp??0)
+		boardUnit.hp = boardUnit.unit.maxhp+(boardUnit.mods.maxhp??0)
 	}
 }
 
@@ -101,8 +101,8 @@ function RollDice(dice:Dice) {
 }
 
 export function calculateDamage(attacker:BoardUnit,defender:BoardUnit) {
-	let attackDice = [...attacker.attack, ...attacker.mods.attack??[]] 
-	let weaknessDice = attackDice.flatMap(die => defender.weakness.filter(wdie => wdie.type==die.type))
+	let attackDice = [...attacker.unit.attack, ...attacker.mods.attack??[]]
+	let weaknessDice = attackDice.flatMap(die => defender.unit.weakness.filter(wdie => wdie.type==die.type))
 	let dice:Dice[] = [...attackDice, ...weaknessDice]
 	return dice.reduce((total, die) => {
 		total.damage += RollDice(die)
@@ -121,7 +121,7 @@ function *attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Pla
 	if(!attacker.hp) {
 		return
 	}
-	let targets = targetting[attacker.targetting.id](attacker, 
+	let targets = targetting[attacker.unit.targetting.id](attacker,
 		defendingPlayer.board.filter(boardUnit => boardUnit.hp>0))
 	if(!targets) {
 		return
@@ -130,9 +130,9 @@ function *attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Pla
 		let damage = calculateDamage(attacker, defender)
 		defender.hp = Math.max(defender.hp-damage.damage, 0)
 		let roll = {
-			attacker, 
+			attacker,
 			attackingPlayer,
-			defender, 
+			defender,
 			defendingPlayer,
 			...damage} as AttackRoll
 		yield roll
@@ -159,10 +159,10 @@ function *runCombat(attacker:Player, defender:Player)  {
 	let units = [...attackerTurns, ...defenderTurns]
 	let tick = () => {
 		for(let unit of units) {
-			unit.boardUnit.energy+=unit.boardUnit.energypertick
+			unit.boardUnit.energy+=unit.boardUnit.unit.energypertick
 		}
 		return units
-			.filter(u => u.boardUnit.energy==u.boardUnit.energymax)
+			.filter(u => u.boardUnit.energy==u.boardUnit.unit.energymax)
 	}
 
 	for(let i = 0; i < 20; i++) {
@@ -193,7 +193,7 @@ export function createThrottledGenerator<T>(items:T[]|Generator<T>, wait:number)
 			abortController.signal.removeEventListener('abort', abort)
 			resolve('ok')
 		}, wait)
-		let abort = () => { 
+		let abort = () => {
 			clearTimeout(timeout)
 			reject('abort')
 		}
@@ -215,7 +215,7 @@ export function animatedFight(attacks:AttackRoll[]|Generator<AttackRoll>, wait:n
 	let generator = createThrottledGenerator(attacks, wait)
 	async function *throttle() {
 		let lastAttack:AttackRoll|undefined = undefined
-		let cleanup = () => { 
+		let cleanup = () => {
 			if(lastAttack) {
 				lastAttack.attacker.highlight = undefined
 				lastAttack.defender.highlight = undefined
@@ -260,7 +260,7 @@ export function fightStatus(player1:Player, player2:Player) {
 
 export function createBoardUnit(unit:Unit, c:Coordinate): BoardUnit {
 	return {
-		...unit,
+		unit,
 		setCoord: {...c},
 		realCoord: c,
 		hp: unit.maxhp,

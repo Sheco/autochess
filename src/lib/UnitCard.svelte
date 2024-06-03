@@ -4,14 +4,17 @@ import Modal from "./Modal.svelte";
 import TraitIcon from "./TraitIcon.svelte";
 import UnitInfo from "./UnitInfo.svelte";
 import Emoji from "./Emoji.svelte";
+import { createBoardUnit } from "./combat";
 
-let { unit, actions = undefined, onclick }:{
-	unit:Unit|BoardUnit, 
+let { unit, actions = undefined, onclick, boardUnit }:{
+	unit:Unit, 
+	boardUnit?:BoardUnit,
 	onclick:()=>void,
 	actions?:Snippet|undefined
 } = $props()
 let showModal = $state(false)
 let highlight = $derived('highlight' in unit? unit.highlight: '')
+if(!boardUnit) boardUnit=createBoardUnit(unit, {x:0, y:0})
 </script>
 
 {#snippet card()}
@@ -30,8 +33,8 @@ let highlight = $derived('highlight' in unit? unit.highlight: '')
 		<button onclick={() => showModal=true} class="btn btn-sm btn-info p-0"><span class="bi bi-info-circle"></span></button>
 		{unit.name}
 			{#if 'mods' in unit}
-			{@const maxhp = unit.maxhp+(unit.mods.maxhp??0) }
-			{@const percent = Math.floor(unit.hp/maxhp*100) }
+			{@const maxhp = unit.maxhp+(boardUnit.mods.maxhp??0) }
+			{@const percent = Math.floor(boardUnit.hp/maxhp*100) }
 			<div class="progress">
 				<div class="progress-bar bg-danger" role="progressbar" style="width: {percent}%" aria-valuenow={percent} aria-valuemin="0" aria-valuemax="100"></div>
 			</div>
@@ -48,16 +51,16 @@ let highlight = $derived('highlight' in unit? unit.highlight: '')
 					</div>
 				{/each}
 			</div>
-			{#if 'damage' in unit && unit.damage}
-				<div class="overlay position-absolute top-0 start-0">
-					<div class="badge bg-danger text-light" style="font-size: 150%">
-						{#each unit.damage.dice as dice}
+			<div class="overlay position-absolute top-0 start-0">
+				<div class="badge bg-danger text-light" style="font-size: 150%">
+					{#if boardUnit.damage}
+						{#each boardUnit.damage.dice as dice}
 							<Emoji>{dice.type.icon}</Emoji>
 						{/each}
-						{unit.damage.damage}
-					</div>
+						{boardUnit.damage.damage}
+					{/if}
 				</div>
-			{/if}
+			</div>
 		</button>
 			<div>
 				{#if actions}

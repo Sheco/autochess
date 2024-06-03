@@ -315,11 +315,11 @@ export function updatePlayerTraits(player:Player) {
 	let countUnitTraits = (trait:Trait) => player.board
 		.reduce((total, curr) => {
 			// get a list of unique units
-			if(!total.find(u => u.id==curr.id))
+			if(!total.find(u => u.unit.id==curr.unit.id))
 				total.push(curr)
 			return total
 		}, [] as BoardUnit[])
-		.reduce((total, curr) => total+(curr.traits.map(t=>t.id).includes(trait.id)? 1: 0), 0)
+		.reduce((total, curr) => total+(curr.unit.traits.map(t=>t.id).includes(trait.id)? 1: 0), 0)
 	player.traits = boardTraitRanks.map(traitrank => (
 		{ ...traitrank, 
 			active: countUnitTraits(traitrank.trait),
@@ -336,7 +336,7 @@ export function updatePlayerTraits(player:Player) {
 	player.board = player.board.map(bu => {
 		bu.mods = player.traits.flatMap(trait => trait.mods) // get all mods
 			// that target this unit's type
-			.filter(trait => bu.traits.map(t => t.id).includes(trait.target.id))
+			.filter(trait => bu.unit.traits.map(t => t.id).includes(trait.target.id))
 			.map(mod => mod.values)
 			// and sum them all up
 			.reduce((total, mod) => {

@@ -62,7 +62,8 @@ declare global {
 		attack?: Dice[]
 		maxhp?: number
 	}
-	export interface BoardUnit extends Unit {
+	export interface BoardUnit {
+		unit: Unit,
 		player?:Player,
 		setCoord:Coordinate
 		realCoord:Coordinate
