@@ -50,14 +50,16 @@ let highlight = $derived(boardUnit.highlight)
 				{/each}
 			</div>
 			<div class="overlay position-absolute top-0 start-0">
-				<div class="badge bg-danger text-light" style="font-size: 150%">
-					{#if boardUnit.damage && boardUnit.damage.damage>0}
-						{#each boardUnit.damage.dice as dice}
-							<Emoji>{dice.type.icon}</Emoji>
-						{/each}
-						{boardUnit.damage.damage}
-					{/if}
-				</div>
+				{#if boardUnit.damage && boardUnit.damage.damage>0}
+				{@const dmg = boardUnit.damage}
+				{@const force = (1+(dmg.damage-dmg.min)/(dmg.max-dmg.min))*100}
+					<div class="badge bg-danger text-light" style="font-size: {force}%">
+							{#each boardUnit.damage.dice as dice}
+								<Emoji>{dice.type.icon}</Emoji>
+							{/each}
+							{boardUnit.damage.damage}
+					</div>
+				{/if}
 			</div>
 		</button>
 	</div>
