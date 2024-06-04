@@ -121,6 +121,7 @@ declare global {
 		attackingPlayer: Player
 		defender: BoardUnit
 		defendingPlayer: Player
+		state:string
 	}
 
 	export interface Coordinate {

@@ -12,7 +12,6 @@ let { unit, onclick, boardUnit }:{
 } = $props()
 let showModal = $state(false)
 if(!boardUnit) boardUnit=createBoardUnit(unit, {x:0, y:0})
-let highlight = $derived(boardUnit.highlight)
 </script>
 
 {#snippet card()}
@@ -26,7 +25,7 @@ let highlight = $derived(boardUnit.highlight)
 {#if showModal}
 	<Modal onclose={()=>showModal=false} body={card} />
 {/if}
-<div class="card w-100" class:border={highlight!=''} class:border-danger={highlight=="danger"} class:border-success={highlight=="success"} class:zoomin={highlight=="success"} class:border-3={highlight!=""}>
+<div class="card w-100 {boardUnit.highlight}">
 	<div class="card-header p-1">
 		<button onclick={() => showModal=true} class="btn btn-sm btn-info p-0"><span class="bi bi-info-circle"></span></button>
 		{unit.name}
@@ -77,7 +76,33 @@ background: #eee;
 border-radius: 1rem;
 border: 1px solid #aaa;
 }
-.zoomin {
+
+@keyframes damaged {
+  0%, 100% {
+    transform: scale(1); /* Initial and final state */
+  }
+  50% {
+    transform: scale(1.5); /* Zoomed-in state */
+  }
+}
+.attacked-defend {
+  display: inline-block; /* Ensures the transform effect takes place correctly */
+  animation: damaged 0.25s forwards; /* 1 second duration, infinite iterations */
+  border: 2px solid #f00;
+  z-index: 1500;
+}
+.attacking-defend {
+  border: 2px solid #f00;
+  z-index: 1500;
+}
+
+.attacking-attack {
+	transform: scale(1.2);
+	z-index: 1500;
+	transition: transform .2s;
+}
+
+.attacked-attack {
 	transform: scale(1.2);
 	z-index: 1500;
 	transition: transform .2s;

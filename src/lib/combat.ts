@@ -127,16 +127,22 @@ function *attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Pla
 		return
 	}
 	for(let defender of targets) {
-		yield {attacker, attackingPlayer, defender, defendingPlayer} as AttackRoll
+		yield {
+			attacker, 
+			attackingPlayer, 
+			defender, 
+			defendingPlayer,
+			state: "attacking"
+			} as AttackRoll
 		let damage = calculateDamage(attacker, defender)
 		defender.hp = Math.max(defender.hp-damage.damage, 0)
-		let roll = {
+		yield {
 			attacker,
 			attackingPlayer,
 			defender,
 			defendingPlayer,
+			state: "attacked",
 			...damage} as AttackRoll
-		yield roll
 	}
 }
 
@@ -226,8 +232,8 @@ export function animatedFight(attacks:AttackRoll[]|Generator<AttackRoll>, wait:n
 		for await (let attack of generator.items) {
 			cleanup()
 			yield attack
-			attack.attacker.highlight = "success"
-			attack.defender.highlight = "danger"
+			attack.attacker.highlight = attack.state+"-attack"
+			attack.defender.highlight = attack.state+"-defend"
 			attack.defender.damage = attack
 			lastAttack = attack
 		}
