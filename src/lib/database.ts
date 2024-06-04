@@ -164,7 +164,7 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{ 
 						target: TraitMap.earth,
-						values: { maxhp: 2 },
+						values: { maxhp: 5 },
 					}
 				]
 			},
@@ -173,7 +173,7 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{
 						target: TraitMap.earth,
-						values: { maxhp: 4},
+						values: { maxhp: 10},
 					},
 					{
 						target: TraitMap.fire,
@@ -194,7 +194,7 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{ 
 						target: TraitMap.metal,
-						values: { maxhp: 2 },
+						values: { maxhp: 5 },
 					}
 				]
 			},
@@ -203,7 +203,7 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{
 						target: TraitMap.metal,
-						values: { maxhp: 4},
+						values: { maxhp: 10},
 					},
 					{
 						target: TraitMap.earth,
@@ -258,7 +258,7 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{
 						target: TraitMap.wood,
-						values: { maxhp: 2 },
+						values: { maxhp: 5 },
 					}
 				]
 			},
@@ -267,7 +267,7 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{
 						target: TraitMap.wood,
-						values: { maxhp: 4},
+						values: { maxhp: 10},
 					},
 					{
 						target: TraitMap.water,
@@ -288,7 +288,7 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{
 						target: TraitMap.water,
-						values: { maxhp: 4 },
+						values: { maxhp: 5 },
 					}
 				]
 			},
@@ -297,7 +297,7 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{
 						target: TraitMap.water,
-						values: { maxhp: 4},
+						values: { maxhp: 10},
 					},
 					{
 						target: TraitMap.metal,
@@ -359,9 +359,9 @@ export let Units:Unit[] = [
 		id: 'mermaid',
 		name: 'Sirena',
 		info: `Es una bella chica de cabello azul con cola de pez. Ataca invocando una ola magica desde atras del enemigo.`,
-		maxhp: 15,
+		maxhp: 20,
 		attack: [
-			{ type: TypeMap.water, amount: 2, sides: 4, modifier: 1 }
+			{ type: TypeMap.water, amount: 2, sides: 6, modifier: 0 }
 		],
 		weakness: [
 			{ type: TypeMap.earth, amount: 1, sides: 4, modifier: 0 }
@@ -376,14 +376,14 @@ export let Units:Unit[] = [
 		id: 'waterelemental',
 		name: 'Elemental de agua',
 		info: `Es una creatura de agua viva, con grandes poderes mágicos. Ataca invocando un remolino de agua rasgador.`,
-		maxhp: 20,
+		maxhp: 25,
 		energymax: 4,
 		energypertick: 1,
 		traits: [TraitMap.unit, TraitMap.water, TraitMap.guardian],
 		targetting: TargettingMap.nearby,
 		cost: 1,
 		attack: [
-			{ type: TypeMap.water, amount: 1, sides: 4, modifier: 3 },
+			{ type: TypeMap.water, amount: 1, sides: 6, modifier: 3 },
 		],
 		weakness: [
 			{ type: TypeMap.earth, amount: 1, sides: 4, modifier: 0 },
@@ -393,14 +393,14 @@ export let Units:Unit[] = [
 		id: 'gunner',
 		name: 'Pistolero',
 		info: `Es un rebelde sín causa que resuelve las problemas a balazos.\nAtaca disparando su pistola.`,
-		maxhp: 15,
+		maxhp: 20,
 		energymax: 3,
 		energypertick: 1,
 		traits: [TraitMap.unit, TraitMap.metal, TraitMap.male],
 		targetting: TargettingMap.farthest1_direct,
 		cost: 1,
 		attack: [
-			{ type: TypeMap.metal, amount: 1, sides: 4, modifier: 4 },
+			{ type: TypeMap.metal, amount: 1, sides: 6, modifier: 3 },
 		],
 		weakness: [
 			{ type: TypeMap.fire, amount: 1, sides: 4, modifier: 0 },
@@ -410,14 +410,14 @@ export let Units:Unit[] = [
 		id: 'metalelemental',
 		name: 'Elemental de metal',
 		info: `Es un soldado con armadura de oro.\nAtaca dando un espadazo.`,
-		maxhp: 20,
+		maxhp: 25,
 		energymax: 4,
 		energypertick: 1,
 		traits: [TraitMap.unit, TraitMap.metal, TraitMap.guardian],
 		targetting: TargettingMap.closest1,
 		cost: 1,
 		attack: [
-			{ type: TypeMap.metal, amount: 1, sides: 4, modifier: 3 },
+			{ type: TypeMap.metal, amount: 1, sides: 6, modifier: 3 },
 		],
 		weakness: [
 			{ type: TypeMap.fire, amount: 1, sides: 4, modifier: 0 },
@@ -427,7 +427,7 @@ export let Units:Unit[] = [
 		id: 'firemage',
 		name: 'Mago de fuego',
 		info: `Es un mago elemental de fuego.\nAtaca lanzando una bola de fuego.`,
-		maxhp: 15,
+		maxhp: 20,
 		energymax: 4,
 		energypertick: 1,
 		traits: [TraitMap.unit, TraitMap.fire, TraitMap.female],
@@ -444,14 +444,14 @@ export let Units:Unit[] = [
 		id: 'fireelemental',
 		name: 'Elemental de fuego',
 		info: `Es una creatura de fuego vivo.\nAtaca dando un puñetazo ardiente.`,
-		maxhp: 20,
+		maxhp: 25,
 		energymax: 4,
 		energypertick: 1,
 		traits: [TraitMap.unit, TraitMap.fire, TraitMap.guardian],
 		targetting: TargettingMap.closest1,
 		cost: 1,
 		attack: [
-			{ type: TypeMap.fire, amount: 1, sides: 4, modifier: 3 },
+			{ type: TypeMap.fire, amount: 1, sides: 6, modifier: 3 },
 		],
 		weakness: [
 			{ type: TypeMap.water, amount: 1, sides: 4, modifier: 0 },
@@ -461,14 +461,14 @@ export let Units:Unit[] = [
 		id: 'archer',
 		name: 'Arquero',
 		info: `Es un soldado con arco y flecha.\nAtaca disparando una lluvia de flechas.`,
-		maxhp: 15,
+		maxhp: 20,
 		energymax: 3,
 		energypertick: 1,
 		traits: [TraitMap.unit, TraitMap.wood, TraitMap.male],
 		targetting: TargettingMap.farthest2,
 		cost: 1,
 		attack: [
-			{ type: TypeMap.wood, amount: 1, sides: 4, modifier: 1 },
+			{ type: TypeMap.wood, amount: 1, sides: 6, modifier: 0 },
 		],
 		weakness: [
 			{ type: TypeMap.metal, amount: 1, sides: 4, modifier: 0 },
@@ -478,14 +478,14 @@ export let Units:Unit[] = [
 		id: 'woodelemental',
 		name: 'Elemental de madera',
 		info: `Es una criatura humanoide de madera viva, por algun motivo solo puede decir "yo soy noob". Ataca con un latigo de raices.`,
-		maxhp: 20,
+		maxhp: 25,
 		energymax: 4,
 		energypertick: 1,
 		traits: [TraitMap.unit, TraitMap.wood, TraitMap.guardian],
 		targetting: TargettingMap.nearby,
 		cost: 1,
 		attack: [
-			{ type: TypeMap.wood, amount: 1, sides: 4, modifier: 3 },
+			{ type: TypeMap.wood, amount: 1, sides: 6, modifier: 3 },
 		],
 		weakness: [
 			{ type: TypeMap.metal, amount: 1, sides: 4, modifier: 0 },
@@ -499,10 +499,10 @@ export let Units:Unit[] = [
 		energypertick: 1,
 		traits: [TraitMap.unit, TraitMap.earth, TraitMap.guardian],
 		targetting: TargettingMap.everyone,
-		maxhp: 20,
+		maxhp: 25,
 		cost: 1,
 		attack: [
-			{ type: TypeMap.earth, amount: 1, sides: 4, modifier: 0 },
+			{ type: TypeMap.earth, amount: 1, sides: 6, modifier: 0 },
 		],
 		weakness: [
 			{ type: TypeMap.wood, amount: 1, sides: 4, modifier: 0 },
@@ -516,7 +516,7 @@ export let Units:Unit[] = [
 		energypertick: 1,
 		traits: [TraitMap.unit, TraitMap.earth,TraitMap.male],
 		targetting: TargettingMap.random,
-		maxhp: 15,
+		maxhp: 20,
 		cost: 1,
 		attack: [
 			{ type: TypeMap.earth, amount: 1, sides: 10, modifier: 1 },
