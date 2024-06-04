@@ -29,6 +29,25 @@ function reset() {
 		<a class="btn btn-primary" href="/play">Jugar</a>
 		<br>
 	</div>
+
+	<h4>AutoChess de Sheco</h4>
+	<p>Esta página es un prototipo de un juego tipo AutoChess, el objetivo es que sea algo jugable en persona
+    como juego de mesa, con dados y tarjetas.
+
+	<p>En esta pagina principal, se pueden ver las unidades disponibles como referencia, así como también
+	los rasgos que aplican cuando tienes varias unidades diferentes que compartan el mismo rasgo en el tablero.
+	Igualmente se incluye una tabla de balance para ver que tanto daño hace cada unidad en condiciones básicas.
+
+	<p>Adicionente arriba hay dos botones, un simulador donde se puede configurar una arena con dos tableros
+	y asignarle cualquier unidad a estos tableros para probar un combate abierto.
+
+	<p>Finalmente, el botón de jugar prepara un flujo de un torneo de juego que demuestra como se jugaria en persona.
+
+	<p>En esta app es completamente AutoChess, o sea, el combate es completamente automático, pero considero que
+	en personas se puede tener cierta libertad para elegir objetivos entre los validos.
+
+	<p>Cabe mencionar que es un trabajo en progreso y que es tan solo un hobby. No estoy planeando comercializar esto.
+
 	<div class="row">
 		<div class="col-12">
 		<h4>Lista de Unidades</h4>
