@@ -26,7 +26,7 @@ let highlight = $derived(boardUnit.highlight)
 {#if showModal}
 	<Modal onclose={()=>showModal=false} body={card} />
 {/if}
-<div class="card w-100" class:border={highlight!=''} class:border-danger={highlight=="danger"} class:border-success={highlight=="success"} class:border-3={highlight!=""}>
+<div class="card w-100" class:border={highlight!=''} class:border-danger={highlight=="danger"} class:border-success={highlight=="success"} class:zoomin={highlight=="success"} class:border-3={highlight!=""}>
 	<div class="card-header p-1">
 		<button onclick={() => showModal=true} class="btn btn-sm btn-info p-0"><span class="bi bi-info-circle"></span></button>
 		{unit.name}
@@ -74,5 +74,9 @@ let highlight = $derived(boardUnit.highlight)
 background: #eee;
 border-radius: 1rem;
 border: 1px solid #aaa;
+}
+.zoomin {
+	transform: scale(1.2);
+	z-index: 1500;
 }
 </style>
