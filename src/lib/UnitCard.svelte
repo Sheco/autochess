@@ -80,5 +80,6 @@ border: 1px solid #aaa;
 .zoomin {
 	transform: scale(1.2);
 	z-index: 1500;
+	transition: transform .2s;
 }
 </style>
