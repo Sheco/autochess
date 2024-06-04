@@ -8,7 +8,7 @@ function loadPlayer(id:string) {
 	let ls = JSON.parse(localStorage.getItem('player'+id)??"null")
 	if(!ls) return 
 	for(let bu of ls.board) {
-		bu.unit = UnitMap[bu.id] 
+		bu.unit = UnitMap[bu.unit.id] 
 	}
 	updatePlayerTraits(ls)
 	return ls as Player
