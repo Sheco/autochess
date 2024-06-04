@@ -127,6 +127,7 @@ function *attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Pla
 		return
 	}
 	for(let defender of targets) {
+		yield {attacker, attackingPlayer, defender, defendingPlayer} as AttackRoll
 		let damage = calculateDamage(attacker, defender)
 		defender.hp = Math.max(defender.hp-damage.damage, 0)
 		let roll = {

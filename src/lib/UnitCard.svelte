@@ -51,7 +51,7 @@ let highlight = $derived(boardUnit.highlight)
 			</div>
 			<div class="overlay position-absolute top-0 start-0">
 				<div class="badge bg-danger text-light" style="font-size: 150%">
-					{#if boardUnit.damage}
+					{#if boardUnit.damage && boardUnit.damage.damage>0}
 						{#each boardUnit.damage.dice as dice}
 							<Emoji>{dice.type.icon}</Emoji>
 						{/each}
