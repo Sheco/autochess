@@ -79,15 +79,14 @@ border: 1px solid #aaa;
 
 @keyframes damaged {
   0%, 100% {
-    transform: scale(1); /* Initial and final state */
+    transform: scale(1);
   }
   50% {
-    transform: scale(1.5); /* Zoomed-in state */
+    transform: scale(1.5);
   }
 }
 .attacked-defend {
-  display: inline-block; /* Ensures the transform effect takes place correctly */
-  animation: damaged 0.25s forwards; /* 1 second duration, infinite iterations */
+  animation: damaged 0.25s forwards;
   border: 2px solid #f00;
   z-index: 1500;
 }
@@ -97,14 +96,14 @@ border: 1px solid #aaa;
 }
 
 .attacking-attack {
-	transform: scale(1.2);
-	z-index: 1500;
-	transition: transform .2s;
+  transform: scale(1.2);
+  z-index: 1500;
+  transition: transform .2s;
 }
 
 .attacked-attack {
-	transform: scale(1.2);
-	z-index: 1500;
-	transition: transform .2s;
+  transform: scale(1.2);
+  z-index: 1500;
+  transition: transform .2s;
 }
 </style>
