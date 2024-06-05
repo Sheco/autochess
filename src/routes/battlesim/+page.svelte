@@ -59,8 +59,8 @@ let player2:Player = $state({
 	board: [ ]
 })
 let winner:Player|undefined = $state(undefined)
-let waitValue:string = $state("1000")
-let wait:number = $derived(Number(waitValue))
+let speedValue:string = $state("1")
+let speed:number = $derived(Number(speedValue))
 let generator:ThrottledGenerator<AttackRoll> = $state(createThrottledGenerator([], 0))
 
 async function run() {
@@ -68,7 +68,7 @@ async function run() {
 	winner = undefined
 	document.querySelector("#grid")?.scrollIntoView()
 	generator.stop()
-	generator = animatedFight(fight(player1, player2), wait)
+	generator = animatedFight(fight(player1, player2), speed)
 	try {
 		for await (let attack of generator.items) {
 			attackRolls.push(attack)
@@ -131,11 +131,11 @@ let onAddUnit = (player:Player, c:Coordinate, value:string) => {
 		<a class="btn btn-primary" href="/">Regresar</a>
 		<button onclick={resetAll} class="btn btn-secondary">Limpiar</button>
 		<button onclick={run} class="btn btn-success">Pelear</button>
-		<select class="form-control d-inline-block" style="width: 10rem" bind:value={waitValue}>
-			<option value="2000">Lento</option>
-			<option value="1000">Velocidad normal</option>
-			<option value="500">Rápido</option>
-			<option value="200">Rápidisimo</option>
+		<select class="form-control d-inline-block" style="width: 10rem" bind:value={speedValue}>
+			<option value="0.5">Lento</option>
+			<option value="1">Velocidad normal</option>
+			<option value="1.5">Rápido</option>
+			<option value="2">Rápidisimo</option>
 		</select>
 		{#if winner}
 			<b class="text-{winner.color}">{winner.name}</b> ha ganado!

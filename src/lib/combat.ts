@@ -117,33 +117,29 @@ export function calculateDamage(attacker:BoardUnit,defender:BoardUnit) {
 	} as DamageRoll)
 }
 
-function *attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Player) {
+function attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Player) {
+	let attack = {
+		attacker,
+		attackingPlayer,
+		attacks: []
+	} as Attack
 	if(!attacker.hp) {
-		return
+		return attack
 	}
 	let targets = targetting[attacker.unit.targetting.id](attacker,
 		defendingPlayer.board.filter(boardUnit => boardUnit.hp>0))
 	if(!targets) {
-		return
+		return attack
 	}
-	for(let defender of targets) {
-		yield {
-			attacker, 
-			attackingPlayer, 
-			defender, 
-			defendingPlayer,
-			state: "attacking"
-			} as AttackRoll
+	attack.attacks = targets.map(defender => {
 		let damage = calculateDamage(attacker, defender)
-		defender.hp = Math.max(defender.hp-damage.damage, 0)
-		yield {
-			attacker,
-			attackingPlayer,
+		return {
 			defender,
 			defendingPlayer,
-			state: "attacked",
-			...damage} as AttackRoll
-	}
+			...damage
+		} as AttackRoll
+	})
+	return attack
 }
 
 interface Turn {
@@ -174,7 +170,12 @@ function *runCombat(attacker:Player, defender:Player)  {
 
 	for(let i = 0; i < 20; i++) {
 		for(let turn of tick()) {
-			yield* attack(turn.attacker, turn.boardUnit, turn.defender)
+			let a = attack(turn.attacker, turn.boardUnit, turn.defender)
+			if(!a.attacks.length) continue
+			yield a
+			a.attacks.forEach(r => {
+				r.defender.hp = Math.max(r.defender.hp-r.damage, 0)
+			})
 			turn.boardUnit.energy=0
 
 			let defenders = turn.defender.board.filter(boardUnit => boardUnit.hp>0)
@@ -193,9 +194,9 @@ export function fight(player1:Player, player2:Player) {
 }
 
 
-export function createThrottledGenerator<T>(items:T[]|Generator<T>, wait:number) {
+function abortableSleep() {
 	let abortController = new AbortController()
-	let sleep = async () => new Promise((resolve, reject) => {
+	let sleep = async (wait:number) => new Promise((resolve, reject) => {
 		let timeout = setTimeout(() => {
 			abortController.signal.removeEventListener('abort', abort)
 			resolve('ok')
@@ -206,42 +207,60 @@ export function createThrottledGenerator<T>(items:T[]|Generator<T>, wait:number)
 		}
 		abortController.signal.addEventListener('abort', abort)
 	})
+
+	let abort = () => {
+		abortController.abort()
+		abortController = new AbortController()
+	}
+
+	return {
+		sleep,
+		abort
+	}
+
+}
+export function createThrottledGenerator<T>(items:T[]|Generator<T>, wait:number) {
+	let sleep = abortableSleep()
 	async function *throttle() {
 		for(let i of items) {
 			yield i
-			await sleep()
+			await sleep.sleep(wait)
 		}
 	}
 	return {
-		stop: () => abortController.abort(),
+		stop: sleep.abort,
 		items: throttle(),
 	} as ThrottledGenerator<T>
 }
 
-export function animatedFight(attacks:AttackRoll[]|Generator<AttackRoll>, wait:number) {
-	let generator = createThrottledGenerator(attacks, wait)
+export function animatedFight(attacks:Attack[]|Generator<Attack>, speed:number) {
+	let sleep = abortableSleep()
 	async function *throttle() {
-		let lastAttack:AttackRoll|undefined = undefined
-		let cleanup = () => {
-			if(lastAttack) {
-				lastAttack.attacker.highlight = undefined
-				lastAttack.defender.highlight = undefined
-				lastAttack.defender.damage = undefined
-			}
-		}
-		for await (let attack of generator.items) {
-			cleanup()
+		for await (let attack of attacks) {
+			attack.attacker.highlight = "attacking-attack"
+			attack.attacks.forEach(a => {
+				a.defender.highlight = "attacking-defend"
+				a.defender.damage = undefined
+			})
+
+			await sleep.sleep(500*(1/speed))
+			attack.attacker.highlight = "attacked-attack"
+			attack.attacks.forEach(a => {
+				a.defender.highlight = "attacked-defend"
+				a.defender.damage = a
+			})
+			await sleep.sleep(500*(1/speed))
+			attack.attacker.highlight = undefined
+			attack.attacks.forEach(a => {
+				a.defender.highlight = undefined
+				a.defender.damage = undefined
+			})
 			yield attack
-			attack.attacker.highlight = attack.state+"-attack"
-			attack.defender.highlight = attack.state+"-defend"
-			attack.defender.damage = attack
-			lastAttack = attack
 		}
-		cleanup()
 	}
 
 	return {
-		stop: generator.stop,
+		stop: sleep.abort,
 		items: throttle()
 	} as ThrottledGenerator<AttackRoll>
 }
