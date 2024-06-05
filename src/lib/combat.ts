@@ -249,13 +249,13 @@ export function animatedFight(attacks:Attack[]|Generator<Attack>, speed:number) 
 				a.defender.highlight = "attacked-defend"
 				a.defender.damage = a
 			})
+			yield attack
 			await sleep.sleep(1000*(1/speed))
 			attack.attacker.highlight = undefined
 			attack.attacks.forEach(a => {
 				a.defender.highlight = undefined
 				a.defender.damage = undefined
 			})
-			yield attack
 		}
 	}
 
