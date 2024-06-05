@@ -83,6 +83,7 @@ export function resetUnits(player:Player) {
 	for(let boardUnit of player.board) {
 		boardUnit.energy = 0
 		boardUnit.hp = boardUnit.unit.maxhp+(boardUnit.mods.maxhp??0)
+		boardUnit.ui.hp = boardUnit.hp
 	}
 }
 
@@ -237,24 +238,25 @@ export function animatedFight(attacks:Attack[]|Generator<Attack>, speed:number) 
 	let sleep = abortableSleep()
 	async function *throttle() {
 		for await (let attack of attacks) {
-			attack.attacker.highlight = "attacking-attack"
+			attack.attacker.ui.style = "attacking-attack"
 			attack.attacks.forEach(a => {
-				a.defender.highlight = "attacking-defend"
-				a.defender.damage = undefined
+				a.defender.ui.style = "attacking-defend"
+				a.defender.ui.damage = undefined
 			})
 
 			await sleep.sleep(500*(1/speed))
-			attack.attacker.highlight = "attacked-attack"
+			attack.attacker.ui.style = "attacked-attack"
 			attack.attacks.forEach(a => {
-				a.defender.highlight = "attacked-defend"
-				a.defender.damage = a
+				a.defender.ui.style = "attacked-defend"
+				a.defender.ui.damage = a
+				a.defender.ui.hp -= a.defender.ui.damage.damage
 			})
 			yield attack
 			await sleep.sleep(1000*(1/speed))
-			attack.attacker.highlight = undefined
+			attack.attacker.ui.style = undefined
 			attack.attacks.forEach(a => {
-				a.defender.highlight = undefined
-				a.defender.damage = undefined
+				a.defender.ui.style = undefined
+				a.defender.ui.damage = undefined
 			})
 		}
 	}
@@ -292,5 +294,6 @@ export function createBoardUnit(unit:Unit, c:Coordinate): BoardUnit {
 		hp: unit.maxhp,
 		energy: 0,
 		mods: {},
+		ui: { hp: unit.maxhp }
 	}
 }

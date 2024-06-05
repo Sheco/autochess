@@ -70,8 +70,11 @@ declare global {
 		hp: number
 		energy:number
 		mods: Mods
-		highlight?:string
-		damage?:AttackRoll
+		ui: {
+			style?:string
+			damage?:AttackRoll
+			hp:number
+		}
 	}
 
 	interface TraitMods {

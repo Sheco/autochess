@@ -25,13 +25,13 @@ if(!boardUnit) boardUnit=createBoardUnit(unit, {x:0, y:0})
 {#if showModal}
 	<Modal onclose={()=>showModal=false} body={card} />
 {/if}
-<div class="card w-100 {boardUnit.highlight}">
+<div class="card w-100 {boardUnit.ui.style}">
 	<div class="card-header p-1">
 		<button onclick={() => showModal=true} class="btn btn-sm btn-info p-0"><span class="bi bi-info-circle"></span></button>
 		{unit.name}
 			{#if boardUnit}
 			{@const maxhp = unit.maxhp+(boardUnit.mods.maxhp??0) }
-			{@const percent = Math.floor(boardUnit.hp/maxhp*100) }
+			{@const percent = Math.floor((boardUnit.ui.hp??0)/maxhp*100) }
 			<div class="progress">
 				<div class="progress-bar bg-danger" role="progressbar" style="width: {percent}%" aria-valuenow={percent} aria-valuemin="0" aria-valuemax="100"></div>
 			</div>
@@ -49,14 +49,14 @@ if(!boardUnit) boardUnit=createBoardUnit(unit, {x:0, y:0})
 				{/each}
 			</div>
 			<div class="overlay position-absolute top-0 start-0">
-				{#if boardUnit.damage && boardUnit.damage.damage>0}
-				{@const dmg = boardUnit.damage}
+				{#if boardUnit.ui.damage && boardUnit.ui.damage.damage>0}
+				{@const dmg = boardUnit.ui.damage}
 				{@const force = (1+(dmg.damage-dmg.min)/(dmg.max-dmg.min))*100}
 					<div class="badge bg-danger text-light" style="font-size: {force}%">
-							{#each boardUnit.damage.dice as dice}
+							{#each boardUnit.ui.damage.dice as dice}
 								<Emoji>{dice.type.icon}</Emoji>
 							{/each}
-							{boardUnit.damage.damage}
+							{boardUnit.ui.damage.damage}
 					</div>
 				{/if}
 			</div>
