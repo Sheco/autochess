@@ -22,12 +22,12 @@ let shuffledPairs = () => {
 }
 let pairs = shuffledPairs()
 
-let attackRolls:AttackRoll[]=$state([])
+let attacks:Attack[]=$state([])
 let winner:Player|undefined=$state(undefined)
 let player1:Player|undefined=$state(undefined)
 let player2:Player|undefined=$state(undefined)
 let next:Player[] = $state([])
-let generator:ThrottledGenerator<AttackRoll> = $state(createThrottledGenerator([], 0))
+let generator:ThrottledGenerator<Attack> = $state(createThrottledGenerator([], 0))
 
 $effect(() => {
 	next = pairs.shift()??[]
@@ -45,7 +45,7 @@ let nextFight = async () => {
 	generator = animatedFight(fight(player1, player2), 1000)
 	try {
 		for await (let attack of generator.items) {
-			attackRolls.push(attack)
+			attacks.push(attack)
 		}
 
 		let result = fightStatus(player1, player2)
@@ -76,6 +76,6 @@ let nextFight = async () => {
 	{#if winner}
 	Ganador: <span class="fw-bold text-{winner.color}">{winner.name}</span>
 	{/if}
-	<BattleGround {player1} {player2} editable={false} {attackRolls} />
+	<BattleGround {player1} {player2} editable={false} {attacks} />
 {/if}
 

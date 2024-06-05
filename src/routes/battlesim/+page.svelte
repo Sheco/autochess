@@ -61,17 +61,17 @@ let player2:Player = $state({
 let winner:Player|undefined = $state(undefined)
 let speedValue:string = $state("1")
 let speed:number = $derived(Number(speedValue))
-let generator:ThrottledGenerator<AttackRoll> = $state(createThrottledGenerator([], 0))
+let generator:ThrottledGenerator<Attack> = $state(createThrottledGenerator([], 0))
 
 async function run() {
-	attackRolls = []
+	attacks = []
 	winner = undefined
 	document.querySelector("#grid")?.scrollIntoView()
 	generator.stop()
 	generator = animatedFight(fight(player1, player2), speed)
 	try {
 		for await (let attack of generator.items) {
-			attackRolls.push(attack)
+			attacks.push(attack)
 		}
 		let result = fightStatus(player1, player2)
 		winner = result.winner
@@ -83,7 +83,7 @@ async function run() {
 	}
 }
 function resetCombat() {
-	attackRolls = []
+	attacks = []
 }
 
 function resetAll() {
@@ -98,7 +98,7 @@ function resetStats() {
 }
 
 
-let attackRolls:AttackRoll[] = $state([])
+let attacks:Attack[] = $state([])
 let stats = $state({
 	combats: 0,
 	victories: {
@@ -150,6 +150,6 @@ let onAddUnit = (player:Player, c:Coordinate, value:string) => {
 	</div>
 
 	<div id="grid">
-		<BattleGround player1={player1} player2={player2} {onAddUnit} {onRemoveUnit} editable={true} {attackRolls} />
+		<BattleGround player1={player1} player2={player2} {onAddUnit} {onRemoveUnit} editable={true} {attacks} />
 	</div>
 </div>

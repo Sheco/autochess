@@ -4,13 +4,13 @@ import UnitCard from './UnitCard.svelte';
 import TraitInfo from './TraitInfo.svelte';
     import DiceRoll from './DiceRoll.svelte';
 
-let { player, mirrored=false, editable=false, onAddUnit, onRemoveUnit, attackRolls }:{
+let { player, mirrored=false, editable=false, onAddUnit, onRemoveUnit, attacks }:{
 	player:Player, 
 	mirrored:boolean,
 	editable:boolean,
 	onAddUnit?: (player:Player, c:Coordinate, value:string)=>void,
 	onRemoveUnit?: (player:Player, c:Coordinate)=>void,
-	attackRolls?: AttackRoll[]
+	attacks?: Attack[]
 } = $props()
 let boardArray = $derived(boardToArray(player.board, mirrored))
 
@@ -92,13 +92,15 @@ let units = [...Units].sort((a, b) => a.name.localeCompare(b.name));
 						<TraitInfo {trait} /><br>
 				{/each}
 
-				{#if attackRolls}
+				{#if attacks}
 					<div>
-					{#each attackRolls.filter(r => r.attackingPlayer.name==player.name && r.damage>0) as attack}
+					{#each attacks.filter(a => a.attackingPlayer.name==player.name) as attack}
+					{#each attack.attacks.filter(r => r.damage>0) as a}
 						<span class="text-{attack.attackingPlayer.color}">{attack.attacker.unit.name}</span> ataca a 
-						<span class="text-{attack.defendingPlayer.color}">{attack.defender.unit.name}</span> y hace <b>{attack.damage}</b> de daño. (
-							<DiceRoll dice={attack.dice} />
+						<span class="text-{a.defendingPlayer.color}">{a.defender.unit.name}</span> y hace <b>{a.damage}</b> de daño. (
+							<DiceRoll dice={a.dice} />
 						)<br>
+					{/each}
 					{/each}
 					</div>
 				{/if}

@@ -262,7 +262,7 @@ export function animatedFight(attacks:Attack[]|Generator<Attack>, speed:number) 
 	return {
 		stop: sleep.abort,
 		items: throttle()
-	} as ThrottledGenerator<AttackRoll>
+	} as ThrottledGenerator<Attack>
 }
 
 export function fightStatus(player1:Player, player2:Player) {
