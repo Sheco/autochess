@@ -72,7 +72,7 @@ declare global {
 		mods: Mods
 		ui: {
 			style?:string
-			damage?:AttackRoll
+			damage?:DamageRoll
 			hp:number
 		}
 	}
@@ -120,9 +120,10 @@ declare global {
 		dice:Dice[],
 	}
 
-	interface AttackRoll extends DamageRoll {
+	interface AttackRoll {
 		defender: BoardUnit
 		defendingPlayer: Player
+		roll: DamageRoll
 	}
 
 	interface Attack {

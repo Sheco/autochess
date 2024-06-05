@@ -95,10 +95,11 @@ let units = [...Units].sort((a, b) => a.name.localeCompare(b.name));
 				{#if attacks}
 					<div>
 					{#each attacks.filter(a => a.attackingPlayer.name==player.name) as attack}
-					{#each attack.attacks.filter(r => r.damage>0) as a}
+					{#each attack.attacks.filter(r => r.roll.damage>0) as a}
 						<span class="text-{attack.attackingPlayer.color}">{attack.attacker.unit.name}</span> ataca a 
-						<span class="text-{a.defendingPlayer.color}">{a.defender.unit.name}</span> y hace <b>{a.damage}</b> de daño. (
-							<DiceRoll dice={a.dice} />
+						<span class="text-{a.defendingPlayer.color}">{a.defender.unit.name}</span> y hace <b>{a.roll.damage}</b> de daño. (
+							<DiceRoll dice={a.roll.
+							dice} />
 						)<br>
 					{/each}
 					{/each}

@@ -133,11 +133,11 @@ function attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Play
 		return attack
 	}
 	attack.attacks = targets.map(defender => {
-		let damage = calculateDamage(attacker, defender)
+		let roll = calculateDamage(attacker, defender)
 		return {
 			defender,
 			defendingPlayer,
-			...damage
+			roll,
 		} as AttackRoll
 	})
 	return attack
@@ -175,7 +175,7 @@ function *runCombat(attacker:Player, defender:Player)  {
 			if(!a.attacks.length) continue
 			yield a
 			a.attacks.forEach(r => {
-				r.defender.hp = Math.max(r.defender.hp-r.damage, 0)
+				r.defender.hp = Math.max(r.defender.hp-r.roll.damage, 0)
 			})
 			turn.boardUnit.energy=0
 
@@ -239,24 +239,24 @@ export function animatedFight(attacks:Attack[]|Generator<Attack>, speed:number) 
 	async function *throttle() {
 		for await (let attack of attacks) {
 			attack.attacker.ui.style = "attacking-attack"
-			attack.attacks.forEach(a => {
-				a.defender.ui.style = "attacking-defend"
-				a.defender.ui.damage = undefined
+			attack.attacks.forEach(({defender}) => {
+				defender.ui.style = "attacking-defend"
+				defender.ui.damage = undefined
 			})
 
 			await sleep.sleep(500*(1/speed))
 			attack.attacker.ui.style = "attacked-attack"
-			attack.attacks.forEach(a => {
-				a.defender.ui.style = "attacked-defend"
-				a.defender.ui.damage = a
-				a.defender.ui.hp -= a.defender.ui.damage.damage
+			attack.attacks.forEach(({defender,roll}) => {
+				defender.ui.style = "attacked-defend"
+				defender.ui.damage = roll
+				defender.ui.hp -= defender.ui.damage.damage
 			})
 			yield attack
 			await sleep.sleep(1000*(1/speed))
 			attack.attacker.ui.style = undefined
-			attack.attacks.forEach(a => {
-				a.defender.ui.style = undefined
-				a.defender.ui.damage = undefined
+			attack.attacks.forEach(({defender}) => {
+				defender.ui.style = undefined
+				defender.ui.damage = undefined
 			})
 		}
 	}
