@@ -81,12 +81,12 @@ border: 1px solid #aaa;
   0%, 100% {
     transform: scale(1);
   }
-  50% {
-    transform: scale(1.5);
+  25% {
+    transform: scale(2);
   }
 }
 .attacked-defend {
-  animation: damaged 0.25s forwards;
+  animation: damaged 0.30s 1 ease-in-out;
   border: 2px solid #f00;
   z-index: 1500;
 }
