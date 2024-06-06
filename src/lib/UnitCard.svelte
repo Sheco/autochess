@@ -49,14 +49,14 @@ if(!boardUnit) boardUnit=createBoardUnit(unit, {x:0, y:0})
 				{/each}
 			</div>
 			<div class="overlay position-absolute top-0 start-0">
-				{#if boardUnit.ui.damage && boardUnit.ui.damage.roll.damage>0}
+				{#if boardUnit.ui.damage && boardUnit.ui.damage.damage>0}
 				{@const dmg = boardUnit.ui.damage}
-				{@const force = (1+(dmg.roll.damage-dmg.roll.min)/(dmg.roll.max-dmg.roll.min))*100}
+				{@const force = (1+(dmg.damage-dmg.min)/(dmg.max-dmg.min))*100}
 					<div class="badge bg-danger text-light" style="font-size: {force}%">
-							{#each boardUnit.ui.damage.roll.dice as dice}
+							{#each boardUnit.ui.damage.dice as dice}
 								<Emoji>{dice.type.icon}</Emoji>
 							{/each}
-							{boardUnit.ui.damage.roll.damage}
+							{boardUnit.ui.damage.damage}
 					</div>
 				{/if}
 			</div>
