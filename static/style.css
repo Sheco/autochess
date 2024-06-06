@@ -6,3 +6,7 @@
 .emoji {
   font-family: 'OpenMoji', sans-serif;
 }
+
+body {
+	font-size: 70%;
+}

@@ -11,7 +11,7 @@ let attackMods = boardUnit.mods.attack??[]
 <div class="row">
 	
 	<div class="col-12">
-		<div style="font-size: 80%; height: 4rem;" class="fw-light">{#each unit.info.split('\n') as line}
+		<div style="height: 4rem;" class="fw-light">{#each unit.info.split('\n') as line}
 			{@html line}<br>
 		{/each}
 		</div>

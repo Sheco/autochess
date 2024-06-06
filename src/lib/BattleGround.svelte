@@ -1,16 +1,16 @@
 <script lang="ts">
+    import type { Snippet } from "svelte";
     import BoardGrid from "./BoardGrid.svelte";
 
-let { player1, player2, onAddUnit, onRemoveUnit, editable, attacks}:
+let { player1, player2, unitCard, dropUnitCard, attacks}:
 	{
 		player1:Player,
 		player2:Player,
-		onAddUnit?: (player:Player, c:Coordinate, value:string)=>void,
-		onRemoveUnit?: (player:Player, c:Coordinate)=>void,
-		editable:boolean,
+		unitCard: Snippet<[Player,BoardUnit]>,
+		dropUnitCard?: Snippet<[Player,Coordinate]>,
 		attacks:Attack[]
 	} = $props()
 		
 </script>
-<BoardGrid player={player2} mirrored={true} {onAddUnit} {onRemoveUnit} {editable} {attacks} />
-<BoardGrid player={player1} mirrored={false} {onAddUnit} {onRemoveUnit}  {editable} {attacks} />
+<BoardGrid player={player2} mirrored={true} {unitCard} {dropUnitCard} {attacks} />
+<BoardGrid player={player1} mirrored={false} {unitCard} {dropUnitCard} {attacks} />

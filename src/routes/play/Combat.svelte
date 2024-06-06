@@ -1,5 +1,8 @@
 <script lang="ts">
     import BattleGround from "$lib/BattleGround.svelte";
+    import DropUnitCard from "$lib/DropUnitCard.svelte";
+    import EmptyUnitCard from "$lib/EmptyUnitCard.svelte";
+    import UnitCard from "$lib/UnitCard.svelte";
 import { fight, createThrottledGenerator, fightStatus, animatedFight } from "$lib/combat";
 
 let { players, onendcombat, ondamage }:{
@@ -42,7 +45,7 @@ let nextFight = async () => {
 	winner = undefined
 	active = true
 
-	generator = animatedFight(fight(player1, player2), 1000)
+	generator = animatedFight(fight(player1, player2), 1)
 	try {
 		for await (let attack of generator.items) {
 			attacks.push(attack)
@@ -76,6 +79,13 @@ let nextFight = async () => {
 	{#if winner}
 	Ganador: <span class="fw-bold text-{winner.color}">{winner.name}</span>
 	{/if}
-	<BattleGround {player1} {player2} editable={false} {attacks} />
+	{#snippet unitCard(player:Player, boardUnit:BoardUnit)}
+		<UnitCard unit={boardUnit.unit} {boardUnit} onclick={() => {}} />
+	{/snippet}
+	{#snippet dropUnitCard(player:Player, c:Coordinate)}
+		<EmptyUnitCard />
+	{/snippet}
+	
+	<BattleGround {player1} {player2} {unitCard} {dropUnitCard} {attacks} />
 {/if}
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 import UnitCard from '$lib/UnitCard.svelte';
 import { fade } from 'svelte/transition';
-import DropUnitCard from './DropUnitCard.svelte';
+import DropUnitCard from '$lib/DropUnitCard.svelte';
 import TraitInfo from '$lib/TraitInfo.svelte';
 
 let { player, onclick, onrelease, takenUnit}:{

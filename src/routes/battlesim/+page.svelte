@@ -1,8 +1,13 @@
 <script lang="ts">
 import { createBoardUnit, resetUnits, fightStatus, fight, createThrottledGenerator, animatedFight } from "$lib/combat";
-import { UnitMap, updatePlayerTraits } from "$lib/database";
+import { UnitMap, Units, updatePlayerTraits } from "$lib/database";
 import BattleGround from "$lib/BattleGround.svelte";
 import { onMount } from "svelte";
+    import Modal from "$lib/Modal.svelte";
+    import UnitCard from "$lib/UnitCard.svelte";
+    import { fade } from "svelte/transition";
+    import DropUnitCard from "$lib/DropUnitCard.svelte";
+    import EmptyUnitCard from "$lib/EmptyUnitCard.svelte";
 
 function loadPlayer(id:string) {
 	let ls = JSON.parse(localStorage.getItem('player'+id)??"null")
@@ -114,23 +119,64 @@ let onRemoveUnit = (player:Player, c:Coordinate) => {
 	savePlayer($state.snapshot(player))
 	resetUnits(player)
 }
-let onAddUnit = (player:Player, c:Coordinate, value:string) => {
+let onAddUnit = (player:Player, c:Coordinate) => {
 	generator.stop()
-	if(!value) {
+	if(!hand) {
 		return;
 	}
-	player.board.push(createBoardUnit(UnitMap[value], c))
+	player.board.push(createBoardUnit(hand, c))
 	updatePlayerTraits(player)
 	savePlayer($state.snapshot(player))
 	resetUnits(player)
 }
+let showUnitList = $state(false)
+let hand:Unit|undefined = $state(undefined)
+let createUnitDialog = () => {
+	showUnitList = true
+}
+let oncreateunit = (unit:Unit) => {
+	showUnitList = false
+	hand = unit
+}
+let oncancelunit = () => {
+	hand = undefined
+}
 </script>
 
+{#snippet dropUnitCard(player:Player, c:Coordinate)}
+{#if hand}
+	<DropUnitCard onclick={() => onAddUnit(player, c)}/>
+{:else}
+	<EmptyUnitCard />
+{/if}
+{/snippet}
+
+{#snippet unitCard(player:Player, boardUnit:BoardUnit)}
+	<UnitCard unit={boardUnit.unit} {boardUnit} onclick={() => onRemoveUnit(player, boardUnit.setCoord)} />
+{/snippet}
+{#if showUnitList}
+<Modal title="Crear unidad" onclose={() => showUnitList = false}>
+	<div class="row">
+		{#each Units as unit}
+			<div class="col-2" style="width: 210px; height: 200px;">
+				<button><UnitCard {unit} onclick={() => oncreateunit(unit)}/></button>
+			</div>
+		{/each}
+	</div>
+</Modal>
+{/if}
+
+{#if hand}
+	<div class="position-fixed top-0 end-0" in:fade out:fade style="width: 210px">
+		<UnitCard unit={hand} onclick={oncancelunit} />
+	</div>
+{/if}
 <div class="container mt-2">
 	<div class="mb-2">
 		<a class="btn btn-primary" href="/">Regresar</a>
 		<button onclick={resetAll} class="btn btn-secondary">Limpiar</button>
 		<button onclick={run} class="btn btn-success">Pelear</button>
+		<button onclick={createUnitDialog} class="btn btn-secondary">Crear unidad</button>
 		<select class="form-control d-inline-block" style="width: 10rem" bind:value={speedValue}>
 			<option value="0.5">Lento</option>
 			<option value="1">Velocidad normal</option>
@@ -150,6 +196,6 @@ let onAddUnit = (player:Player, c:Coordinate, value:string) => {
 	</div>
 
 	<div id="grid">
-		<BattleGround player1={player1} player2={player2} {onAddUnit} {onRemoveUnit} editable={true} {attacks} />
+		<BattleGround player1={player1} player2={player2} {unitCard} {dropUnitCard} {attacks} />
 	</div>
 </div>

@@ -14,16 +14,15 @@ let showModal = $state(false)
 if(!boardUnit) boardUnit=createBoardUnit(unit, {x:0, y:0})
 </script>
 
-{#snippet card()}
-	<div class="card">
-		<div class="card-header">{unit.name}</div>
-		<div class="card-body">
-			<UnitInfo {unit} {boardUnit} />
-		</div>
-	</div>
-{/snippet}
 {#if showModal}
-	<Modal onclose={()=>showModal=false} body={card} />
+	<Modal title="Información de la unidad" width="30rem" onclose={()=>showModal=false}>
+		<div class="card">
+			<div class="card-header">{unit.name}</div>
+			<div class="card-body">
+				<UnitInfo {unit} {boardUnit} />
+			</div>
+		</div>
+	</Modal>
 {/if}
 <div class="card w-100 {boardUnit.ui.style}">
 	<div class="card-header p-1">
@@ -43,7 +42,7 @@ if(!boardUnit) boardUnit=createBoardUnit(unit, {x:0, y:0})
 			<img src="/units/{unit.id}.png" width="100%" class="{unit.id}" alt={unit.name} />
 			<div class="overlay position-absolute bottom-0 pb-0 ps-0">
 				{#each unit.traits.filter(t => t.name) as trait}
-					<div class="trait mb-0 pe-3 ps-1 text-start" style="font-size: 80%">
+					<div class="trait mb-0 pe-3 ps-1 text-start">
 						<TraitIcon {trait} /> {trait.name}<br>
 					</div>
 				{/each}

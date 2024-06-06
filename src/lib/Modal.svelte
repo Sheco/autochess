@@ -1,27 +1,42 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
 
-	let { body, onclose }:{ body:Snippet, onclose:()=>void} = $props()
+	let { children, title, onclose, width }:{ 
+		children:Snippet, 
+		title:string, 
+		width?:string,
+		onclose:()=>void
+	} = $props()
 
 	let dialog:HTMLDialogElement; // HTMLDialogElement
 
 	$effect(() => {
 		if (dialog) dialog.showModal();
 	})
+	let style = $derived(width? `width: ${width}`: undefined)
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
 <dialog
 	bind:this={dialog}
-	{onclose}
-	onclick={onclose}
->
-	{@render body()}
+	{style}
+	{onclose}>
+	<div class="card">
+		<div class="card-header">
+			{title}
+			<form method="dialog" class="float-end">
+				<button class="btn btn-sm btn-danger">x</button>
+			</form>
+		</div>
+		<div class="card-body">
+			{@render children()}
+		</div>
+	</div>
 </dialog>
 
 <style>
 	dialog {
-		max-width: 32em;
+		max-width: 90%;
 		border-radius: 1em;
 		border: none;
 		padding: 0;

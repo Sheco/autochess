@@ -1,15 +1,13 @@
 <script lang="ts">
-import { Units } from './database'
-import UnitCard from './UnitCard.svelte';
 import TraitInfo from './TraitInfo.svelte';
     import DiceRoll from './DiceRoll.svelte';
+    import type { Snippet } from 'svelte';
 
-let { player, mirrored=false, editable=false, onAddUnit, onRemoveUnit, attacks }:{
+let { player, mirrored=false, unitCard, dropUnitCard, attacks }:{
 	player:Player, 
 	mirrored:boolean,
-	editable:boolean,
-	onAddUnit?: (player:Player, c:Coordinate, value:string)=>void,
-	onRemoveUnit?: (player:Player, c:Coordinate)=>void,
+	unitCard: Snippet<[Player,BoardUnit]>,
+	dropUnitCard?: Snippet<[Player,Coordinate]>,
 	attacks?: Attack[]
 } = $props()
 let boardArray = $derived(boardToArray(player.board, mirrored))
@@ -26,29 +24,19 @@ function boardToArray(board:Board, mirrored:boolean=false) {
 	return [ ...newboard.slice(6), ...newboard.slice(3,6), ...newboard.slice(0,3)]
 }
 
-function add(index:number) {
-	return (ev:Event) => {
-		if(!ev.target)
-			return
-		let select = ev.target as HTMLSelectElement
-		let y = Math.floor(index/3)
-		let mirroredy = mirrored? 2-y: y
-		let x = index%3
-		let c:Coordinate = { x, y: mirroredy }
-		if(onRemoveUnit)
-			onRemoveUnit(player, c)
-		if(onAddUnit)
-			onAddUnit(player, c, select.value)
-	}
+function indexToCoordinate(index:number) {
+	let y = Math.floor(index/3)
+	let mirroredy = mirrored? 2-y: y
+	let x = index%3
+	return { x, y: mirroredy } as Coordinate
 }
 
 
 let isAlive = $derived(player.board.filter(boardUnit => boardUnit.hp>0).length>0)
 let status = $derived(isAlive? "bg-"+player.color: "bg-secondary")
-let units = [...Units].sort((a, b) => a.name.localeCompare(b.name));
 
 </script>
-<div class="card mb-1 border-{player.color} border-2"  style="font-size: 80%">
+<div class="card mb-1 border-{player.color} border-2">
 	<div class="card-body p-1">
 		<div class="row">
 			<div class="col-6">
@@ -56,22 +44,9 @@ let units = [...Units].sort((a, b) => a.name.localeCompare(b.name));
 					{#each boardArray as boardUnit, index (index)}
 						<div class="col-4 mb-1">
 							{#if boardUnit}
-								<UnitCard unit={boardUnit.unit} {boardUnit} onclick={() => onRemoveUnit?onRemoveUnit(player, boardUnit.setCoord):undefined} />
-							{:else}
-								<div class="card h-100">
-									<div class="card-header p-0 ps-2">Espacio vacio
-									</div>
-									<div class="card-body p-1">
-										{#if editable}
-										<select onchange={add(index)} value="" class="mw-100 form-control">
-											<option value="">-</option>
-											{#each units as unit}
-												<option value="{unit.id}">{unit.name}</option>
-											{/each}
-										</select>
-										{/if}
-									</div>
-								</div>
+								{@render unitCard(player, boardUnit)}
+							{:else if dropUnitCard}
+								{@render dropUnitCard(player, indexToCoordinate(index))}
 							{/if}
 						</div>
 					{/each}
