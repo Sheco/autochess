@@ -18,7 +18,7 @@ function savePlayer(player:Player) {
 	let copy = Object.assign({}, player)
 	copy.traits = []
 	copy.board = copy.board.map(bu  => {
-		bu.damage = undefined
+		bu.ui.damage = undefined
 		bu.mods = {}
 		return bu
 	})
