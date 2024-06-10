@@ -8,6 +8,7 @@ import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     import DropUnitCard from "$lib/DropUnitCard.svelte";
     import EmptyUnitCard from "$lib/EmptyUnitCard.svelte";
+    import BoardUnitCard from "$lib/BoardUnitCard.svelte";
 
 function loadPlayer(id:string) {
 	let ls = JSON.parse(localStorage.getItem('player'+id)??"null")
@@ -114,6 +115,8 @@ let stats = $state({
 
 let onRemoveUnit = (player:Player, c:Coordinate) => {
 	generator.stop()
+	let unit = player.board.find(u => u.setCoord.x==c.x && u.setCoord.y==c.y)
+	if(unit) hand = unit.unit
 	player.board=player.board.filter(i => !(i.setCoord.x==c.x && i.setCoord.y==c.y))
 	updatePlayerTraits(player)
 	savePlayer($state.snapshot(player))
@@ -152,13 +155,13 @@ let oncancelunit = () => {
 {/snippet}
 
 {#snippet unitCard(player:Player, boardUnit:BoardUnit)}
-	<UnitCard unit={boardUnit.unit} {boardUnit} onclick={() => onRemoveUnit(player, boardUnit.setCoord)} />
+	<BoardUnitCard unit={boardUnit.unit} {boardUnit} onclick={() => onRemoveUnit(player, boardUnit.setCoord)} />
 {/snippet}
 {#if showUnitList}
 <Modal title="Crear unidad" onclose={() => showUnitList = false}>
 	<div class="row">
 		{#each Units as unit}
-			<div class="col-2" style="width: 210px; height: 200px;">
+			<div class="col-2" style="height: 200px;">
 				<button><UnitCard {unit} onclick={() => oncreateunit(unit)}/></button>
 			</div>
 		{/each}
