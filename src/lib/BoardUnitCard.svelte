@@ -20,6 +20,18 @@ if(!boardUnit) boardUnit=createBoardUnit(unit, {x:0, y:0})
 	</Modal>
 {/if}
 <div class="card w-100 {boardUnit.ui.style}" style="height: 120px">
+	<div class="overlay position-absolute top-0 start-0" style="z-index: 1500">
+		{#if boardUnit.ui.damage && boardUnit.ui.damage.damage>0}
+		{@const dmg = boardUnit.ui.damage}
+		{@const force = (1+(dmg.damage-dmg.min)/(dmg.max-dmg.min))*100}
+			<div class="damage-splash" style="font-size: {force}%">
+					{#each boardUnit.ui.damage.dice as dice}
+						<Emoji>{dice.type.icon}</Emoji>
+					{/each}
+					{boardUnit.ui.damage.damage}
+			</div>
+		{/if}
+	</div>
 	<div class="card-header p-1" style="height: 2rem">
 		<button onclick={() => showModal=true} class="btn btn-sm btn-info p-0 float-end"><span class="bi bi-info-circle"></span></button>
 			{#if boardUnit}
@@ -34,18 +46,6 @@ if(!boardUnit) boardUnit=createBoardUnit(unit, {x:0, y:0})
 
 		<button {onclick} class="unit p-0 position-relative">
 			<img src="/units/{unit.id}.png" class="{unit.id}" alt={unit.name} style="height: 200px"/>
-			<div class="overlay position-absolute top-0 start-0">
-				{#if boardUnit.ui.damage && boardUnit.ui.damage.damage>0}
-				{@const dmg = boardUnit.ui.damage}
-				{@const force = (1+(dmg.damage-dmg.min)/(dmg.max-dmg.min))*100}
-					<div class="badge bg-danger text-light" style="font-size: {force}%">
-							{#each boardUnit.ui.damage.dice as dice}
-								<Emoji>{dice.type.icon}</Emoji>
-							{/each}
-							{boardUnit.ui.damage.damage}
-					</div>
-				{/if}
-			</div>
 		</button>
 	</div>
 </div>
@@ -72,7 +72,7 @@ border: 1px solid #aaa;
   }
 }
 .attacked-defend {
-  animation: damaged 0.30s 1 ease-in-out;
+ animation: damaged 0.30s 1 ease-in-out;
   border: 2px solid #f00;
   z-index: 1500;
 }
@@ -92,5 +92,34 @@ border: 1px solid #aaa;
   z-index: 1500;
   transition: transform .2s;
 }
+
+.damage-splash {
+    font-size: 3em;
+    font-weight: bold;
+    color: red;
+    padding: 20px 40px;
+    background: linear-gradient(45deg, #ff0000, #ff9900);
+    position: relative;
+    text-align: center;
+    clip-path: polygon(
+        50% 0%, 60% 30%, 100% 30%, 70% 50%, 
+        100% 70%, 60% 70%, 50% 100%, 40% 70%, 
+        0% 70%, 30% 50%, 0% 30%, 40% 30%
+    );
+}
+
+.damage-splash::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, #ffff00, #ffcc00);
+    clip-path: inherit;
+    z-index: -1;
+    transform: scale(1.2);
+}
+
 </style>
 
