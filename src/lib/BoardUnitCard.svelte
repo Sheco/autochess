@@ -15,13 +15,8 @@ if(!boardUnit) boardUnit=createBoardUnit(unit, {x:0, y:0})
 </script>
 
 {#if showModal}
-	<Modal title="Información de la unidad" width="30rem" onclose={()=>showModal=false}>
-		<div class="card">
-			<div class="card-header">{unit.name}</div>
-			<div class="card-body">
-				<UnitInfo {unit} {boardUnit} />
-			</div>
-		</div>
+	<Modal title="{unit.name}" width="30rem" onclose={()=>showModal=false}>
+		<UnitInfo {unit} {boardUnit} />
 	</Modal>
 {/if}
 <div class="card w-100 {boardUnit.ui.style}" style="height: 120px">
