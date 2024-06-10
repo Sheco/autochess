@@ -174,8 +174,9 @@ let oncancelunit = () => {
 		<a class="btn btn-primary" href="/"><i class="bi bi-house-fill"></i> Regresar</a>
 		<button onclick={resetAll} class="btn btn-secondary"><i class="bi bi-pause-fill"></i> Pausa</button>
 		<button onclick={run} class="btn btn-success"><i class="bi bi-file-play-fill"></i> Pelear</button>
-		<button onclick={createUnitDialog} class="btn btn-secondary"><i class="bi bi-box-arrow-up"></i> Tomar únidad</button>
-		{#if hand}
+		{#if !hand}
+			<button onclick={createUnitDialog} class="btn btn-secondary"><i class="bi bi-box-arrow-up"></i> Tomar únidad</button>
+		{:else}
 			<button onclick={() => hand = undefined} class="btn btn-warning"><i class="bi bi-x-circle-fill"></i> Soltar {hand.name}</button>
 		{/if}
 		<select class="form-control d-inline-block" style="width: 10rem" bind:value={speedValue}>
