@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Snippet } from "svelte";
+    import { onMount, type Snippet } from "svelte";
 
 	let { children, title, onclose, width }:{ 
 		children:Snippet, 
@@ -14,9 +14,20 @@
 		if (dialog) dialog.showModal();
 	})
 	let style = $derived(width? `width: ${width}`: undefined)
+	onMount(() => {
+		document.querySelectorAll('dialog').forEach(element => 
+		element.addEventListener('mousedown', 
+			event => {
+				if(!event.target) return
+				let dialog = event.target as HTMLDialogElement
+				if (dialog === event.currentTarget) dialog.close()
+			}
+		))
+	})
+
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
+<!-- svelte-ignore a11_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
 <dialog
 	bind:this={dialog}
 	{style}
@@ -40,6 +51,7 @@
 		border-radius: 1em;
 		border: none;
 		padding: 0;
+		z-index: 1000;
 	}
 	dialog::backdrop {
 		background: rgba(0, 0, 0, 0.6);
