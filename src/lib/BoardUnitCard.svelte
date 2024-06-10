@@ -24,11 +24,13 @@ if(!boardUnit) boardUnit=createBoardUnit(unit, {x:0, y:0})
 		{#if boardUnit.ui.damage && boardUnit.ui.damage.damage>0}
 		{@const dmg = boardUnit.ui.damage}
 		{@const force = (1+(dmg.damage-dmg.min)/(dmg.max-dmg.min))*100}
+			<div style="font-size: 0.5rem">
 			<div class="damage-splash" style="font-size: {force}%">
 					{#each boardUnit.ui.damage.dice as dice}
 						<Emoji>{dice.type.icon}</Emoji>
 					{/each}
 					{boardUnit.ui.damage.damage}
+			</div>
 			</div>
 		{/if}
 	</div>
@@ -101,17 +103,16 @@ border: 1px solid #aaa;
 }
 
 .damage-splash {
-    font-size: 3em;
-    font-weight: bold;
+    font-size: 0.05rem;
     color: red;
-    padding: 20px 40px;
+    padding: 20px 20px;
     background: linear-gradient(45deg, #ff0000, #ff9900);
     position: relative;
     text-align: center;
     clip-path: polygon(
-        50% 0%, 60% 30%, 100% 30%, 70% 50%, 
-        100% 70%, 60% 70%, 50% 100%, 40% 70%, 
-        0% 70%, 30% 50%, 0% 30%, 40% 30%
+        50% 0%, 75% 30%, 100% 30%, 90% 50%, 
+        100% 70%, 75% 70%, 50% 100%, 25% 70%, 
+        0% 70%, 10% 50%, 0% 30%, 25% 30%
     );
 }
 
