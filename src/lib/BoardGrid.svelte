@@ -1,6 +1,5 @@
 <script lang="ts">
 import TraitInfo from './TraitInfo.svelte';
-    import DiceRoll from './DiceRoll.svelte';
     import type { Snippet } from 'svelte';
 
 let { player, mirrored=false, unitCard, dropUnitCard, attacks }:{

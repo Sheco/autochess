@@ -25,8 +25,8 @@ function reset() {
 </script>
 <div class="container mt-2">
 	<div class="d-print-none">
-		<a class="btn btn-success" href="/battlesim">Simulador</a>
-		<a class="btn btn-primary" href="/play">Jugar</a>
+		<a class="btn btn-success" href="/battlesim"><i class="bi bi-file-play-fill">Simulador</a>
+		<a class="btn btn-primary" href="/play"><i class="bi bi-people-fill"></i> Jugar</a>
 		<br>
 	</div>
 

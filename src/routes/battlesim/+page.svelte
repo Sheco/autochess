@@ -148,7 +148,7 @@ let oncancelunit = () => {
 
 {#snippet dropUnitCard(player:Player, c:Coordinate)}
 {#if hand}
-	<DropUnitCard onclick={() => onAddUnit(player, c)}/>
+	<DropUnitCard unit={hand} onclick={() => onAddUnit(player, c)}/>
 {:else}
 	<EmptyUnitCard />
 {/if}
@@ -169,17 +169,15 @@ let oncancelunit = () => {
 </Modal>
 {/if}
 
-{#if hand}
-	<div class="position-fixed top-0 end-0" in:fade out:fade style="width: 210px">
-		<UnitCard unit={hand} onclick={oncancelunit} />
-	</div>
-{/if}
 <div class="container mt-2">
 	<div class="mb-2">
-		<a class="btn btn-primary" href="/">Regresar</a>
-		<button onclick={resetAll} class="btn btn-secondary">Limpiar</button>
-		<button onclick={run} class="btn btn-success">Pelear</button>
-		<button onclick={createUnitDialog} class="btn btn-secondary">Crear unidad</button>
+		<a class="btn btn-primary" href="/"><i class="bi bi-house-fill"></i> Regresar</a>
+		<button onclick={resetAll} class="btn btn-secondary"><i class="bi bi-pause-fill"></i> Pausa</button>
+		<button onclick={run} class="btn btn-success"><i class="bi bi-file-play-fill"></i> Pelear</button>
+		<button onclick={createUnitDialog} class="btn btn-secondary"><i class="bi bi-box-arrow-up"></i> Tomar únidad</button>
+		{#if hand}
+			<button onclick={() => hand = undefined} class="btn btn-warning"><i class="bi bi-x-circle-fill"></i> Soltar {hand.name}</button>
+		{/if}
 		<select class="form-control d-inline-block" style="width: 10rem" bind:value={speedValue}>
 			<option value="0.5">Lento</option>
 			<option value="1">Velocidad normal</option>

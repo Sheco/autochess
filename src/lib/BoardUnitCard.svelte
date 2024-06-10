@@ -1,6 +1,5 @@
 <script lang="ts">
 import Modal from "./Modal.svelte";
-import TraitIcon from "./TraitIcon.svelte";
 import UnitInfo from "./UnitInfo.svelte";
 import Emoji from "./Emoji.svelte";
 import { createBoardUnit } from "./combat";
@@ -104,7 +103,6 @@ border: 1px solid #aaa;
 
 .damage-splash {
     font-size: 0.05rem;
-    color: red;
     padding: 20px 20px;
     background: linear-gradient(45deg, #ff0000, #ff9900);
     position: relative;
