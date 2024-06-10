@@ -58,18 +58,31 @@ declare global {
 		weakness: Dice[];
 	}
 
+	/*
 	interface Mods {
 		attack?: Dice[]
 		maxhp?: number
 	}
-	export interface BoardUnit {
+	*/
+
+	interface AttributeMod {
+		attribute: string,
+		value: number
+	}
+	interface DiceMod {
+		attribute: string,
+		dice: Dice[]
+	}
+	type Mod = AttributeMod|DiceMod
+
+	export interface BoardUnit extends Unit {
 		unit: Unit,
 		player?:Player,
 		setCoord:Coordinate
 		realCoord:Coordinate
 		hp: number
 		energy:number
-		mods: Mods
+		mods: Mod[]
 		ui: {
 			style?:string
 			damage?:DamageRoll
@@ -77,9 +90,9 @@ declare global {
 		}
 	}
 
-	interface TraitMods {
+	interface TraitMod {
 		target: Trait,
-		values: Mods
+		mods: Mod[]
 
 	}
 	interface TraitRank {
@@ -87,14 +100,14 @@ declare global {
 		message: string
 		levels: {
 			amount: number
-			mods: TraitMods[]
+			mods: TraitMod[]
 		}[]
 	}
 
 	interface TraitRankActive extends TraitRank {
 		active: number,
 		level: number
-		mods: TraitMods[]
+		mods: TraitMod[]
 	}
 	export type Board = BoardUnit[]
 	export interface Player {

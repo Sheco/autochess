@@ -1,13 +1,14 @@
 <script lang="ts">
-let { boardUnit, attribute }:{
-	boardUnit:BoardUnit,
+let { unit, attribute }:{
+	unit:BoardUnit,
 	attribute:string
 } = $props()
-let base = boardUnit.unit[attribute as keyof typeof boardUnit.unit] as number
-let mod = boardUnit.mods[attribute as keyof typeof boardUnit.mods] as number
+let base = unit.unit[attribute as keyof typeof unit.unit] as number
+let active = unit[attribute as keyof typeof unit] as number
+let isModded = base!=active
 </script>
-{#if mod}
-	<span class="text-success fw-bold">{base+mod}</span>
+{#if isModded}
+	<span class="text-success fw-bold">{active}</span>
 {:else}
-	{base}
+	{active}
 {/if}

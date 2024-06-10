@@ -1,3 +1,5 @@
+import { updatePlayerTraits } from "./database";
+
 function coordinatesBetween(point1:Coordinate, point2:Coordinate) {
     const dx = point2.x - point1.x;
     const dy = point2.y - point1.y;
@@ -79,17 +81,9 @@ function setBattleCoordinates(player:Player) {
 	}
 }
 
-export function resetUnits(player:Player) {
-	for(let boardUnit of player.board) {
-		boardUnit.energy = 0
-		boardUnit.hp = boardUnit.unit.maxhp+(boardUnit.mods.maxhp??0)
-		boardUnit.ui.hp = boardUnit.hp
-	}
-}
-
 function initBattle(player1:Player, player2: Player) {
 	for(let player of [player1, player2]) {
-		resetUnits(player)
+		updatePlayerTraits(player)
 		setBattleCoordinates(player)
 	}
 }
@@ -102,7 +96,7 @@ function RollDice(dice:Dice) {
 }
 
 export function calculateDamage(attacker:BoardUnit,defender:BoardUnit) {
-	let attackDice = [...attacker.unit.attack, ...attacker.mods.attack??[]]
+	let attackDice = [...attacker.unit.attack]
 	let weaknessDice = attackDice.flatMap(die => defender.unit.weakness.filter(wdie => wdie.type==die.type))
 	let dice:Dice[] = [...attackDice, ...weaknessDice]
 	return dice.reduce((total, die) => {
@@ -288,12 +282,13 @@ export function fightStatus(player1:Player, player2:Player) {
 
 export function createBoardUnit(unit:Unit, c:Coordinate): BoardUnit {
 	return {
+		...unit,
 		unit,
 		setCoord: {...c},
 		realCoord: c,
 		hp: unit.maxhp,
 		energy: 0,
-		mods: {},
+		mods: [],
 		ui: { hp: unit.maxhp }
 	}
 }

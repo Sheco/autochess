@@ -12,16 +12,18 @@ let modal = $state(false)
 {#if modal}
 <Modal onclose={() => modal = false} title="{trait.trait.icon} {trait.trait.name} nível {trait.level+1}">
 			<p>{@html trait.message}</p>
-			{#each trait.mods as mod}
-				Aplica a <TraitIcon trait={mod.target} />:
-				{#if mod.values.maxhp!==undefined}
-					HP+{mod.values.maxhp}
-				{/if}
-				{#if mod.values.attack!==undefined}
-						{#each mod.values.attack as dice}
+			{#each trait.mods as traitmod}
+				Aplica a <TraitIcon trait={traitmod.target} />:
+				{#each traitmod.mods as mod}
+					{#if 'value' in mod}
+						- {mod.attribute}: {mod.value}
+					{/if}
+					{#if 'dice' in mod}
+						{#each mod.dice as dice}
 							Ataque: <Emoji>{dice.type.icon}</Emoji>{dice.amount}d{dice.sides}+{dice.modifier}
 						{/each}
-				{/if}
+					{/if}
+				{/each}
 				<br>
 			{/each}
 </Modal>

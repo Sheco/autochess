@@ -1,11 +1,10 @@
 <script lang="ts">
-import { createBoardUnit, resetUnits, fightStatus, fight, createThrottledGenerator, animatedFight } from "$lib/combat";
+import { createBoardUnit, fightStatus, fight, createThrottledGenerator, animatedFight } from "$lib/combat";
 import { UnitMap, Units, updatePlayerTraits } from "$lib/database";
 import BattleGround from "$lib/BattleGround.svelte";
 import { onMount } from "svelte";
     import Modal from "$lib/Modal.svelte";
     import UnitCard from "$lib/UnitCard.svelte";
-    import { fade } from "svelte/transition";
     import DropUnitCard from "$lib/DropUnitCard.svelte";
     import EmptyUnitCard from "$lib/EmptyUnitCard.svelte";
     import BoardUnitCard from "$lib/BoardUnitCard.svelte";
@@ -25,7 +24,7 @@ function savePlayer(player:Player) {
 	copy.traits = []
 	copy.board = copy.board.map(bu  => {
 		bu.ui.damage = undefined
-		bu.mods = {}
+		bu.mods = []
 		return bu
 	})
 	localStorage.setItem(player.id, JSON.stringify(copy))
@@ -120,7 +119,6 @@ let onRemoveUnit = (player:Player, c:Coordinate) => {
 	player.board=player.board.filter(i => !(i.setCoord.x==c.x && i.setCoord.y==c.y))
 	updatePlayerTraits(player)
 	savePlayer($state.snapshot(player))
-	resetUnits(player)
 }
 let onAddUnit = (player:Player, c:Coordinate) => {
 	generator.stop()
@@ -130,7 +128,6 @@ let onAddUnit = (player:Player, c:Coordinate) => {
 	player.board.push(createBoardUnit(hand, c))
 	updatePlayerTraits(player)
 	savePlayer($state.snapshot(player))
-	resetUnits(player)
 }
 let showUnitList = $state(false)
 let hand:Unit|undefined = $state(undefined)
@@ -155,14 +152,14 @@ let oncancelunit = () => {
 {/snippet}
 
 {#snippet unitCard(player:Player, boardUnit:BoardUnit)}
-	<BoardUnitCard unit={boardUnit.unit} {boardUnit} onclick={() => onRemoveUnit(player, boardUnit.setCoord)} />
+	<BoardUnitCard unit={boardUnit} onclick={() => onRemoveUnit(player, boardUnit.setCoord)} />
 {/snippet}
 {#if showUnitList}
 <Modal title="Crear unidad" onclose={() => showUnitList = false}>
 	<div class="row">
 		{#each Units as unit}
 			<div class="col-2" style="height: 200px;">
-				<button><UnitCard {unit} onclick={() => oncreateunit(unit)}/></button>
+				<button><UnitCard unit={createBoardUnit(unit, {x: 0, y: 0})} onclick={() => oncreateunit(unit)}/></button>
 			</div>
 		{/each}
 	</div>
@@ -177,7 +174,7 @@ let oncancelunit = () => {
 		{#if !hand}
 			<button onclick={createUnitDialog} class="btn btn-secondary"><i class="bi bi-box-arrow-up"></i> Tomar únidad</button>
 		{:else}
-			<button onclick={() => hand = undefined} class="btn btn-warning"><i class="bi bi-x-circle-fill"></i> Soltar {hand.name}</button>
+			<button onclick={oncancelunit} class="btn btn-warning"><i class="bi bi-x-circle-fill"></i> Soltar {hand.name}</button>
 		{/if}
 		<select class="form-control d-inline-block" style="width: 10rem" bind:value={speedValue}>
 			<option value="0.5">Lento</option>

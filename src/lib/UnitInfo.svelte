@@ -2,11 +2,8 @@
 import UnitTraits from "./UnitTraits.svelte";
     import Attribute from "./Attribute.svelte";
     import Emoji from "./Emoji.svelte";
-    import { createBoardUnit } from "./combat";
 
-let { unit, boardUnit }:{ unit:Unit, boardUnit?:BoardUnit } = $props()
-if (!boardUnit) boardUnit = createBoardUnit(unit, {x:0, y:0})
-let attackMods = boardUnit.mods.attack??[]
+let { unit }:{ unit:BoardUnit } = $props()
 </script>
 <div class="row">
 	
@@ -29,7 +26,7 @@ let attackMods = boardUnit.mods.attack??[]
 	<div class="col-12">
 		<b>Ataque:</b><br>
 		<div class="ms-3">
-			{#each [...unit.attack, ...attackMods] as die}
+			{#each [...unit.attack] as die}
 				<Emoji>{die.type.icon}</Emoji>{die.amount}d{die.sides}+{die.modifier}
 			{/each}
 		</div>
@@ -44,7 +41,7 @@ let attackMods = boardUnit.mods.attack??[]
 	</div>
 	<div class="col-12">
 		<b>HP:</b> 
-		<span class="float-end"><Attribute {boardUnit} attribute={'maxhp'} /></span>
+		<span class="float-end"><Attribute unit={unit as BoardUnit} attribute={'maxhp'} /></span>
 	</div>
 	<div class="col-6">
 		<b>Energía por tick:</b>

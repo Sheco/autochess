@@ -58,7 +58,7 @@ function reset() {
 				<div class="card">
 					<div class="card-header"><UnitTraits {unit} />{unit.name}</div>
 					<div class="card-body">
-						<UnitInfo {unit} />
+						<UnitInfo unit={createBoardUnit(unit, {x:0, y:0})} />
 					</div>
 				</div>
 			</div>
@@ -81,17 +81,19 @@ function reset() {
 					{@html traitRank.message}
 					<ul>
 						{#each traitRank.levels as level}
-							<li>{level.amount} unidad(es) <ul><li>{#each level.mods as mod}
-								
-								Aplica a <TraitIcon trait={mod.target} />:
-								{#if mod.values.maxhp!==undefined}
-									HP+{mod.values.maxhp}
-								{/if}
-								{#if mod.values.attack!==undefined}
-										{#each mod.values.attack as dice}
+							<li>{level.amount} unidad(es) <ul><li>
+								{#each level.mods as traitmod}
+								Aplica a <TraitIcon trait={traitmod.target} />:
+								{#each traitmod.mods as mod}
+									{#if 'value' in mod}
+										- {mod.attribute}: {mod.value}
+									{/if}
+									{#if 'dice' in mod}
+										{#each mod.dice as dice}
 											Ataque: <Emoji>{dice.type.icon}</Emoji>{dice.amount}d{dice.sides}+{dice.modifier}
 										{/each}
-								{/if}
+									{/if}
+								{/each}
 								<br>
 								{/each}
 							</li></ul>

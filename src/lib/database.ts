@@ -164,7 +164,7 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{ 
 						target: TraitMap.earth,
-						values: { maxhp: 5 },
+						mods: [{ attribute: 'maxhp', value: 5 }],
 					}
 				]
 			},
@@ -173,13 +173,14 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{
 						target: TraitMap.earth,
-						values: { maxhp: 10},
+						mods: [{ attribute: 'maxhp', value: 10 }],
 					},
 					{
 						target: TraitMap.fire,
-						values: {
-							attack: [{ type: TraitMap.fire, amount: 1, sides: 4, modifier: 0}],
-						}
+						mods: [{
+							attribute: 'attack',
+							dice: [{ type: TraitMap.fire, amount: 1, sides: 4, modifier: 0}],
+						}]
 					}
 				]
 			},
@@ -194,7 +195,7 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{ 
 						target: TraitMap.metal,
-						values: { maxhp: 5 },
+						mods: [{ attribute: 'maxhp', value: 5 }],
 					}
 				]
 			},
@@ -203,13 +204,14 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{
 						target: TraitMap.metal,
-						values: { maxhp: 10},
+						mods: [{ attribute: 'maxhp', value: 10}],
 					},
 					{
 						target: TraitMap.earth,
-						values: {
-							attack: [{ type: TraitMap.earth, amount: 1, sides: 4, modifier: 0}],
-						}
+						mods: [{
+							attribute: 'attack',
+							dice: [{ type: TraitMap.earth, amount: 1, sides: 4, modifier: 0}],
+						}]
 					}
 				]
 			},
@@ -224,9 +226,10 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{
 						target: TraitMap.fire,
-						values: {
-							attack: [{ type: TraitMap.fire, amount: 1, sides: 4, modifier: 0}]
-						}
+						mods: [{
+							attribute: 'attack',
+							dice: [{ type: TraitMap.fire, amount: 1, sides: 4, modifier: 0}]
+						}]
 					}
 				]
 			},
@@ -235,15 +238,17 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{
 						target: TraitMap.wood,
-						values: {
-							attack: [{ type: TraitMap.wood, amount: 1, sides: 4, modifier: 0}]
-						}
+						mods: [{
+							attribute: 'attack',
+							dice: [{ type: TraitMap.wood, amount: 1, sides: 4, modifier: 0}]
+						}]
 					},
 					{
 						target: TraitMap.fire,
-						values: {
-							attack: [{ type: TraitMap.fire, amount: 1, sides: 4, modifier: 0}]
-						}
+						mods: [{
+							attribute: 'attack',
+							dice: [{ type: TraitMap.fire, amount: 1, sides: 4, modifier: 0}]
+						}]
 					}
 				]
 			},
@@ -258,7 +263,7 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{
 						target: TraitMap.wood,
-						values: { maxhp: 5 },
+						mods: [{ attribute: 'maxhp', value: 5 }],
 					}
 				]
 			},
@@ -267,13 +272,14 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{
 						target: TraitMap.wood,
-						values: { maxhp: 10},
+						mods: [{ attribute: 'maxhp', value: 10}],
 					},
 					{
 						target: TraitMap.water,
-						values: {
-							attack: [{ type: TraitMap.water, amount: 1, sides: 4, modifier: 0}],
-						}
+						mods: [{
+							attribute: 'attack',
+							dice: [{ type: TraitMap.water, amount: 1, sides: 4, modifier: 0}],
+						}]
 					}
 				]
 			},
@@ -288,7 +294,7 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{
 						target: TraitMap.water,
-						values: { maxhp: 5 },
+						mods: [{ attribute: 'maxhp', value: 5 }],
 					}
 				]
 			},
@@ -297,13 +303,14 @@ export let boardTraitRanks:TraitRank[] = [
 				mods: [
 					{
 						target: TraitMap.water,
-						values: { maxhp: 10},
+						mods: [{ attribute: 'maxhp', value: 10}],
 					},
 					{
 						target: TraitMap.metal,
-						values: {
-							attack: [{ type: TraitMap.metal, amount: 1, sides: 4, modifier: 0}],
-						}
+						mods: [{
+							attribute: 'attack',
+							dice: [{ type: TraitMap.metal, amount: 1, sides: 4, modifier: 0}],
+						}]
 					}
 				]
 			},
@@ -311,6 +318,18 @@ export let boardTraitRanks:TraitRank[] = [
 	}
 ]
 
+function sumAttributeMods(boardUnit:BoardUnit, attribute:string) {
+	return boardUnit.mods.reduce((total, mod) =>
+		total+(mod.attribute==attribute && 'value' in mod? mod.value: 0)
+	, 0)
+}
+
+function getDiceMods(boardUnit:BoardUnit, attribute:string) {
+	return boardUnit.mods
+		.filter(mod => mod.attribute==attribute && 'dice' in mod)
+		.map(mod => mod as DiceMod)
+		.flatMap(mod => mod.dice)
+}
 export function updatePlayerTraits(player:Player) {
 	let countUnitTraits = (trait:Trait) => player.board
 		.reduce((total, curr) => {
@@ -334,22 +353,23 @@ export function updatePlayerTraits(player:Player) {
 			return traitrank
 		})
 	player.board = player.board.map(bu => {
+		// reset stats to the unit's base values
+		Object.assign(bu, bu.unit)
+		bu.attack = [...bu.attack]
+		bu.weakness = [...bu.weakness]
+
 		bu.mods = player.traits.flatMap(trait => trait.mods) // get all mods
 			// that target this unit's type
 			.filter(trait => bu.unit.traits.map(t => t.id).includes(trait.target.id))
-			.map(mod => mod.values)
-			// and sum them all up
-			.reduce((total, mod) => {
-				if(mod.maxhp) {
-					if(total.maxhp===undefined) total.maxhp=0
-					total.maxhp+=mod.maxhp
-				}
-				if(mod.attack) {
-					if(total.attack===undefined) total.attack = []
-					total.attack.push(...mod.attack)
-				}
-				return total
-			},{})
+			.flatMap(mod => mod.mods)
+
+		bu.energy = 0
+		bu.maxhp = bu.unit.maxhp+sumAttributeMods(bu, 'maxhp')
+		bu.hp = bu.maxhp
+		bu.ui.hp = bu.hp
+
+		let attackDiceMods = getDiceMods(bu, 'attack')
+		bu.attack.push(...attackDiceMods)
 		return bu
 	})
 }

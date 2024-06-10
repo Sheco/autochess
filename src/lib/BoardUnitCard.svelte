@@ -2,42 +2,39 @@
 import Modal from "./Modal.svelte";
 import UnitInfo from "./UnitInfo.svelte";
 import Emoji from "./Emoji.svelte";
-import { createBoardUnit } from "./combat";
 
-let { unit, onclick, boardUnit }:{
-	unit:Unit, 
-	boardUnit?:BoardUnit,
+let { unit, onclick}:{
+	unit:BoardUnit, 
 	onclick:()=>void,
 } = $props()
 let showModal = $state(false)
-if(!boardUnit) boardUnit=createBoardUnit(unit, {x:0, y:0})
 </script>
 
 {#if showModal}
 	<Modal title="{unit.name}" width="30rem" onclose={()=>showModal=false}>
-		<UnitInfo {unit} {boardUnit} />
+		<UnitInfo {unit} />
 	</Modal>
 {/if}
-<div class="card w-100 {boardUnit.ui.style}" style="height: 100px">
+<div class="card w-100 {unit.ui.style}" style="height: 100px">
 	<div class="overlay position-absolute top-0 start-0" style="z-index: 1500">
-		{#if boardUnit.ui.damage && boardUnit.ui.damage.damage>0}
-		{@const dmg = boardUnit.ui.damage}
+		{#if unit.ui.damage && unit.ui.damage.damage>0}
+		{@const dmg = unit.ui.damage}
 		{@const force = (1+(dmg.damage-dmg.min)/(dmg.max-dmg.min))*100}
 			<div style="font-size: 0.5rem">
 			<div class="damage-splash" style="font-size: {force}%">
-					{#each boardUnit.ui.damage.dice as dice}
+					{#each unit.ui.damage.dice as dice}
 						<Emoji>{dice.type.icon}</Emoji>
 					{/each}
-					{boardUnit.ui.damage.damage}
+					{unit.ui.damage.damage}
 			</div>
 			</div>
 		{/if}
 	</div>
 	<div class="card-header p-1" style="height: 2rem">
 		<button onclick={() => showModal=true} class="btn btn-sm btn-info p-0 float-end"><span class="bi bi-info-circle"></span></button>
-			{#if boardUnit}
-			{@const maxhp = unit.maxhp+(boardUnit.mods.maxhp??0) }
-			{@const percent = Math.floor((boardUnit.ui.hp??0)/maxhp*100) }
+			{#if unit}
+			{@const maxhp = unit.maxhp }
+			{@const percent = Math.floor((unit.ui.hp??0)/maxhp*100) }
 			<div class="progress">
 				<div class="progress-bar bg-danger" role="progressbar" style="width: {percent}%" aria-valuenow={percent} aria-valuemin="0" aria-valuemax="100"></div>
 			</div>
