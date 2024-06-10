@@ -46,7 +46,7 @@ let status = $derived(isAlive? "bg-"+player.color: "bg-secondary")
 					no big deal :)
 					-->
 					<input type="text" bind:value={player.name} />
-					<span class="badge bg-danger position-absolute top-0 end-0 border">{player.board.reduce((total, v) => total+v.hp, 0)}</span><br>
+					<span class="badge bg-danger ">{player.board.reduce((total, v) => total+v.hp, 0)}</span><br>
 				</div>
 
 				{#each player.traits as trait}

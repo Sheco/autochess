@@ -19,7 +19,7 @@ if(!boardUnit) boardUnit=createBoardUnit(unit, {x:0, y:0})
 		<UnitInfo {unit} {boardUnit} />
 	</Modal>
 {/if}
-<div class="card w-100 {boardUnit.ui.style}" style="height: 120px">
+<div class="card w-100 {boardUnit.ui.style}" style="height: 100px">
 	<div class="overlay position-absolute top-0 start-0" style="z-index: 1500">
 		{#if boardUnit.ui.damage && boardUnit.ui.damage.damage>0}
 		{@const dmg = boardUnit.ui.damage}
@@ -42,7 +42,7 @@ if(!boardUnit) boardUnit=createBoardUnit(unit, {x:0, y:0})
 			</div>
 			{/if}
 	</div>
-	<div class="card-body p-0 overflow-hidden w-100" style="height: 70px">
+	<div class="card-body p-0 overflow-hidden w-100" style="height: 50px">
 
 		<button {onclick} class="unit p-0 position-relative">
 			<img src="/units/{unit.id}.png" class="{unit.id}" alt={unit.name} style="height: 200px"/>
@@ -53,8 +53,15 @@ if(!boardUnit) boardUnit=createBoardUnit(unit, {x:0, y:0})
 <style>
 .unit {
   height: 100px;
-  width: 100%;
+  width: 200%;
   overflow: hidden;
+ position:relative;
+}
+.unit img {
+position: absolute;
+  top: 50%;
+  left: 40%;
+  transform: translate(-70%, -30%);
 }
 
 .overlay .trait {
