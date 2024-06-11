@@ -31,10 +31,7 @@ let onmanage = (p:Player) => {
 {#if view == "main"}
 	<PlayerBoard {players} {onmanage} {onfight} />
 {:else if view == "manage" && player}
-		<button class="btn btn-secondary" onclick={onclose}>
-			Cerrar
-		</button>
-	<ManagePlayer {player} />
+	<ManagePlayer {player} {onclose} />
 {:else if view == "combat"}
 	<Combat {players} {ondamage} {onendcombat} />
 {/if}

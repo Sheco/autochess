@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { Snippet } from "svelte";
-import { createBoardUnit, setBattleCoordinates } from "$lib/combat";
+import { createBoardUnit, firstOpenSpace, setBattleCoordinates } from "$lib/combat";
     import { updatePlayerTraits } from "$lib/database";
     import DropUnitCard from "$lib/DropUnitCard.svelte";
     import EmptyUnitCard from "$lib/EmptyUnitCard.svelte";
@@ -8,7 +8,7 @@ import { createBoardUnit, setBattleCoordinates } from "$lib/combat";
     import BoardGrid from "$lib/BoardGrid.svelte";
     import TraitInfo from "$lib/TraitInfo.svelte";
 
-let { player }: {player:Player, actions?:Snippet|undefined} = $props();
+let { player, onclose }: {player:Player, onclose?:()=>void} = $props();
 let takenUnit:BoardUnit|undefined = $state(undefined)
 function ontakeFromBench(c:Coordinate) {
 	let otherUnit = takenUnit
@@ -44,6 +44,13 @@ function onreleaseToBoard(c:Coordinate) {
 	takenUnit = undefined
 }
 
+function onclose_here() {
+	if(takenUnit) {
+		let c = firstOpenSpace(player.hand)
+		if(c) onreleaseToBench(c)
+	}
+	if(onclose) onclose()
+}
 $effect(()=> {
 	// track player, when it changes, reset state.
 	player;
@@ -67,6 +74,12 @@ $effect(()=> {
 				{/each}
 			</div>
 		</div>
+
+		{#if onclose}
+			<button class="btn btn-secondary" onclick={onclose_here}>
+				Cerrar
+			</button>
+		{/if}
 	</div>
 	<div class="col-8">
 		{#snippet benchDropUnitCard(c:Coordinate)}
