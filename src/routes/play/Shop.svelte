@@ -31,6 +31,16 @@ let onroll = () => {
 let onbuy = (index:number) => {
 	if(player.gold==0)
 		return;
+	let firstOpen = () => {
+		for(let i=0; i<6; i++) {
+			if(!player.hand.units.find(u => u.setCoord.x==i))
+				return i
+		}
+	}
+	if(firstOpen()===undefined) {
+		alert('La banca esta llena')
+		return;
+	}
 	let [card] = cards.splice(index, 1)
 	onbuy_parent(player, card)
 }

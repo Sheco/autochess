@@ -63,7 +63,7 @@ let onbuy = (player:Player, unit:Unit) => {
 	}
 	let x = firstOpen()
 	if(x === undefined) { 
-		alert('The bench is full')
+		alert('La banca esta llena')
 		return;
 	}
 	let y = 0
