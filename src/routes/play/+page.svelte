@@ -56,7 +56,7 @@ let onroll = (player:Player) => {
 let onbuy = (player:Player, unit:Unit) => {
 	player.gold--
 	let firstOpen = () => {
-		for(let i=0; i<6; i++) {
+		for(let i=0; i<player.hand.columns; i++) {
 			if(!player.hand.units.find(u => u.setCoord.x==i))
 				return i
 		}
