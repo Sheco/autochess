@@ -13,7 +13,7 @@ import { onMount } from "svelte";
 function loadPlayer(id:string) {
 	let ls = JSON.parse(localStorage.getItem('player'+id)??"null")
 	if(!ls) return 
-	for(let bu of ls.board) {
+	for(let bu of ls.board.units) {
 		bu.unit = UnitMap[bu.unit.id] 
 	}
 	updatePlayerTraits(ls)
