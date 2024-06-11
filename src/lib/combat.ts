@@ -104,8 +104,8 @@ function RollDice(dice:Dice) {
 }
 
 export function calculateDamage(attacker:BoardUnit,defender:BoardUnit) {
-	let attackDice = [...attacker.unit.attack]
-	let weaknessDice = attackDice.flatMap(die => defender.unit.weakness.filter(wdie => wdie.type==die.type))
+	let attackDice = [...attacker.attack]
+	let weaknessDice = attackDice.flatMap(die => defender.weakness.filter(wdie => wdie.type==die.type))
 	let dice:Dice[] = [...attackDice, ...weaknessDice]
 	return dice.reduce((total, die) => {
 		total.damage += RollDice(die)
