@@ -10,19 +10,23 @@ import { createBoardUnit, setBattleCoordinates } from "$lib/combat";
 let { player }: {player:Player, actions?:Snippet|undefined} = $props();
 let takenUnit:BoardUnit|undefined = $state(undefined)
 function ontakeFromBench(c:Coordinate) {
-	let index=player.hand.findIndex(bu => c.x==bu.setCoord.x && c.y==bu.setCoord.y);
-	[takenUnit] = player.hand.splice(index, 1)
+	let otherUnit = takenUnit
+	let index=player.hand.units.findIndex(bu => c.x==bu.setCoord.x && c.y==bu.setCoord.y);
+	[takenUnit] = player.hand.units.splice(index, 1)
+	if(otherUnit) player.hand.units.push(createBoardUnit(otherUnit.unit, c))
 }
 function ontakeFromBoard(c:Coordinate) {
-	let index=player.board.findIndex(bu => c.x==bu.setCoord.x && c.y==bu.setCoord.y)
-	takenUnit = player.board[index]
-	player.board.splice(index, 1)
+	let otherUnit = takenUnit
+	let index=player.board.units.findIndex(bu => c.x==bu.setCoord.x && c.y==bu.setCoord.y)
+	takenUnit = player.board.units[index]
+	player.board.units.splice(index, 1)
+	if(otherUnit) player.board.units.push(createBoardUnit(otherUnit.unit, c))
 	updatePlayerTraits(player)
 }
 function onreleaseToBench(c:Coordinate) {
 	if(!takenUnit)
 		return
-	player.hand.push(createBoardUnit(takenUnit.unit, c))
+	player.hand.units.push(createBoardUnit(takenUnit.unit, c))
 	updatePlayerTraits(player)
 	takenUnit = undefined
 }
@@ -33,7 +37,7 @@ function onreleaseToBoard(c:Coordinate) {
 		return
 	}
 
-	player.board.push(createBoardUnit(takenUnit.unit, c))
+	player.board.units.push(createBoardUnit(takenUnit.unit, c))
 	setBattleCoordinates(player)
 	updatePlayerTraits(player)
 	takenUnit = undefined
@@ -45,6 +49,12 @@ $effect(()=> {
 	takenUnit = undefined
 })
 </script>
+
+{#if takenUnit}
+	<div class="fixed-top" style="width:100px">
+		<BoardUnitCard unit={takenUnit} onclick={() => {}}/>
+	</div>
+{/if}
 
 {#snippet benchDropUnitCard(c:Coordinate)}
 {#if takenUnit}

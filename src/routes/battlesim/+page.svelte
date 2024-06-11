@@ -8,6 +8,7 @@ import { onMount } from "svelte";
     import DropUnitCard from "$lib/DropUnitCard.svelte";
     import EmptyUnitCard from "$lib/EmptyUnitCard.svelte";
     import BoardUnitCard from "$lib/BoardUnitCard.svelte";
+    import PlayerBoard from "$lib/PlayerBoard.svelte";
 
 function loadPlayer(id:string) {
 	let ls = JSON.parse(localStorage.getItem('player'+id)??"null")
@@ -22,7 +23,7 @@ function loadPlayer(id:string) {
 function savePlayer(player:Player) {
 	let copy = Object.assign({}, player)
 	copy.traits = []
-	copy.board = copy.board.map(bu  => {
+	copy.board.units = copy.board.units.map(bu  => {
 		bu.ui.damage = undefined
 		bu.mods = []
 		return bu
@@ -46,8 +47,16 @@ let player1:Player = $state({
 	gold: 5,
 	rolls: 2,
 	traits: [],
-	hand: [],
-	board: [],
+	hand: {
+		units: [],
+		rows: 1,
+		columns: 6,
+	},
+	board: {
+		units: [],
+		rows: 1,
+		columns: 6
+	}
 })
 let player2:Player = $state({
 	id: 'player2',
@@ -59,9 +68,17 @@ let player2:Player = $state({
 	maxgold: 5,
 	gold: 5,
 	rolls: 2,
-	hand: [],
 	traits: [],
-	board: [ ]
+	hand: {
+		units: [],
+		rows: 1,
+		columns: 6,
+	},
+	board: {
+		units: [],
+		rows: 1,
+		columns: 6
+	}
 })
 let winner:Player|undefined = $state(undefined)
 let speedValue:string = $state("1")
@@ -114,9 +131,9 @@ let stats = $state({
 
 let onRemoveUnit = (player:Player, c:Coordinate) => {
 	generator.stop()
-	let unit = player.board.find(u => u.setCoord.x==c.x && u.setCoord.y==c.y)
+	let unit = player.board.units.find(u => u.setCoord.x==c.x && u.setCoord.y==c.y)
 	if(unit) hand = unit.unit
-	player.board=player.board.filter(i => !(i.setCoord.x==c.x && i.setCoord.y==c.y))
+	player.board.units=player.board.units.filter(i => !(i.setCoord.x==c.x && i.setCoord.y==c.y))
 	updatePlayerTraits(player)
 	savePlayer($state.snapshot(player))
 }
@@ -125,7 +142,7 @@ let onAddUnit = (player:Player, c:Coordinate) => {
 	if(!hand) {
 		return;
 	}
-	player.board.push(createBoardUnit(hand, c))
+	player.board.units.push(createBoardUnit(hand, c))
 	updatePlayerTraits(player)
 	savePlayer($state.snapshot(player))
 }
@@ -143,17 +160,6 @@ let oncancelunit = () => {
 }
 </script>
 
-{#snippet dropUnitCard(player:Player, c:Coordinate)}
-{#if hand}
-	<DropUnitCard unit={hand} onclick={() => onAddUnit(player, c)}/>
-{:else}
-	<EmptyUnitCard />
-{/if}
-{/snippet}
-
-{#snippet unitCard(player:Player, boardUnit:BoardUnit)}
-	<BoardUnitCard unit={boardUnit} onclick={() => onRemoveUnit(player, boardUnit.setCoord)} />
-{/snippet}
 {#if showUnitList}
 <Modal title="Crear unidad" onclose={() => showUnitList = false}>
 	<div class="row">
@@ -195,6 +201,30 @@ let oncancelunit = () => {
 	</div>
 
 	<div id="grid">
-		<BattleGround player1={player1} player2={player2} {unitCard} {dropUnitCard} {attacks} />
+		{#snippet player2dropUnitCard(c:Coordinate)}
+		{#if hand}
+			<DropUnitCard unit={hand} onclick={() => onAddUnit(player2, c)}/>
+		{:else}
+			<EmptyUnitCard />
+		{/if}
+		{/snippet}
+
+		{#snippet player2unitCard(boardUnit:BoardUnit)}
+			<BoardUnitCard unit={boardUnit} onclick={() => onRemoveUnit(player2, boardUnit.setCoord)} />
+		{/snippet}
+		<PlayerBoard player={player2} mirrored={true} unitCard={player2unitCard} dropUnitCard={player2dropUnitCard} {attacks} />
+
+		{#snippet player1dropUnitCard(c:Coordinate)}
+		{#if hand}
+			<DropUnitCard unit={hand} onclick={() => onAddUnit(player1, c)}/>
+		{:else}
+			<EmptyUnitCard />
+		{/if}
+		{/snippet}
+
+		{#snippet player1unitCard(boardUnit:BoardUnit)}
+			<BoardUnitCard unit={boardUnit} onclick={() => onRemoveUnit(player1, boardUnit.setCoord)} />
+		{/snippet}
+		<PlayerBoard player={player1} mirrored={false} unitCard={player1unitCard} dropUnitCard={player1dropUnitCard} {attacks} />
 	</div>
 </div>

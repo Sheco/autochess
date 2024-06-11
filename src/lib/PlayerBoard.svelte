@@ -14,7 +14,7 @@ let { player, mirrored=false, unitCard, dropUnitCard, columns=6, rows=3, attacks
 } = $props()
 
 
-let isAlive = $derived(player.board.filter(boardUnit => boardUnit.hp>0).length>0)
+let isAlive = $derived(player.board.units.filter(boardUnit => boardUnit.hp>0).length>0)
 let status = $derived(isAlive? "bg-"+player.color: "bg-secondary")
 
 </script>
@@ -28,7 +28,7 @@ let status = $derived(isAlive? "bg-"+player.color: "bg-secondary")
 					no big deal :)
 					-->
 					<input type="text" bind:value={player.name} />
-					<span class="badge bg-danger ">{player.board.reduce((total, v) => total+v.hp, 0)}</span><br>
+					<span class="badge bg-danger ">{player.board.units.reduce((total, v) => total+v.hp, 0)}</span><br>
 				</div>
 
 				{#each player.traits as trait}

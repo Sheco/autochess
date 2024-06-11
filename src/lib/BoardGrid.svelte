@@ -15,7 +15,7 @@ function boardToArray(board:Board, mirrored:boolean=false) {
 	let newboard = Array(columns*rows).fill(undefined).map((_, i) => {
 		let x = i%columns
 		let y = Math.floor(i/columns)
-		return board.find(boardUnit => {
+		return board.units.find(boardUnit => {
 			return (boardUnit.setCoord.x == x) && (boardUnit.setCoord.y == y)
 		})
 	})

@@ -20,8 +20,16 @@ let resetPlayer = (player:Player) => {
 	player.hp = 3
 	player.rolls = 2
 	player.gold = 10
-	player.hand = []
-	player.board = []
+	player.hand = {
+		units: [],
+		rows: 1,
+		columns: 6
+	}
+	player.board = {
+		units: [],
+		rows: 3,
+		columns: 6
+	}
 }
 let onrestart = () => {
 	for(let player of players) {
@@ -49,7 +57,7 @@ let onbuy = (player:Player, unit:Unit) => {
 	player.gold--
 	let firstOpen = () => {
 		for(let i=0; i<6; i++) {
-			if(!player.hand.find(u => u.setCoord.x==i))
+			if(!player.hand.units.find(u => u.setCoord.x==i))
 				return i
 		}
 	}
@@ -60,7 +68,7 @@ let onbuy = (player:Player, unit:Unit) => {
 	}
 	let y = 0
 	let boardUnit = createBoardUnit(unit, {x, y})
-	player.hand.push(boardUnit)
+	player.hand.units.push(boardUnit)
 }
 let oncontinue = () => {
 		//FIXME esto no funciona bien cuando el primer jugador ya esta muerto
@@ -93,8 +101,16 @@ let onnewplayer = () => {
 			gold: 10,
 			rolls: 2,
 			traits: [],
-			hand: [],
-			board: []
+			hand: {
+				rows: 1,
+				columns: 6,
+				units: [],
+			},
+			board: {
+				rows: 3,
+				columns: 6,
+				units: []
+			}
 	})
 }
 onnewplayer()

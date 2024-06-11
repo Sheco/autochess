@@ -331,7 +331,7 @@ function getDiceMods(boardUnit:BoardUnit, attribute:string) {
 		.flatMap(mod => mod.dice)
 }
 export function updatePlayerTraits(player:Player) {
-	let countUnitTraits = (trait:Trait) => player.board
+	let countUnitTraits = (trait:Trait) => player.board.units
 		.reduce((total, curr) => {
 			// get a list of unique units
 			if(!total.find(u => u.unit.id==curr.unit.id))
@@ -352,7 +352,7 @@ export function updatePlayerTraits(player:Player) {
 			traitrank.mods = traitrank.levels[traitrank.level].mods
 			return traitrank
 		})
-	player.board = player.board.map(bu => {
+	player.board.units = player.board.units.map(bu => {
 		// reset stats to the unit's base values
 		Object.assign(bu, bu.unit)
 		bu.attack = [...bu.attack]

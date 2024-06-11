@@ -19,7 +19,7 @@ let { players, onfight, onmanage }:{
 			<tr>
 				<td>{p.name}</td>
 				<td>{p.hp}</td>
-				<td>{p.board.length}</td>
+				<td>{p.board.units.length}</td>
 				<td>
 					{#if onmanage}
 					<button onclick={() => onmanage(p)} class="btn btn-{p.color} me-2">
@@ -33,7 +33,7 @@ let { players, onfight, onmanage }:{
 				<td colspan="3"></td>
 				<td colspan="2">
 					{#if onfight}
-					<button disabled={!(players[0].board.length==3 && players[1].board.length==3)} 
+					<button disabled={!(players[0].board.units.length==3 && players[1].board.units.length==3)} 
 						onclick={onfight} class="btn btn-secondary">
 						Pelear
 					</button>

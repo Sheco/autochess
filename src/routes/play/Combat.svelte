@@ -55,7 +55,7 @@ let nextFight = async () => {
 		let result = fightStatus(player1, player2)
 		winner = result.winner
 		if(result.loser && result.winner) {
-			let unitsAlive = result.winner.board.filter(u => u.hp>0).length
+			let unitsAlive = result.winner.board.units.filter(u => u.hp>0).length
 			ondamage(result.loser, unitsAlive)
 		}
 	} catch(Exception) {

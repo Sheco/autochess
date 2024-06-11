@@ -14,8 +14,8 @@ function coordinatesBetween(point1:Coordinate, point2:Coordinate) {
 	return coordinates.slice(1)
 }
 
-function coordinatesToBoardUnits(board:Board) {
-	return (c:Coordinate) => board.find(boardUnit => boardUnit.realCoord.x==c.x && boardUnit.realCoord.y==c.y)
+function coordinatesToBoardUnits(units:BoardUnit[]) {
+	return (c:Coordinate) => units.find(boardUnit => boardUnit.realCoord.x==c.x && boardUnit.realCoord.y==c.y)
 }
 
 let calculateDistance = (attacker:BoardUnit, defender:BoardUnit) => {
@@ -25,12 +25,12 @@ let calculateDistance = (attacker:BoardUnit, defender:BoardUnit) => {
 	)
 	return { target: defender, distance }
 }
-let targetting:{[key:string]: (c:BoardUnit, f:Board) => BoardUnit[]} = {
-		random: (_:BoardUnit, target:Board) => !target.length? []:
+let targetting:{[key:string]: (c:BoardUnit, f:BoardUnit[]) => BoardUnit[]} = {
+		random: (_:BoardUnit, target:BoardUnit[]) => !target.length? []:
 			[target[Math.floor(Math.random()*target.length)]]
 		,
-		everyone: (_:BoardUnit, target:Board) => target,
-		nearby: (attacker:BoardUnit, target:Board) => {
+		everyone: (_:BoardUnit, target:BoardUnit[]) => target,
+		nearby: (attacker:BoardUnit, target:BoardUnit[]) => {
 			let closest = target
 				.map((target) => calculateDistance(attacker, target))
 				.sort((a, b) => a.distance-b.distance)
@@ -38,31 +38,31 @@ let targetting:{[key:string]: (c:BoardUnit, f:Board) => BoardUnit[]} = {
 				.slice(0, 2)
 			return !closest.length? []: [closest[Math.floor(Math.random()*closest.length)]]
 		},
-		closest1: (attacker:BoardUnit, target:Board) => target
+		closest1: (attacker:BoardUnit, target:BoardUnit[]) => target
 				.map((target) => calculateDistance(attacker, target))
 				.sort((a, b) => a.distance-b.distance)
 				.map(({target}) => target)
 				.slice(0,1)
 		,
-		weakest1: (attacker:BoardUnit, target:Board) => target
+		weakest1: (attacker:BoardUnit, target:BoardUnit[]) => target
 				.map((target) => calculateDistance(attacker, target))
 				.sort((a,b) => (a.target.hp-b.target.hp))
 				.map(({target}) => target)
 				.slice(0, 1)
 		,
-		farthest1: (attacker:BoardUnit, target:Board) => target
+		farthest1: (attacker:BoardUnit, target:BoardUnit[]) => target
 				.map((target) => calculateDistance(attacker, target))
 				.sort((a, b) => b.distance-a.distance)
 				.map(({target}) => target)
 				.slice(0,1)
 		,
-		farthest2: (attacker:BoardUnit, target:Board) => target
+		farthest2: (attacker:BoardUnit, target:BoardUnit[]) => target
 				.map((target) => calculateDistance(attacker, target))
 				.sort((a, b) => b.distance-a.distance)
 				.map(({target}) => target)
 				.slice(0,2)
 		,
-		farthest1_direct: (attacker:BoardUnit, target:Board) => {
+		farthest1_direct: (attacker:BoardUnit, target:BoardUnit[]) => {
 			let [farthest1] = targetting.farthest1(attacker, target)
 			if(!farthest1) return []
 			let blocker = coordinatesBetween(attacker.realCoord, farthest1.realCoord)
@@ -75,7 +75,7 @@ let targetting:{[key:string]: (c:BoardUnit, f:Board) => BoardUnit[]} = {
 
 
 export function setBattleCoordinates(player:Player) {
-	for(let boardUnit of player.board) {
+	for(let boardUnit of player.board.units) {
 		boardUnit.realCoord.x = boardUnit.setCoord.x
 		boardUnit.realCoord.y = player.mirrored? -boardUnit.setCoord.y-1: boardUnit.setCoord.y
 	}
@@ -122,7 +122,7 @@ function attack(attackingPlayer:Player, attacker:BoardUnit, defendingPlayer:Play
 		return attack
 	}
 	let targets = targetting[attacker.unit.targetting.id](attacker,
-		defendingPlayer.board.filter(boardUnit => boardUnit.hp>0))
+		defendingPlayer.board.units.filter(boardUnit => boardUnit.hp>0))
 	if(!targets) {
 		return attack
 	}
@@ -144,12 +144,12 @@ interface Turn {
 }
 
 function *runCombat(attacker:Player, defender:Player)  {
-	let attackerTurns:Turn[] = attacker.board
+	let attackerTurns:Turn[] = attacker.board.units
 		.filter(boardUnit => boardUnit.hp>0)
 		.map(boardUnit => ({
 			boardUnit, attacker, defender
 		}))
-	let defenderTurns:Turn[] = defender.board
+	let defenderTurns:Turn[] = defender.board.units
 		.filter(boardUnit => boardUnit.hp>0)
 		.map(boardUnit => ({
 			boardUnit, attacker:defender, defender:attacker
@@ -173,7 +173,7 @@ function *runCombat(attacker:Player, defender:Player)  {
 			})
 			turn.boardUnit.energy=0
 
-			let defenders = turn.defender.board.filter(boardUnit => boardUnit.hp>0)
+			let defenders = turn.defender.board.units.filter(boardUnit => boardUnit.hp>0)
 			if(defenders.length==0) {
 				return
 			}
@@ -262,8 +262,8 @@ export function animatedFight(attacks:Attack[]|Generator<Attack>, speed:number) 
 }
 
 export function fightStatus(player1:Player, player2:Player) {
-	let player1Alive = player1.board.filter(boardUnit => boardUnit.hp>0).length>0
-	let player2Alive = player2.board.filter(boardUnit => boardUnit.hp>0).length>0
+	let player1Alive = player1.board.units.filter(boardUnit => boardUnit.hp>0).length>0
+	let player2Alive = player2.board.units.filter(boardUnit => boardUnit.hp>0).length>0
 
 	let winner:Player|undefined = undefined
 	let loser:Player|undefined = undefined

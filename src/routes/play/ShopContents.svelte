@@ -19,7 +19,7 @@ let { player, buttons, cards, onbuy, rolled }:{
 		</span>
 	</div>
 	<div class="card-body">
-		Oro: {player.gold} Cartas en la mano: {player.hand.length}<br>
+		Oro: {player.gold} Cartas en la mano: {player.hand.units.length}<br>
 		<div class="row mt-2">
 				{#each cards as unit, i}
 					<div class="col-3 mb-1 d-flex align-items-stretch">

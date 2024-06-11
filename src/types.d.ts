@@ -109,7 +109,11 @@ declare global {
 		level: number
 		mods: TraitMod[]
 	}
-	export type Board = BoardUnit[]
+	export interface Board {
+		rows: number
+		columns: number
+		units: BoardUnit[]
+	}
 	export interface Player {
 		id: string,
 		name: string,
