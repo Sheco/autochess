@@ -2,12 +2,13 @@
 import { Units } from "$lib/database";
 import ShopContents from "./ShopContents.svelte";
 import ManagePlayer from "./ManagePlayer.svelte";
+    import { firstOpenSpace } from "$lib/combat";
 
 let {player, oncontinue: oncontinue_parent, onroll: onroll_parent, onbuy: onbuy_parent}:{
 	player:Player,
 	oncontinue:()=>void,
 	onroll:(player:Player)=>void,
-	onbuy:(player:Player, unit:Unit)=>void,
+	onbuy:(player:Player, unit:Unit, c:Coordinate)=>void,
 } = $props()
 
 let newDeck = Units
@@ -31,18 +32,13 @@ let onroll = () => {
 let onbuy = (index:number) => {
 	if(player.gold==0)
 		return;
-	let firstOpen = () => {
-		for(let i=0; i<player.hand.columns; i++) {
-			if(!player.hand.units.find(u => u.setCoord.x==i))
-				return i
-		}
-	}
-	if(firstOpen()===undefined) {
+	let c = firstOpenSpace(player.hand)
+	if(!c) {
 		alert('La banca esta llena')
 		return;
 	}
 	let [card] = cards.splice(index, 1)
-	onbuy_parent(player, card)
+	onbuy_parent(player, card, c)
 }
 let oncontinue = () => {
 	deck.push(...cards)

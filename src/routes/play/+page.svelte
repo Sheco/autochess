@@ -53,21 +53,9 @@ let onroll = (player:Player) => {
 	player.rolls--
 	player.gold -= 2
 }
-let onbuy = (player:Player, unit:Unit) => {
+let onbuy = (player:Player, unit:Unit, c:Coordinate) => {
 	player.gold--
-	let firstOpen = () => {
-		for(let i=0; i<player.hand.columns; i++) {
-			if(!player.hand.units.find(u => u.setCoord.x==i))
-				return i
-		}
-	}
-	let x = firstOpen()
-	if(x === undefined) { 
-		alert('La banca esta llena')
-		return;
-	}
-	let y = 0
-	let boardUnit = createBoardUnit(unit, {x, y})
+	let boardUnit = createBoardUnit(unit, c)
 	player.hand.units.push(boardUnit)
 }
 let oncontinue = () => {

@@ -17,6 +17,14 @@ function coordinatesBetween(point1:Coordinate, point2:Coordinate) {
 function coordinatesToBoardUnits(units:BoardUnit[]) {
 	return (c:Coordinate) => units.find(boardUnit => boardUnit.realCoord.x==c.x && boardUnit.realCoord.y==c.y)
 }
+export function firstOpenSpace(board:Board) {
+	for(let y=0; y<board.rows; y++) {
+		for(let x=0; x<board.columns; x++) {
+			if(!board.units.find(u => u.setCoord.x==x && u.setCoord.y==y))
+				return {x, y} as Coordinate
+		}
+	}
+}
 
 let calculateDistance = (attacker:BoardUnit, defender:BoardUnit) => {
 	let distance = Math.sqrt(
