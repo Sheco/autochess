@@ -1,5 +1,6 @@
 <script lang="ts">
     import BattleGround from "$lib/BattleGround.svelte";
+    import BoardUnitCard from "$lib/BoardUnitCard.svelte";
     import DropUnitCard from "$lib/DropUnitCard.svelte";
     import EmptyUnitCard from "$lib/EmptyUnitCard.svelte";
     import UnitCard from "$lib/UnitCard.svelte";
@@ -79,10 +80,10 @@ let nextFight = async () => {
 	{#if winner}
 	Ganador: <span class="fw-bold text-{winner.color}">{winner.name}</span>
 	{/if}
-	{#snippet unitCard(player:Player, boardUnit:BoardUnit)}
-		<UnitCard unit={boardUnit.unit} {boardUnit} onclick={() => {}} />
+	{#snippet unitCard(boardUnit:BoardUnit)}
+		<BoardUnitCard unit={boardUnit} onclick={() => {}} />
 	{/snippet}
-	{#snippet dropUnitCard(player:Player, c:Coordinate)}
+	{#snippet dropUnitCard(c:Coordinate)}
 		<EmptyUnitCard />
 	{/snippet}
 	

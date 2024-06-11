@@ -1,33 +1,28 @@
 <script lang="ts">
 import type { Snippet } from "svelte";
-import ManagePlayerBench from "./ManagePlayerBench.svelte";
-import ManagePlayerBoard from "./ManagePlayerBoard.svelte";
-import UnitCard from "$lib/UnitCard.svelte";
-import { fade } from "svelte/transition";
-import { createBoardUnit } from "$lib/combat";
+import { createBoardUnit, setBattleCoordinates } from "$lib/combat";
     import { updatePlayerTraits } from "$lib/database";
+    import DropUnitCard from "$lib/DropUnitCard.svelte";
+    import EmptyUnitCard from "$lib/EmptyUnitCard.svelte";
+    import BoardUnitCard from "$lib/BoardUnitCard.svelte";
+    import BoardGrid from "$lib/BoardGrid.svelte";
 
-let { player, actions }: {player:Player, actions?:Snippet|undefined} = $props();
-let takenUnit:Unit|undefined = $state(undefined)
-function ontakeFromBench(index:number) {
-	if (takenUnit) {
-		onreleaseToBench()
-	}
+let { player }: {player:Player, actions?:Snippet|undefined} = $props();
+let takenUnit:BoardUnit|undefined = $state(undefined)
+function ontakeFromBench(c:Coordinate) {
+	let index=player.hand.findIndex(bu => c.x==bu.setCoord.x && c.y==bu.setCoord.y);
 	[takenUnit] = player.hand.splice(index, 1)
 }
 function ontakeFromBoard(c:Coordinate) {
-	if (takenUnit) {
-		onreleaseToBoard(c)
-	}
 	let index=player.board.findIndex(bu => c.x==bu.setCoord.x && c.y==bu.setCoord.y)
-	takenUnit = player.board[index].unit
+	takenUnit = player.board[index]
 	player.board.splice(index, 1)
 	updatePlayerTraits(player)
 }
-function onreleaseToBench() {
+function onreleaseToBench(c:Coordinate) {
 	if(!takenUnit)
 		return
-	player.hand.push(takenUnit)
+	player.hand.push(createBoardUnit(takenUnit.unit, c))
 	updatePlayerTraits(player)
 	takenUnit = undefined
 }
@@ -37,7 +32,9 @@ function onreleaseToBoard(c:Coordinate) {
 		console.log("ERROR: transferCard() taken===undefined")
 		return
 	}
-	player.board.push(createBoardUnit(takenUnit, c))
+
+	player.board.push(createBoardUnit(takenUnit.unit, c))
+	setBattleCoordinates(player)
 	updatePlayerTraits(player)
 	takenUnit = undefined
 }
@@ -49,10 +46,40 @@ $effect(()=> {
 })
 </script>
 
-<ManagePlayerBench {player} onclick={ontakeFromBench} onrelease={onreleaseToBench} {actions} {takenUnit} />
-<ManagePlayerBoard {player} onclick={ontakeFromBoard} onrelease={onreleaseToBoard} {takenUnit} />
+{#snippet benchDropUnitCard(c:Coordinate)}
 {#if takenUnit}
-	<div class="position-fixed top-0 end-0" in:fade out:fade style="width: 210px">
-		<UnitCard unit={takenUnit} onclick={onreleaseToBench} />
-	</div>
+	<DropUnitCard unit={takenUnit} onclick={() => onreleaseToBench(c)}/>
+{:else}
+	<EmptyUnitCard />
 {/if}
+{/snippet}
+{#snippet benchUnitCard(boardUnit:BoardUnit)}
+	<BoardUnitCard unit={boardUnit} onclick={() => ontakeFromBench(boardUnit.setCoord)} />
+{/snippet}
+<div class="card mt-2" id="board">
+	<div class="card-header bg-{player.color} text-light">
+		Banca
+	</div>
+	<div class="card-body">
+		<BoardGrid board={player.hand} mirrored={false} dropUnitCard={benchDropUnitCard} unitCard={benchUnitCard} rows={1} />
+	</div>
+</div>
+
+{#snippet boardDropUnitCard(c:Coordinate)}
+{#if takenUnit}
+	<DropUnitCard unit={takenUnit} onclick={() => onreleaseToBoard(c)}/>
+{:else}
+	<EmptyUnitCard />
+{/if}
+{/snippet}
+{#snippet boardUnitCard(boardUnit:BoardUnit)}
+	<BoardUnitCard unit={boardUnit} onclick={() => ontakeFromBoard(boardUnit.setCoord)} />
+{/snippet}
+<div class="card mt-2" id="board">
+	<div class="card-header bg-{player.color} text-light">
+		Tablero
+	</div>
+	<div class="card-body">
+		<BoardGrid board={player.board} mirrored={false} dropUnitCard={boardDropUnitCard} unitCard={boardUnitCard} />
+	</div>
+</div>

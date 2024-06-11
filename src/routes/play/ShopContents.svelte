@@ -1,5 +1,6 @@
 <script lang="ts">
 import UnitCard from '$lib/UnitCard.svelte';
+    import { createBoardUnit } from '$lib/combat';
 import type { Snippet } from 'svelte';
 
 let { player, buttons, cards, onbuy, rolled }:{
@@ -22,7 +23,7 @@ let { player, buttons, cards, onbuy, rolled }:{
 		<div class="row mt-2">
 				{#each cards as unit, i}
 					<div class="col-3 mb-1 d-flex align-items-stretch">
-						<UnitCard onclick={() => onbuy(i)} {unit} />
+						<UnitCard onclick={() => onbuy(i)} unit={createBoardUnit(unit, {x:0, y:0})} />
 					</div>
 				{:else}
 					<div class="col-12">

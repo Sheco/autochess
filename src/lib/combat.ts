@@ -74,7 +74,7 @@ let targetting:{[key:string]: (c:BoardUnit, f:Board) => BoardUnit[]} = {
 }
 
 
-function setBattleCoordinates(player:Player) {
+export function setBattleCoordinates(player:Player) {
 	for(let boardUnit of player.board) {
 		boardUnit.realCoord.x = boardUnit.setCoord.x
 		boardUnit.realCoord.y = player.mirrored? -boardUnit.setCoord.y-1: boardUnit.setCoord.y

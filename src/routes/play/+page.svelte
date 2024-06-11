@@ -1,5 +1,6 @@
 <script lang="ts">
 import { goto } from "$app/navigation";
+    import { createBoardUnit } from "$lib/combat";
 import Manage from "./Manage.svelte";
     import PlayerBoard from "./PlayerBoard.svelte";
 import PlayerSetup from "./PlayerSetup.svelte";
@@ -46,7 +47,20 @@ let onroll = (player:Player) => {
 }
 let onbuy = (player:Player, unit:Unit) => {
 	player.gold--
-	player.hand.push(unit)
+	let firstOpen = () => {
+		for(let i=0; i<6; i++) {
+			if(!player.hand.find(u => u.setCoord.x==i))
+				return i
+		}
+	}
+	let x = firstOpen()
+	if(x === undefined) { 
+		alert('The bench is full')
+		return;
+	}
+	let y = 0
+	let boardUnit = createBoardUnit(unit, {x, y})
+	player.hand.push(boardUnit)
 }
 let oncontinue = () => {
 		//FIXME esto no funciona bien cuando el primer jugador ya esta muerto
