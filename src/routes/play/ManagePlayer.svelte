@@ -6,6 +6,7 @@ import { createBoardUnit, setBattleCoordinates } from "$lib/combat";
     import EmptyUnitCard from "$lib/EmptyUnitCard.svelte";
     import BoardUnitCard from "$lib/BoardUnitCard.svelte";
     import BoardGrid from "$lib/BoardGrid.svelte";
+    import TraitInfo from "$lib/TraitInfo.svelte";
 
 let { player }: {player:Player, actions?:Snippet|undefined} = $props();
 let takenUnit:BoardUnit|undefined = $state(undefined)
@@ -56,40 +57,54 @@ $effect(()=> {
 	</div>
 {/if}
 
-{#snippet benchDropUnitCard(c:Coordinate)}
-{#if takenUnit}
-	<DropUnitCard unit={takenUnit} onclick={() => onreleaseToBench(c)}/>
-{:else}
-	<EmptyUnitCard />
-{/if}
-{/snippet}
-{#snippet benchUnitCard(boardUnit:BoardUnit)}
-	<BoardUnitCard unit={boardUnit} onclick={() => ontakeFromBench(boardUnit.setCoord)} />
-{/snippet}
-<div class="card mt-2" id="board">
-	<div class="card-header bg-{player.color} text-light">
-		Banca
+<div class="row">
+	<div class="col-4">
+		<div class="card mt-2">
+			<div class="card-header">Rasgos</div>
+			<div class="card-body">
+				{#each player.traits as trait}
+						<TraitInfo {trait} /><br>
+				{/each}
+			</div>
+		</div>
 	</div>
-	<div class="card-body">
-		<BoardGrid board={player.hand} mirrored={false} dropUnitCard={benchDropUnitCard} unitCard={benchUnitCard} rows={1} />
-	</div>
-</div>
+	<div class="col-8">
+		{#snippet benchDropUnitCard(c:Coordinate)}
+		{#if takenUnit}
+			<DropUnitCard unit={takenUnit} onclick={() => onreleaseToBench(c)}/>
+		{:else}
+			<EmptyUnitCard />
+		{/if}
+		{/snippet}
+		{#snippet benchUnitCard(boardUnit:BoardUnit)}
+			<BoardUnitCard unit={boardUnit} onclick={() => ontakeFromBench(boardUnit.setCoord)} />
+		{/snippet}
+		<div class="card mt-2" id="board">
+			<div class="card-header bg-{player.color} text-light">
+				Banca
+			</div>
+			<div class="card-body">
+				<BoardGrid board={player.hand} mirrored={false} dropUnitCard={benchDropUnitCard} unitCard={benchUnitCard} rows={1} />
+			</div>
+		</div>
 
-{#snippet boardDropUnitCard(c:Coordinate)}
-{#if takenUnit}
-	<DropUnitCard unit={takenUnit} onclick={() => onreleaseToBoard(c)}/>
-{:else}
-	<EmptyUnitCard />
-{/if}
-{/snippet}
-{#snippet boardUnitCard(boardUnit:BoardUnit)}
-	<BoardUnitCard unit={boardUnit} onclick={() => ontakeFromBoard(boardUnit.setCoord)} />
-{/snippet}
-<div class="card mt-2" id="board">
-	<div class="card-header bg-{player.color} text-light">
-		Tablero
-	</div>
-	<div class="card-body">
-		<BoardGrid board={player.board} mirrored={false} dropUnitCard={boardDropUnitCard} unitCard={boardUnitCard} />
+		{#snippet boardDropUnitCard(c:Coordinate)}
+		{#if takenUnit}
+			<DropUnitCard unit={takenUnit} onclick={() => onreleaseToBoard(c)}/>
+		{:else}
+			<EmptyUnitCard />
+		{/if}
+		{/snippet}
+		{#snippet boardUnitCard(boardUnit:BoardUnit)}
+			<BoardUnitCard unit={boardUnit} onclick={() => ontakeFromBoard(boardUnit.setCoord)} />
+		{/snippet}
+		<div class="card mt-2" id="board">
+			<div class="card-header bg-{player.color} text-light">
+				Tablero
+			</div>
+			<div class="card-body">
+				<BoardGrid board={player.board} mirrored={false} dropUnitCard={boardDropUnitCard} unitCard={boardUnitCard} />
+			</div>
+		</div>
 	</div>
 </div>
