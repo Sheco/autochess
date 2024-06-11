@@ -126,7 +126,7 @@ declare global {
 		gold: number,
 		rolls: number,
 		traits: TraitRankActive[],
-		hand: Board,
+		bench: Board,
 		dimUnits?:boolean
 	}
 

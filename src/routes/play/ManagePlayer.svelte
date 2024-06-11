@@ -12,9 +12,9 @@ let { player, onclose }: {player:Player, onclose?:()=>void} = $props();
 let takenUnit:BoardUnit|undefined = $state(undefined)
 function ontakeFromBench(c:Coordinate) {
 	let otherUnit = takenUnit
-	let index=player.hand.units.findIndex(bu => c.x==bu.setCoord.x && c.y==bu.setCoord.y);
-	[takenUnit] = player.hand.units.splice(index, 1)
-	if(otherUnit) player.hand.units.push(createBoardUnit(otherUnit.unit, c))
+	let index=player.bench.units.findIndex(bu => c.x==bu.setCoord.x && c.y==bu.setCoord.y);
+	[takenUnit] = player.bench.units.splice(index, 1)
+	if(otherUnit) player.bench.units.push(createBoardUnit(otherUnit.unit, c))
 }
 function ontakeFromBoard(c:Coordinate) {
 	let otherUnit = takenUnit
@@ -27,7 +27,7 @@ function ontakeFromBoard(c:Coordinate) {
 function onreleaseToBench(c:Coordinate) {
 	if(!takenUnit)
 		return
-	player.hand.units.push(createBoardUnit(takenUnit.unit, c))
+	player.bench.units.push(createBoardUnit(takenUnit.unit, c))
 	updatePlayerTraits(player)
 	takenUnit = undefined
 }
@@ -46,13 +46,13 @@ function onreleaseToBoard(c:Coordinate) {
 
 function onclose_here() {
 	if(takenUnit) {
-		let c = firstOpenSpace(player.hand)
+		let c = firstOpenSpace(player.bench)
 		if(c) onreleaseToBench(c)
 	}
 	if(onclose) onclose()
 }
 $effect(()=> {
-	// track player, when it changes, reset state.
+	// trbenchplayer, when it changes, reset state.
 	player;
 	takenUnit = undefined
 })
@@ -97,7 +97,7 @@ $effect(()=> {
 				Banca
 			</div>
 			<div class="card-body">
-				<BoardGrid board={player.hand} mirrored={false} dropUnitCard={benchDropUnitCard} unitCard={benchUnitCard} rows={1} />
+				<BoardGrid board={player.bench} mirrored={false} dropUnitCard={benchDropUnitCard} unitCard={benchUnitCard} rows={1} />
 			</div>
 		</div>
 

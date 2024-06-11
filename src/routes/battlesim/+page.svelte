@@ -47,7 +47,7 @@ let player1:Player = $state({
 	gold: 5,
 	rolls: 2,
 	traits: [],
-	hand: {
+	bench: {
 		units: [],
 		rows: 1,
 		columns: 6,
@@ -69,7 +69,7 @@ let player2:Player = $state({
 	gold: 5,
 	rolls: 2,
 	traits: [],
-	hand: {
+	bench: {
 		units: [],
 		rows: 1,
 		columns: 6,

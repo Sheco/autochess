@@ -32,7 +32,7 @@ let onroll = () => {
 let onbuy = (index:number) => {
 	if(player.gold==0)
 		return;
-	let c = firstOpenSpace(player.hand)
+	let c = firstOpenSpace(player.bench)
 	if(!c) {
 		alert('La banca esta llena')
 		return;

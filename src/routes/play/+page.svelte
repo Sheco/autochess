@@ -20,7 +20,7 @@ let resetPlayer = (player:Player) => {
 	player.hp = 3
 	player.rolls = 2
 	player.gold = 10
-	player.hand = {
+	player.bench = {
 		units: [],
 		rows: 1,
 		columns: 6
@@ -56,7 +56,7 @@ let onroll = (player:Player) => {
 let onbuy = (player:Player, unit:Unit, c:Coordinate) => {
 	player.gold--
 	let boardUnit = createBoardUnit(unit, c)
-	player.hand.units.push(boardUnit)
+	player.bench.units.push(boardUnit)
 }
 let oncontinue = () => {
 		//FIXME esto no funciona bien cuando el primer jugador ya esta muerto
@@ -64,7 +64,6 @@ let oncontinue = () => {
 			currentPlayerIndex=0
 		else
 			currentPlayerIndex++
-		
 		if(currentPlayer===undefined) {
 			console.log('oncontinue: currentPlayer==undefined, index:', currentPlayerIndex, 'livingplayers', livingPlayers)
 			return
@@ -89,7 +88,7 @@ let onnewplayer = () => {
 			gold: 10,
 			rolls: 2,
 			traits: [],
-			hand: {
+			bench: {
 				rows: 1,
 				columns: 6,
 				units: [],
